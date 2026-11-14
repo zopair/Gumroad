@@ -104,19 +104,20 @@ Completed:
 - Twenty product-specific preview SVGs generated and rendered to PNG.
 - Ten 3D-style mockup SVGs generated and rendered to PNG.
 - Each Gumroad product now has four cover/gallery images.
+- Ten XLSX workbooks generated, regression-tested in GitHub Actions and attached to their matching Gumroad products.
+- Product descriptions, additional details and receipt messages updated to list all three downloads.
 - Gallery rendering workflow serialized to prevent concurrent Git push races.
 - Responsive custom profile HTML prepared in storefront/profile.html.
 
 In progress:
-- Ten XLSX workbooks generated and regression-tested in GitHub Actions, then attached to their matching Gumroad products.
 - Custom profile HTML requires Gumroad CLI sanitizer preview and publish. The available connector does not expose those commands.
 - Profile SEO title/description, global theme, profile avatar/bio and newsletter follow eligibility require account-level Pages/Settings access.
 
 ## Next priorities
 
-P0: publish and preview the custom profile page, then perform a buyer-side mobile/desktop check of all ten product pages and download flows.
+P0: publish and preview the custom profile page using Gumroad Pages CLI, then set profile SEO metadata and global theme.
 
-P1: publish and preview the custom profile page using Gumroad Pages CLI, then set profile SEO metadata and global theme.
+P1: perform a buyer-side mobile/desktop check of all ten product pages and download flows.
 
 P2: create authentic product walkthroughs, distribute channel-specific previews with UTMs, and review views/conversion weekly.
 
