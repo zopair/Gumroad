@@ -1,0 +1,45 @@
+name: Build animated product mockup GIFs
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/build-product-gifs.yml"
+      - "products/*/assets/mockup-03.png"
+concurrency:
+  group: gumroad-product-gifs
+  cancel-in-progress: true
+jobs:
+  gifs:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Generate short looping GIFs
+        run: |
+          set -euo pipefail
+          count=0
+          for png in products/*/assets/mockup-03.png; do
+            gif="\${png%.png}.gif"
+            ffmpeg -hide_banner -loglevel error -y -loop 1 -i "$png" \
+              -vf "scale=800:500,zoompan=z='1+0.02*(1+sin(2*PI*on/48))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=48:s=800x500:fps=12,split[s0][s1];[s0]palettegen=max_colors=128[p];[s1][p]paletteuse" \
+              -frames:v 48 -loop 0 "$gif"
+            test -s "$gif"
+            count=$((count + 1))
+          done
+          test "$count" -eq 10
+      - name: Commit GIFs
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          find products -type f -name '*.gif' -print0 | xargs -0 -r git add
+          git commit -m "Add animated product mockup previews"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
