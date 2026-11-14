@@ -31,7 +31,7 @@ Last operational review: 2026-11-15
 - Email and sales templates include permission, unsubscribe and opt-out safeguards.
 - Pricing and financial workbooks carry educational-use and verification limitations.
 - Product covers are product-specific; three custom preview/mockup images were added alongside each original cover.
-- Current downloadable package: one Markdown file and one CSV worksheet per product. XLSX workbook generation is under CI validation; do not advertise XLSX until generated, attached and verified on Gumroad.
+- Current downloadable package: three files per product — a Markdown guide, matching CSV worksheet and editable XLSX workbook. The ten workbooks passed the GitHub Actions regression/build workflow and are attached to their matching published Gumroad products.
 
 ## Store description — recommended profile copy
 
@@ -47,7 +47,8 @@ The last checked Gumroad analytics window (2026-10-16 through 2026-11-15) showed
 - Set the profile SEO title and description.
 - Confirm profile image, short bio, store theme and payout profile in Gumroad Settings.
 - Verify the newsletter follow form is enabled for this account.
-- Run a real mobile and desktop buyer-side visual check after publication.
+- Run a real mobile and desktop buyer-side visual check after profile publication.
+- Confirm that each of the three attached files downloads and opens from the buyer's Gumroad Library.
 
 The available Gumroad product connector can manage products, descriptions, tags, covers and files, but does not expose profile custom-HTML publishing, profile SEO settings or global theme controls. Do not claim those account-level items are complete until the CLI/UI reports success.
 
