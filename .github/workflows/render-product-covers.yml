@@ -12,15 +12,16 @@ concurrency:
   cancel-in-progress: true
 jobs:
   render:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    timeout-minutes: 8
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Install open-source media tools
+      - name: Install SVG renderer
         run: |
           sudo apt-get update
-          sudo apt-get install -y librsvg2-bin ffmpeg
+          sudo apt-get install -y librsvg2-bin
       - name: Render product covers, previews, mockups, brand and campaign assets
         run: |
           set -euo pipefail
@@ -40,32 +41,19 @@ jobs:
             fi
             file "$out"
             count=$((count + 1))
-          done < <(find products storefront marketing -type f -name '*.svg' -print0)
+          done < <(find products storefront marketing -type f -name '*.svg' ! -name 'thumbnail.svg' -print0)
           test "$count" -eq 53
-      - name: Create subtle animated product mockup GIFs
-        run: |
-          set -euo pipefail
-          count=0
-          for png in products/*/assets/mockup-03.png; do
-            gif="${png%.png}.gif"
-            ffmpeg -hide_banner -loglevel error -y -loop 1 -i "$png" \
-              -vf "scale=800:500,zoompan=z='1+0.025*(1+sin(2*PI*on/60))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=60:s=800x500:fps=12,split[s0][s1];[s0]palettegen=max_colors=128[p];[s1][p]paletteuse" \
-              -frames:v 60 -loop 0 "$gif"
-            test -s "$gif"
-            count=$((count + 1))
-          done
-          test "$count" -eq 10
       - name: Commit rendered assets
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          find products storefront marketing -type f \( -name '*.png' -o -name '*.gif' \) -print0 | xargs -0 -r git add
+          find products storefront marketing -type f -name '*.png' -print0 | xargs -0 -r git add
           if git diff --cached --quiet; then
             echo "No rendered assets changed."
             exit 0
           fi
-          git commit -m "Render store gallery, animated mockups and campaign assets"
+          git commit -m "Render store gallery and campaign assets"
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main
