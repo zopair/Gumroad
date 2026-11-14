@@ -5,12 +5,12 @@
  <circle cx="1450" cy="120" r="350" fill="#C28DB8" opacity=".10"/><circle cx="110" cy="940" r="270" fill="#D6A85F" opacity=".07"/>
  <path d="M92 100H1508" stroke="#D6A85F" stroke-width="2" opacity=".8"/>
  <text x="100" y="165" class="brand">ZUBAIR DIGITAL KITS</text>
- <text x="100" y="320" class="title">PROPOSAL &</text><text x="100" y="410" class="title">STATEMENT OF WORK</text>
+ <text x="100" y="320" class="title">PROPOSAL &amp;</text><text x="100" y="410" class="title">STATEMENT OF WORK</text>
  <text x="105" y="475" class="sub">Set expectations before delivery begins.</text>
  <rect x="100" y="545" width="700" height="235" rx="18" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".15"/>
  <text x="140" y="605" class="small gold">INSIDE THE KIT</text>
- <g font-family="Inter,Arial,sans-serif" font-size="23" fill="#F3F0E9"><text x="145" y="665">✦  SCOPE & DELIVERABLES</text><text x="145" y="715">✦  MILESTONE PLAN</text><text x="465" y="665">✦  FEES & ASSUMPTIONS</text><text x="465" y="715">✦  CHANGE CONTROL</text></g>
- <rect x="950" y="290" width="440" height="450" rx="24" fill="#F3F0E9"/><text x="990" y="345" class="dark label">PROPOSAL STRUCTURE</text><rect x="990" y="380" width="360" height="65" rx="9" fill="#17263A"/><rect x="990" y="462" width="170" height="84" rx="9" fill="#C28DB8"/><rect x="1180" y="462" width="170" height="84" rx="9" fill="#DDE5E4"/><rect x="990" y="562" width="360" height="45" rx="8" fill="#DDE5E4"/><rect x="990" y="620" width="360" height="45" rx="8" fill="#DDE5E4"/><g class="dark tiny"><text x="1010" y="420">PROJECT OVERVIEW</text><text x="1005" y="512">DELIVERABLES</text><text x="1195" y="512">MILESTONES</text><text x="1010" y="592">FEES & ASSUMPTIONS</text><text x="1010" y="650">CHANGE CONTROL</text></g>
+ <g font-family="Inter,Arial,sans-serif" font-size="23" fill="#F3F0E9"><text x="145" y="665">✦  SCOPE &amp; DELIVERABLES</text><text x="145" y="715">✦  MILESTONE PLAN</text><text x="465" y="665">✦  FEES &amp; ASSUMPTIONS</text><text x="465" y="715">✦  CHANGE CONTROL</text></g>
+ <rect x="950" y="290" width="440" height="450" rx="24" fill="#F3F0E9"/><text x="990" y="345" class="dark label">PROPOSAL STRUCTURE</text><rect x="990" y="380" width="360" height="65" rx="9" fill="#17263A"/><rect x="990" y="462" width="170" height="84" rx="9" fill="#C28DB8"/><rect x="1180" y="462" width="170" height="84" rx="9" fill="#DDE5E4"/><rect x="990" y="562" width="360" height="45" rx="8" fill="#DDE5E4"/><rect x="990" y="620" width="360" height="45" rx="8" fill="#DDE5E4"/><g class="dark tiny"><text x="1010" y="420">PROJECT OVERVIEW</text><text x="1005" y="512">DELIVERABLES</text><text x="1195" y="512">MILESTONES</text><text x="1010" y="592">FEES &amp; ASSUMPTIONS</text><text x="1010" y="650">CHANGE CONTROL</text></g>
  <path d="M100 865H1500" stroke="#FFFFFF" stroke-opacity=".2" stroke-width="2"/>
  <text x="100" y="925" font-family="Inter,Arial,sans-serif" font-size="21" fill="#D2DCE4">PRACTICAL DIGITAL WORKBOOK  /  INSTANT DOWNLOAD</text>
  <text x="1500" y="925" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="700" fill="#D6A85F">ZDK  /  09</text>
