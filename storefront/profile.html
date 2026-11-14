@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Zubair Digital Kits | Business, Marketing & Client Workflow Templates</title>
+  <meta name="description" content="Practical editable business templates, social media planning tools, sales trackers and client workflow kits for freelancers, creators and small businesses.">
+  <meta property="og:title" content="Zubair Digital Kits — Practical tools for better work">
+  <meta property="og:description" content="Editable business, marketing and client workflow resources. Clear deliverables, useful previews and instant digital access.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#111827">
+  <style>
+    :root {
+      --bg: #f3f0e9;
+      --surface: #ffffff;
+      --surface-2: #e8e3d8;
+      --ink: #111827;
+      --muted: #64748b;
+      --navy: #243b53;
+      --gold: #d6a85f;
+      --line: rgba(36,59,83,.15);
+      --shadow: 0 18px 48px rgba(17,24,39,.09);
+      --radius: 22px;
+    }
+    [data-theme="dark"] {
+      --bg: #111827;
+      --surface: #192536;
+      --surface-2: #243b53;
+      --ink: #f3f0e9;
+      --muted: #b8c3d1;
+      --navy: #d6a85f;
+      --gold: #e6bd79;
+      --line: rgba(243,240,233,.14);
+      --shadow: 0 18px 48px rgba(0,0,0,.24);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      transition: background .2s ease, color .2s ease;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar { border-bottom: 1px solid var(--line); }
+    .nav { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .02em; }
+    .brand-mark { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #111827; background: linear-gradient(135deg,#f1d59b,#b9873c); font-size: 15px; font-weight: 900; box-shadow: 0 8px 18px rgba(214,168,95,.25); }
+    .brand small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
+    .nav-links { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .nav-links a:hover { color: var(--gold); }
+    .theme-toggle { border: 1px solid var(--line); color: var(--ink); background: var(--surface); border-radius: 999px; padding: 9px 13px; cursor: pointer; }
+    .hero { padding: 74px 0 64px; display: grid; grid-template-columns: 1.08fr .92fr; gap: 50px; align-items: center; }
+    .eyebrow { color: var(--gold); font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+    h1 { font-size: clamp(40px, 5.5vw, 68px); line-height: 1.04; letter-spacing: -.045em; margin: 18px 0; max-width: 690px; }
+    .hero p { color: var(--muted); max-width: 580px; font-size: 17px; margin: 0 0 28px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .button { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 0 21px; border-radius: 999px; font-weight: 800; font-size: 13px; transition: transform .2s ease, box-shadow .2s ease; }
+    .button:hover { transform: translateY(-2px); }
+    .button.primary { color: #111827; background: linear-gradient(135deg,#f1d59b,#d6a85f); box-shadow: 0 10px 24px rgba(214,168,95,.2); }
+    .button.secondary { border: 1px solid var(--line); background: var(--surface); }
+    .hero-art { position: relative; }
+    .hero-art img { width: 100%; display: block; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid var(--line); }
+    .hero-note { position: absolute; left: -20px; bottom: 22px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 16px; padding: 13px 17px; box-shadow: var(--shadow); font-size: 12px; font-weight: 800; }
+    .hero-note span { display: block; color: var(--muted); font-size: 10px; font-weight: 600; }
+    .proof-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin-bottom: 70px; }
+    .proof { background: var(--surface); padding: 20px 22px; }
+    .proof strong { display: block; font-size: 14px; }
+    .proof span { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }
+    h2 { font-size: clamp(28px,3.5vw,42px); line-height: 1.12; letter-spacing: -.035em; margin: 8px 0 0; }
+    .section-head p { color: var(--muted); max-width: 430px; margin: 0; font-size: 14px; }
+    .catalog-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 28px 0; }
+    .search { flex: 1 1 240px; min-width: 220px; height: 46px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 0 18px; outline: none; }
+    .search:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(214,168,95,.16); }
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; }
+    .filter { border: 1px solid var(--line); background: var(--surface); color: var(--muted); padding: 10px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .filter[aria-pressed="true"] { background: var(--navy); color: var(--bg); border-color: var(--navy); }
+    .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+    .product { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; box-shadow: 0 8px 26px rgba(17,24,39,.035); transition: transform .2s ease, box-shadow .2s ease; display: flex; flex-direction: column; }
+    .product:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .product-image { aspect-ratio: 16 / 10; background: var(--surface-2); overflow: hidden; }
+    .product-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .product-body { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+    .product-category { color: var(--gold); text-transform: uppercase; font-size: 10px; letter-spacing: .16em; font-weight: 900; }
+    .product h3 { font-size: 19px; line-height: 1.22; letter-spacing: -.02em; margin: 8px 0; }
+    .product p { color: var(--muted); font-size: 12px; margin: 0 0 18px; flex: 1; }
+    .product-bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding-top: 15px; }
+    .price { font-weight: 900; font-size: 17px; }
+    .view-link { color: var(--gold); font-size: 12px; font-weight: 900; }
+    .empty { display: none; border: 1px dashed var(--line); border-radius: 18px; padding: 32px; color: var(--muted); text-align: center; }
+    .why { padding: 76px 0; }
+    .why-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 28px; }
+    .why-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+    .why-card b { display: block; margin-bottom: 7px; font-size: 15px; }
+    .why-card p { margin: 0; color: var(--muted); font-size: 12px; }
+    .newsletter { padding: 38px; background: linear-gradient(135deg,#111827,#243b53); color: #f3f0e9; border-radius: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+    .newsletter h2 { font-size: 30px; }
+    .newsletter p { color: #c9d2dd; font-size: 13px; margin: 9px 0 0; }
+    .follow-form { display: flex; gap: 8px; }
+    .follow-form input { min-width: 0; flex: 1; border: 1px solid rgba(243,240,233,.2); border-radius: 999px; background: rgba(255,255,255,.08); color: #fff; padding: 0 17px; height: 48px; outline: none; }
+    .follow-form input::placeholder { color: #c9d2dd; }
+    .follow-form button { border: 0; border-radius: 999px; padding: 0 18px; background: linear-gradient(135deg,#f1d59b,#d6a85f); color: #111827; font-size: 12px; font-weight: 900; cursor: pointer; }
+    [data-gumroad-follow-message] { color: #f3f0e9; font-size: 12px; margin-top: 8px; }
+    .faq { padding: 72px 0; }
+    .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 26px; }
+    details { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+    summary { cursor: pointer; font-weight: 800; font-size: 13px; }
+    details p { color: var(--muted); font-size: 12px; margin: 12px 0 0; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 11px; }
+    .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+    .hidden { display: none !important; }
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 34px; padding-top: 54px; }
+      .hero-art { max-width: 620px; }
+      .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .newsletter { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px,1160px); }
+      .nav { min-height: 68px; }
+      .nav-links { display: none; }
+      .hero { padding: 44px 0 40px; }
+      .hero p { font-size: 15px; }
+      .hero-note { left: 8px; bottom: 10px; }
+      .proof-strip { grid-template-columns: 1fr; margin-bottom: 54px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .grid { grid-template-columns: 1fr; }
+      .why-grid, .faq-grid { grid-template-columns: 1fr; }
+      .newsletter { padding: 25px 20px; }
+      .follow-form { flex-direction: column; }
+      .follow-form button { height: 46px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="Zubair Digital Kits home">
+        <span class="brand-mark">ZD</span>
+        <span>ZUBAIR DIGITAL KITS<small>Practical tools for better work</small></span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#products">Products</a>
+        <a href="#why">Why Zubair</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">◐ Theme</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero">
+      <div>
+        <div class="eyebrow">Business • Marketing • Operations</div>
+        <h1>Make better work easier to organize.</h1>
+        <p>Practical, editable digital resources for freelancers, creators and small businesses. Plan launches, organize content, manage leads and run client work with clearer systems.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#products">Explore the collection</a>
+          <a class="button secondary" href="#why">How the resources work</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img src="https://public-files.gumroad.com/xma83w1tt7fjrhq3dsxsje3towat" alt="Business Launch Planner digital workbook mockup showing validation, evidence and offer worksheets" loading="eager">
+        <div class="hero-note">Built for real workflows<span>Editable guides + spreadsheet-ready tools</span></div>
+      </div>
+    </section>
+
+    <section class="wrap proof-strip" aria-label="Store principles">
+      <div class="proof"><strong>Clear deliverables</strong><span>Know what is included before you buy.</span></div>
+      <div class="proof"><strong>Editable resources</strong><span>Adapt the templates to your own workflow.</span></div>
+      <div class="proof"><strong>Instant digital access</strong><span>Download your files after checkout.</span></div>
+    </section>
+
+    <section class="wrap" id="products">
+      <div class="section-head">
+        <div><div class="eyebrow">The collection</div><h2>Tools for the work in front of you.</h2></div>
+        <p>Choose a focused resource for a specific task. Every product page lists its exact files, use cases and limitations.</p>
+      </div>
+      <div class="catalog-tools">
+        <input class="search" id="productSearch" type="search" placeholder="Search templates and tools…" aria-label="Search products">
+        <div class="filters" role="group" aria-label="Filter products">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter" type="button" data-filter="planning" aria-pressed="false">Planning</button>
+          <button class="filter" type="button" data-filter="marketing" aria-pressed="false">Marketing</button>
+          <button class="filter" type="button" data-filter="sales" aria-pressed="false">Sales</button>
+          <button class="filter" type="button" data-filter="operations" aria-pressed="false">Client operations</button>
+        </div>
+      </div>
+      <div class="grid" id="productGrid">
+        <article class="product" data-category="planning" data-search="business launch planner startup validation founder idea research offer economics">
+          <a class="product-image" href="https://zopair.gumroad.com/l/zinnck"><img src="https://public-files.gumroad.com/xma83w1tt7fjrhq3dsxsje3towat" alt="Business Launch Planner 3D workbook mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Planning & validation</div><h3>Business Launch Planner</h3><p>Validate a business idea, collect customer evidence, shape a first offer and plan a focused 14-day sprint.</p><div class="product-bottom"><span class="price" data-gumroad-product="zinnck" data-gumroad-field="price">$9</span><a class="view-link" href="https://zopair.gumroad.com/l/zinnck">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="marketing" data-search="30 day social media content calendar planner content strategy publishing schedule">
+          <a class="product-image" href="https://zopair.gumroad.com/l/nkmder"><img src="https://public-files.gumroad.com/salkazfrf85p489tw09a9gojbbfu" alt="30-Day Social Media Content Calendar mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Content planning</div><h3>30-Day Social Media Content Calendar</h3><p>Plan a month of purposeful content with five pillars, a publishing tracker and a weekly scorecard.</p><div class="product-bottom"><span class="price" data-gumroad-product="nkmder" data-gumroad-field="price">$9</span><a class="view-link" href="https://zopair.gumroad.com/l/nkmder">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="marketing" data-search="100 content hooks social media copywriting short form creator">
+          <a class="product-image" href="https://zopair.gumroad.com/l/dzhox"><img src="https://public-files.gumroad.com/giwsx0hfk5khonyo0i1bdqlxpxt4" alt="100 Content Hooks social media writing toolkit mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Content writing</div><h3>100 Content Hooks for Social Media</h3><p>Use 100 original opening lines across seven content angles, with a worksheet to adapt each hook.</p><div class="product-bottom"><span class="price" data-gumroad-product="dzhox" data-gumroad-field="price">$7</span><a class="view-link" href="https://zopair.gumroad.com/l/dzhox">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="marketing" data-search="caption writing workbench social media caption templates copywriting">
+          <a class="product-image" href="https://zopair.gumroad.com/l/ethffv"><img src="https://public-files.gumroad.com/m3wtqdl1rpjcb0yj2i1iq0igsp99" alt="Caption Writing Workbench mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Content writing</div><h3>Caption Writing Workbench</h3><p>Draft clearer captions with a five-part framework, 12 patterns and a final quality gate.</p><div class="product-bottom"><span class="price" data-gumroad-product="ethffv" data-gumroad-field="price">$7</span><a class="view-link" href="https://zopair.gumroad.com/l/ethffv">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="marketing" data-search="welcome email sequence five email templates newsletter email marketing">
+          <a class="product-image" href="https://zopair.gumroad.com/l/dfvmpl"><img src="https://public-files.gumroad.com/i20djta7nyp6z1mb71x35wbcs5ic" alt="Welcome Email Sequence Kit mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Email marketing</div><h3>Welcome Email Sequence Kit</h3><p>Build a five-email welcome journey with subject ideas, timing and consent-focused checks.</p><div class="product-bottom"><span class="price" data-gumroad-product="dfvmpl" data-gumroad-field="price">$9</span><a class="view-link" href="https://zopair.gumroad.com/l/dfvmpl">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="sales" data-search="sales follow up message templates leads proposals freelancer">
+          <a class="product-image" href="https://zopair.gumroad.com/l/kjbtaz"><img src="https://public-files.gumroad.com/p99lpd8je1s8f1b35t6hnpbovgni" alt="Sales Follow-Up Message Templates mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Sales communication</div><h3>Sales Follow-Up Message Templates</h3><p>Six respectful scripts for inquiries, discovery calls, proposals and customer check-ins.</p><div class="product-bottom"><span class="price" data-gumroad-product="kjbtaz" data-gumroad-field="price">$9</span><a class="view-link" href="https://zopair.gumroad.com/l/kjbtaz">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="sales" data-search="simple crm lead tracker template sales pipeline spreadsheet">
+          <a class="product-image" href="https://zopair.gumroad.com/l/sjkkzdk"><img src="https://public-files.gumroad.com/iy0vieskxfu5rdquqqfol6oq7wo0" alt="Simple CRM and Lead Tracker mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Lead management</div><h3>Simple CRM &amp; Lead Tracker</h3><p>Organize leads with seven pipeline stages, next-action rules and weekly sales metrics.</p><div class="product-bottom"><span class="price" data-gumroad-product="sjkkzdk" data-gumroad-field="price">$12</span><a class="view-link" href="https://zopair.gumroad.com/l/sjkkzdk">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="operations" data-search="client onboarding pack freelancer agency intake kickoff checklist">
+          <a class="product-image" href="https://zopair.gumroad.com/l/wtblwn"><img src="https://public-files.gumroad.com/krtkzy0ej5rvpjot53tjrd68ujk8" alt="Client Onboarding Pack mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Client operations</div><h3>Client Onboarding Pack</h3><p>Collect project information, align responsibilities, check access and hand off cleanly.</p><div class="product-bottom"><span class="price" data-gumroad-product="wtblwn" data-gumroad-field="price">$9</span><a class="view-link" href="https://zopair.gumroad.com/l/wtblwn">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="operations" data-search="proposal statement of work sow template deliverables milestones scope">
+          <a class="product-image" href="https://zopair.gumroad.com/l/nogopb"><img src="https://public-files.gumroad.com/ubl4cx53ok4u6pg6ioxefr3giohs" alt="Proposal and Statement of Work template mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Client operations</div><h3>Proposal &amp; Statement of Work Template</h3><p>Define deliverables, acceptance criteria, milestones, fees and change control.</p><div class="product-bottom"><span class="price" data-gumroad-product="nogopb" data-gumroad-field="price">$12</span><a class="view-link" href="https://zopair.gumroad.com/l/nogopb">View product →</a></div></div>
+        </article>
+        <article class="product" data-category="planning" data-search="service pricing calculator freelancer hourly rate costs margin project quote">
+          <a class="product-image" href="https://zopair.gumroad.com/l/avcdz"><img src="https://public-files.gumroad.com/4zhuc3m6a6qach1ndbyrz3b6e1hz" alt="Service Pricing Calculator workbook mockup" loading="lazy"></a>
+          <div class="product-body"><div class="product-category">Pricing & finance</div><h3>Service Pricing Calculator</h3><p>Model delivery costs, billable capacity, utilization scenarios and project quotes.</p><div class="product-bottom"><span class="price" data-gumroad-product="avcdz" data-gumroad-field="price">$9</span><a class="view-link" href="https://zopair.gumroad.com/l/avcdz">View product →</a></div></div>
+        </article>
+      </div>
+      <div class="empty" id="emptyState">No products match that search. Try a different phrase or category.</div>
+    </section>
+
+    <section class="wrap why" id="why">
+      <div class="eyebrow">Why these resources</div><h2>Useful structure, without unnecessary complexity.</h2>
+      <div class="why-grid">
+        <div class="why-card"><b>Designed around a task</b><p>Each resource focuses on a defined job: plan, write, track, price or deliver.</p></div>
+        <div class="why-card"><b>Clear file details</b><p>Product pages list the included Markdown guide and matching CSV worksheet where applicable.</p></div>
+        <div class="why-card"><b>Honest limitations</b><p>We explain what each resource does not include so you can choose with confidence.</p></div>
+      </div>
+    </section>
+
+    <section class="wrap" aria-label="Store updates">
+      <div class="newsletter">
+        <div><div class="eyebrow">Occasional updates</div><h2>Get practical resources in your inbox.</h2><p>Receive product updates and useful notes from Zubair Digital Kits. Unsubscribe at any time.</p></div>
+        <form class="follow-form" data-gumroad-follow>
+          <input type="email" name="email" autocomplete="email" placeholder="Your email address" aria-label="Your email address" required>
+          <button type="submit">Subscribe</button>
+          <div data-gumroad-follow-message aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="wrap faq" id="faq">
+      <div class="eyebrow">Before you buy</div><h2>Frequently asked questions</h2>
+      <div class="faq-grid">
+        <details><summary>What do I receive after purchase?</summary><p>Each product page lists its exact files. Most current kits include an editable Markdown guide and a matching CSV worksheet. Excel workbooks are being added as separate downloads once their validation is complete.</p></details>
+        <details><summary>Do these products require a subscription?</summary><p>No subscription is required for the listed one-time digital downloads. Any product-specific access conditions are shown on its own page.</p></details>
+        <details><summary>Are these standalone apps?</summary><p>No. These are templates, guides and planning tools. They do not include hosted software, automated publishing, CRM services or email-sending platforms unless a product page explicitly says otherwise.</p></details>
+        <details><summary>Can I use the files in Excel or Google Sheets?</summary><p>CSV worksheets can be opened in Excel, Google Sheets and compatible spreadsheet applications. Check each product page for the precise file formats.</p></details>
+        <details><summary>Do the templates guarantee business or marketing results?</summary><p>No. They provide structure and practical prompts. Results depend on your audience, offer, execution, evidence and distribution.</p></details>
+        <details><summary>What if I cannot open a download?</summary><p>Use the contact option on the relevant product page and include the product name and a brief description of the issue. Do not send passwords or payment details.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>© Zubair Digital Kits. Practical resources for independent work.</span>
+      <span><a href="https://zopair.gumroad.com/">Store home</a> · <a href="https://gumroad.com/terms">Gumroad terms</a></span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const themeButton = document.getElementById("themeToggle");
+      const savedTheme = localStorage.getItem("zubair-store-theme");
+      if (savedTheme === "dark" || savedTheme === "light") root.setAttribute("data-theme", savedTheme);
+      themeButton.addEventListener("click", function () {
+        const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("zubair-store-theme", next);
+      });
+      const search = document.getElementById("productSearch");
+      const cards = Array.from(document.querySelectorAll(".product"));
+      const filters = Array.from(document.querySelectorAll(".filter"));
+      const empty = document.getElementById("emptyState");
+      let active = "all";
+      function update() {
+        const query = search.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach(function (card) {
+          const categoryMatch = active === "all" || card.dataset.category === active;
+          const searchMatch = !query || (card.dataset.search + " " + card.textContent).toLowerCase().includes(query);
+          const show = categoryMatch && searchMatch;
+          card.classList.toggle("hidden", !show);
+          if (show) visible++;
+        });
+        empty.style.display = visible ? "none" : "block";
+      }
+      search.addEventListener("input", update);
+      filters.forEach(function (button) {
+        button.addEventListener("click", function () {
+          active = button.dataset.filter;
+          filters.forEach(function (item) { item.setAttribute("aria-pressed", String(item === button)); });
+          update();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
