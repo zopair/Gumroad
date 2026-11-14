@@ -108,8 +108,13 @@ Completed:
 - Product descriptions, additional details and receipt messages updated to list all three downloads.
 - Gallery rendering workflow serialized to prevent concurrent Git push races.
 - Responsive custom profile HTML prepared in storefront/profile.html.
+- Ten public, product-specific free samples created and linked from the corresponding Gumroad descriptions.
+- Ten vertical Pinterest pin designs rendered to PNG, with SEO-aware titles, descriptions and keywords.
+- A 30-day organic launch plan and channel-specific UTM examples prepared.
+- Branded avatar, wordmark and favicon created in the store palette.
 
 In progress:
+- Animated mockup GIF generation is running in GitHub Actions; attach only after the workflow succeeds.
 - Custom profile HTML requires Gumroad CLI sanitizer preview and publish. The available connector does not expose those commands.
 - Profile SEO title/description, global theme, profile avatar/bio and newsletter follow eligibility require account-level Pages/Settings access.
 
