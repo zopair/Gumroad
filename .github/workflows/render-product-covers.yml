@@ -1,10 +1,10 @@
-name: Render product cover assets
+name: Render product gallery assets
 on:
   workflow_dispatch:
   push:
     paths:
       - ".github/workflows/render-product-covers.yml"
-      - "products/**/assets/cover.svg"
+      - "products/**/assets/*.svg"
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -16,7 +16,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y librsvg2-bin
-      - name: Render PNG covers
+      - name: Render product covers and gallery previews
         run: |
           set -euo pipefail
           count=0
@@ -25,17 +25,17 @@ jobs:
             rsvg-convert --format=png --width=1600 --height=1000 "$file" > "$out"
             file "$out"
             count=$((count + 1))
-          done < <(find products -type f -path '*/assets/cover.svg' -print0)
-          test "$count" -eq 10
-      - name: Commit rendered covers
+          done < <(find products -type f -path '*/assets/*.svg' -print0)
+          test "$count" -eq 30
+      - name: Commit rendered PNG assets
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          find products -type f -path '*/assets/cover.png' -print0 | xargs -0 -r git add
+          find products -type f -path '*/assets/*.png' -print0 | xargs -0 -r git add
           if git diff --cached --quiet; then
-            echo "No rendered covers changed."
+            echo "No rendered product assets changed."
           else
-            git commit -m "Render 10 Gumroad product covers as PNG"
+            git commit -m "Render product gallery preview assets"
             git push
           fi
