@@ -115,6 +115,15 @@ def dropdown(ws, cell_range: str, values: Iterable[str]):
 
 
 def finish(wb: Workbook, path: Path):
+    for ws in wb.worksheets:
+        ws.sheet_view.showGridLines = False
+        if ws.auto_filter.ref:
+            ws.auto_filter.ref = f"A1:{get_column_letter(ws.max_column)}{ws.max_row}"
+        for row in ws.iter_rows(min_row=2):
+            for cell in row:
+                cell.alignment = Alignment(vertical="top", wrap_text=True)
+                if cell.row % 2 == 0 and cell.fill.fill_type is None:
+                    cell.fill = PatternFill("solid", fgColor="F7F5F0")
     wb.calculation.fullCalcOnLoad = True
     wb.calculation.forceFullCalc = True
     wb.calculation.calcMode = "auto"
