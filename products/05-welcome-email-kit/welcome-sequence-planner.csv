@@ -1,0 +1,6 @@
+email_number,purpose,subject_line,send_delay_days,signup_promise_delivered,consent_basis_checked,sender_details_checked,unsubscribe_link_tested,links_tested,status
+1,Deliver the promise,,0,No,No,No,No,No,No,Draft
+2,Understand the problem,,2,No,No,No,No,No,No,Draft
+3,Teach one method,,4,No,No,No,No,No,No,Draft
+4,Address an objection,,7,No,No,No,No,No,No,Draft
+5,Invite a next step,,10,No,No,No,No,No,No,Draft
