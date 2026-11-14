@@ -41,7 +41,7 @@ Every product page should include:
 9. FAQ and a clear support route.
 10. One clear call to action.
 
-The ten live products now have refreshed names, summaries, descriptions, categories and eight relevant tags each. Each has a four-image gallery: original cover, two product-specific previews and one 3D-style mockup. Each currently includes a Markdown guide and matching CSV worksheet.
+The ten live products now have refreshed names, summaries, descriptions, categories and eight relevant tags each. Each has a four-image gallery: original cover, two product-specific previews and one 3D-style mockup. Each now includes a Markdown guide, matching CSV worksheet and editable XLSX workbook.
 
 ## Search metadata
 
@@ -108,13 +108,13 @@ Completed:
 - Responsive custom profile HTML prepared in storefront/profile.html.
 
 In progress:
-- Ten real XLSX workbooks with formulas, dropdowns, filters, dashboards and validation tests. CI is being debugged; do not advertise or attach XLSX until tests pass and each file is verified.
+- Ten XLSX workbooks generated and regression-tested in GitHub Actions, then attached to their matching Gumroad products.
 - Custom profile HTML requires Gumroad CLI sanitizer preview and publish. The available connector does not expose those commands.
 - Profile SEO title/description, global theme, profile avatar/bio and newsletter follow eligibility require account-level Pages/Settings access.
 
 ## Next priorities
 
-P0: finish and validate the ten XLSX workbooks, attach them to their matching products, update product copy and verify buyer downloads.
+P0: publish and preview the custom profile page, then perform a buyer-side mobile/desktop check of all ten product pages and download flows.
 
 P1: publish and preview the custom profile page using Gumroad Pages CLI, then set profile SEO metadata and global theme.
 
