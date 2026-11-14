@@ -25,7 +25,7 @@ jobs:
           set -euo pipefail
           count=0
           for png in products/*/assets/mockup-03.png; do
-            gif="\${png%.png}.gif"
+            gif="${png%.png}.gif"
             ffmpeg -hide_banner -loglevel error -y -loop 1 -i "$png" \
               -vf "scale=800:500,zoompan=z='1+0.02*(1+sin(2*PI*on/48))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=48:s=800x500:fps=12" \
               -frames:v 48 -loop 0 "$gif"
