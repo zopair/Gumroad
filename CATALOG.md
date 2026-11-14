@@ -25,16 +25,16 @@ Gumroad currently allows ten published product slots for this store. All ten are
 
 Each live Gumroad listing now includes three downloads: its Markdown guide, matching CSV worksheet and editable XLSX workbook.
 
-1. [Business Launch Planner](products/01-business-launch-planner.md) + [Customer Evidence Log CSV](products/01-business-launch-planner/customer-evidence-log.csv) — $9.
-2. [30-Day Content Calendar](products/02-30-day-content-calendar.md) + [30-Day Calendar CSV](products/02-content-calendar/30-day-content-calendar.csv) — $9.
-3. [100 Content Hooks](products/03-100-content-hooks.md) + [Hook Adaptation Planner CSV](products/03-content-hooks/hook-adaptation-planner.csv) — $7.
-4. [Caption Writing Workbench](products/04-caption-writing-workbench.md) + [Caption Drafting Worksheet CSV](products/04-caption-workbench/caption-drafting-worksheet.csv) — $7.
-5. [Welcome Email Sequence Kit](products/05-welcome-email-sequence.md) + [Welcome Sequence Planner CSV](products/05-welcome-email-kit/welcome-sequence-planner.csv) — $9.
-6. [Sales Follow-Up Message Pack](products/06-sales-follow-up-sequences.md) + [Sales Follow-Up Tracker CSV](products/06-sales-follow-up-pack/sales-follow-up-tracker.csv) — $9.
-7. [Simple CRM & Lead Tracker](products/07-simple-crm-lead-tracker.md) + [Lead Tracker CSV](products/07-simple-crm-lead-tracker/lead-tracker.csv) — $12.
-8. [Client Onboarding Pack](products/08-client-onboarding-pack.md) + [Client Onboarding Checklist CSV](products/08-client-onboarding-pack/client-onboarding-checklist.csv) — $9.
-9. [Proposal & Statement of Work Template](products/09-proposal-sow-template.md) + [Deliverables & Milestones CSV](products/09-proposal-sow-template/proposal-deliverables-register.csv) — $12.
-10. [Service Pricing Calculator](products/10-service-pricing-calculator.md) + [Pricing Inputs & Scenarios CSV](products/10-service-pricing-workbook/service-pricing-inputs.csv) — $9.
+1. [Business Launch Planner](products/01-business-launch-planner.md) + [Customer Evidence Log CSV](products/01-business-launch-planner/customer-evidence-log.csv) + [Business Launch Planner Excel](products/01-business-launch-planner/business-launch-planner.xlsx) — $9.
+2. [30-Day Content Calendar](products/02-30-day-content-calendar.md) + [30-Day Calendar CSV](products/02-content-calendar/30-day-content-calendar.csv) + [30-Day Content Calendar Excel](products/02-content-calendar/30-day-content-calendar.xlsx) — $9.
+3. [100 Content Hooks](products/03-100-content-hooks.md) + [Hook Adaptation Planner CSV](products/03-content-hooks/hook-adaptation-planner.csv) + [100 Content Hooks Excel](products/03-content-hooks/100-content-hooks.xlsx) — $7.
+4. [Caption Writing Workbench](products/04-caption-writing-workbench.md) + [Caption Drafting Worksheet CSV](products/04-caption-workbench/caption-drafting-worksheet.csv) + [Caption Writing Workbench Excel](products/04-caption-workbench/caption-writing-workbench.xlsx) — $7.
+5. [Welcome Email Sequence Kit](products/05-welcome-email-sequence.md) + [Welcome Sequence Planner CSV](products/05-welcome-email-kit/welcome-sequence-planner.csv) + [Welcome Email Sequence Excel](products/05-welcome-email-kit/welcome-email-sequence.xlsx) — $9.
+6. [Sales Follow-Up Message Pack](products/06-sales-follow-up-sequences.md) + [Sales Follow-Up Tracker CSV](products/06-sales-follow-up-pack/sales-follow-up-tracker.csv) + [Sales Follow-Up Pack Excel](products/06-sales-follow-up-pack/sales-follow-up-pack.xlsx) — $9.
+7. [Simple CRM & Lead Tracker](products/07-simple-crm-lead-tracker.md) + [Lead Tracker CSV](products/07-simple-crm-lead-tracker/lead-tracker.csv) + [Simple CRM & Lead Tracker Excel](products/07-simple-crm-lead-tracker/simple-crm-lead-tracker.xlsx) — $12.
+8. [Client Onboarding Pack](products/08-client-onboarding-pack.md) + [Client Onboarding Checklist CSV](products/08-client-onboarding-pack/client-onboarding-checklist.csv) + [Client Onboarding Pack Excel](products/08-client-onboarding-pack/client-onboarding-pack.xlsx) — $9.
+9. [Proposal & Statement of Work Template](products/09-proposal-sow-template.md) + [Deliverables & Milestones CSV](products/09-proposal-sow-template/proposal-deliverables-register.csv) + [Proposal & SOW Excel](products/09-proposal-sow-template/proposal-sow-template.xlsx) — $12.
+10. [Service Pricing Calculator](products/10-service-pricing-calculator.md) + [Pricing Inputs & Scenarios CSV](products/10-service-pricing-workbook/service-pricing-inputs.csv) + [Service Pricing Calculator Excel](products/10-service-pricing-workbook/service-pricing-calculator.xlsx) — $9.
 
 ## Product quality standard
 
