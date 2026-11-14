@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101827"/><stop offset=".55" stop-color="#243B53"/><stop offset="1" stop-color="#172235"/></linearGradient>
+ <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#E8E3D8"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F1D59B"/><stop offset="1" stop-color="#B9873C"/></linearGradient>
+ <filter id="shadow"><feGaussianBlur stdDeviation="24"/></filter>
+</defs>
+<rect width="1600" height="1000" fill="url(#bg)"/>
+<circle cx="1350" cy="130" r="260" fill="#D6A85F" opacity=".08"/><circle cx="180" cy="850" r="330" fill="#F3F0E9" opacity=".035"/>
+<text x="100" y="92" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="5" fill="#D6A85F">ZUBAIR DIGITAL KITS</text>
+<text x="100" y="185" font-family="Arial,sans-serif" font-size="58" font-weight="700" fill="#F3F0E9">Sales Follow-Up Pack</text>
+<text x="100" y="245" font-family="Arial,sans-serif" font-size="23" letter-spacing="3" fill="#D6A85F">A PREMIUM, PRACTICAL DIGITAL TOOLKIT</text>
+<text x="100" y="302" font-family="Arial,sans-serif" font-size="20" fill="#C9D2DD">Clear structure. Editable resources. Ready for your workflow.</text>
+<ellipse cx="1030" cy="790" rx="410" ry="55" fill="#000" opacity=".35" filter="url(#shadow)"/>
+<g transform="translate(740 280) rotate(7 250 310)">
+ <rect x="38" y="34" width="480" height="610" rx="16" fill="#0B1220" opacity=".55"/>
+ <rect x="20" y="18" width="480" height="610" rx="16" fill="#D6A85F"/>
+ <rect x="0" y="0" width="480" height="610" rx="16" fill="url(#paper)"/>
+ <rect x="0" y="0" width="480" height="115" rx="16" fill="#111827"/>
+ <path d="M0 95 H480 V115 H0Z" fill="#111827"/>
+ <text x="34" y="45" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#D6A85F">ZUBAIR DIGITAL KITS</text>
+ <text x="34" y="82" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#F3F0E9">Sales Follow-Up Pack</text>
+ <text x="34" y="160" font-family="Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="2" fill="#243B53">YOUR WORKFLOW, ORGANIZED</text>
+ <rect x="34" y="190" width="412" height="62" rx="8" fill="#FFFFFF" stroke="#D8D2C7"/><circle cx="62" cy="221" r="12" fill="url(#gold)"/><text x="88" y="226" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing=".5" fill="#243B53">6 MESSAGE SCRIPTS</text><rect x="34" y="272" width="412" height="62" rx="8" fill="#F3F0E9" stroke="#D8D2C7"/><circle cx="62" cy="303" r="12" fill="url(#gold)"/><text x="88" y="308" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing=".5" fill="#243B53">PROPOSAL FOLLOW-UP</text><rect x="34" y="354" width="412" height="62" rx="8" fill="#FFFFFF" stroke="#D8D2C7"/><circle cx="62" cy="385" r="12" fill="url(#gold)"/><text x="88" y="390" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing=".5" fill="#243B53">NEXT-ACTION TRACKER</text><rect x="34" y="436" width="412" height="62" rx="8" fill="#F3F0E9" stroke="#D8D2C7"/><circle cx="62" cy="467" r="12" fill="url(#gold)"/><text x="88" y="472" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing=".5" fill="#243B53">OPT-OUT RULES</text>
+ <rect x="34" y="535" width="412" height="40" rx="6" fill="#243B53"/><text x="240" y="560" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#F3F0E9">EDIT • APPLY • REPEAT</text>
+</g>
+<g transform="translate(1180 410) rotate(-8)">
+ <rect width="240" height="350" rx="22" fill="#0B1220" opacity=".55"/>
+ <rect x="8" y="8" width="224" height="334" rx="18" fill="#F3F0E9"/>
+ <rect x="8" y="8" width="224" height="58" rx="18" fill="#243B53"/>
+ <text x="120" y="43" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#D6A85F">QUICK VIEW</text>
+ <text x="28" y="100" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#243B53">INCLUDED</text>
+ <circle cx="32" cy="132" r="5" fill="#D6A85F"/><text x="47" y="137" font-family="Arial,sans-serif" font-size="10" fill="#243B53">6 MESSAGE SCRIPTS</text><circle cx="32" cy="186" r="5" fill="#D6A85F"/><text x="47" y="191" font-family="Arial,sans-serif" font-size="10" fill="#243B53">PROPOSAL FOLLOW-UP</text><circle cx="32" cy="240" r="5" fill="#D6A85F"/><text x="47" y="245" font-family="Arial,sans-serif" font-size="10" fill="#243B53">NEXT-ACTION TRACKER</text>
+ <rect x="28" y="288" width="168" height="26" rx="13" fill="#D6A85F"/><text x="112" y="306" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="700" fill="#111827">DIGITAL DOWNLOAD</text>
+</g>
+<g transform="translate(250 500) rotate(-7)">
+ <rect x="14" y="18" width="300" height="230" rx="18" fill="#D6A85F" opacity=".8"/>
+ <rect width="300" height="230" rx="18" fill="#F3F0E9"/>
+ <text x="26" y="48" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#243B53">WORKSHEET PREVIEW</text>
+ <path d="M26 72 H274 M26 112 H274 M26 152 H274 M26 192 H274" stroke="#C9C1B3" stroke-width="2"/>
+ <path d="M26 72 H108 M26 112 H158 M26 152 H124 M26 192 H190" stroke="#D6A85F" stroke-width="7" stroke-linecap="round"/>
+</g>
+<text x="100" y="940" font-family="Arial,sans-serif" font-size="16" fill="#B8C3D1">An original product preview — the actual included files are listed on the product page.</text>
+</svg>
