@@ -1,43 +1,56 @@
-# Gumroad Store Setup — Internal Metadata
+# Gumroad Store Setup — Live Account Metadata
 
-Currency: USD. Storefront: https://zopair.gumroad.com
+Store: Zubair Digital Kits
+Storefront: https://zopair.gumroad.com
+Currency: USD
+Published product limit: 10 — all ten slots are occupied.
+Last operational review: 2026-11-15
 
-All descriptions below describe the actual Markdown deliverable. No mockups, spreadsheets, automation integrations, or software are included unless explicitly stated.
+## Live products
 
-| # | Product | Price | Gumroad category | Tags |
-|---:|---|---:|---|---|
-| 1 | Business Launch Planner | $9 | business-and-money/entrepreneurship/resources | business-plan,launch,validation,small-business |
-| 2 | 30-Day Content Calendar | $9 | business-and-money/marketing-and-sales/social-media | content-calendar,social-media,marketing,planning |
-| 3 | 100 Content Hooks | $7 | writing-and-publishing/resources | content-hooks,copywriting,social-media,writing |
-| 4 | Caption Writing Workbench | $7 | writing-and-publishing/resources | captions,copywriting,content,marketing |
-| 5 | Welcome Email Sequence Kit | $9 | business-and-money/marketing-and-sales/email | email-marketing,welcome-sequence,copywriting |
-| 6 | Sales Follow-Up Message Pack | $9 | business-and-money/marketing-and-sales | sales,email-templates,follow-up,leads |
-| 7 | Simple CRM & Lead Tracker | $12 | business-and-money/management-and-leadership | crm,lead-tracker,sales-pipeline,spreadsheet |
-| 8 | Client Onboarding Pack | $9 | business-and-money/entrepreneurship/resources | client-onboarding,freelance,operations |
-| 9 | Proposal & Statement of Work Template | $12 | business-and-money/entrepreneurship/resources | proposal,scope-of-work,freelance,business |
-| 10 | Service Pricing Calculator Workbook | $9 | business-and-money/accounting | pricing,calculator,freelance,profit |
-| 11 | 13-Week Cash Flow Forecast | $12 | business-and-money/accounting | cash-flow,forecast,finance,small-business |
-| 12 | Expense & Profit Tracker | $9 | business-and-money/accounting | expenses,profit,bookkeeping,tracker |
-| 13 | Project Delivery Tracker | $9 | business-and-money/management-and-leadership | project-management,tracker,operations |
-| 14 | SOP Starter Kit | $12 | business-and-money/management-and-leadership | sop,operations,process,workflow |
-| 15 | Website SEO Audit Checklist | $9 | software-development/web-development | seo,audit,website,checklist |
-| 16 | Keyword & Content Map | $7 | business-and-money/marketing-and-sales | keyword-research,seo,content-strategy |
-| 17 | E-commerce Product Page Optimizer | $9 | business-and-money/marketing-and-sales | ecommerce,product-page,conversion,copywriting |
-| 18 | Competitor Research Workbook | $9 | business-and-money/marketing-and-sales | competitor-research,market-research,strategy |
-| 19 | Structured Hiring Interview Scorecard | $7 | business-and-money/networking-careers-and-jobs | hiring,interview,scorecard,hr |
-| 20 | Meeting Notes & Action Register | $7 | business-and-money/management-and-leadership | meeting-notes,action-items,team,productivity |
+| # | Product title on Gumroad | Price | Category | Files attached | Gallery |
+|---:|---|---:|---|---|---:|
+| 1 | Business Launch Planner \| Startup Validation Workbook | $9 | business-and-money/entrepreneurship/resources | Markdown guide + Customer Evidence Log.csv | 4 images |
+| 2 | 30-Day Social Media Content Calendar | $9 | business-and-money/marketing-and-sales/social-media | Markdown guide + 30-Day Content Calendar.csv | 4 images |
+| 3 | 100 Content Hooks for Social Media | $7 | business-and-money/marketing-and-sales/social-media | Markdown hook library + Hook Adaptation Planner.csv | 4 images |
+| 4 | Caption Writing Workbench \| Social Media Templates | $7 | business-and-money/marketing-and-sales/social-media | Markdown workbench + Caption Drafting Worksheet.csv | 4 images |
+| 5 | Welcome Email Sequence Kit \| 5 Email Templates | $9 | business-and-money/marketing-and-sales/email | Markdown sequence + Welcome Sequence Planner.csv | 4 images |
+| 6 | Sales Follow-Up Message Templates | $9 | business-and-money/marketing-and-sales | Markdown scripts + Sales Follow-Up Tracker.csv | 4 images |
+| 7 | Simple CRM & Lead Tracker Template | $12 | business-and-money/management-and-leadership | Markdown blueprint + Lead Tracker.csv | 4 images |
+| 8 | Client Onboarding Pack for Freelancers | $9 | business-and-money/entrepreneurship/resources | Markdown pack + Client Onboarding Checklist.csv | 4 images |
+| 9 | Proposal & Statement of Work (SOW) Template | $12 | business-and-money/entrepreneurship/resources | Markdown template + Proposal Deliverables & Milestones.csv | 4 images |
+| 10 | Service Pricing Calculator for Freelancers | $9 | business-and-money/accounting | Markdown workbook + Service Pricing Inputs & Scenarios.csv | 4 images |
 
-## Store description
-Original, practical workbooks and templates for small businesses, independent professionals, and creators. Clear instructions, editable worksheets, and reusable operating systems—without subscriptions or unnecessary software dependencies.
+## Search metadata and policy guardrails
 
-## Store policy checklist
-- Product files must match the description exactly.
-- No claims about guaranteed revenue, rankings, hiring outcomes, or conversion lifts.
-- No fake reviews, urgency, scarcity, or sales counts.
-- State that deliverables are Markdown files / text templates.
-- Keep support scope limited to access and file-use questions.
-- Publish only after confirming every product file is attached and opens correctly.
-- Recheck category and tags before launch.
+- Product titles, summaries, descriptions, categories and tags have been rewritten to match buyer intent and actual contents.
+- Each product uses eight relevant tags, within Gumroad's 2–20 character tag limit.
+- Tags describe the actual use case; do not add unrelated trending keywords.
+- No fake testimonials, customer counts, rankings, scarcity, revenue claims or guaranteed outcomes.
+- Every page distinguishes a planning template from hosted software, an automated service or a standalone application.
+- Email and sales templates include permission, unsubscribe and opt-out safeguards.
+- Pricing and financial workbooks carry educational-use and verification limitations.
+- Product covers are product-specific; three custom preview/mockup images were added alongside each original cover.
+- Current downloadable package: one Markdown file and one CSV worksheet per product. XLSX workbook generation is under CI validation; do not advertise XLSX until generated, attached and verified on Gumroad.
+
+## Store description — recommended profile copy
+
+Practical, editable digital resources for freelancers, creators and small businesses. Plan launches, organize content, manage leads, price services and run client projects with clear templates and spreadsheet-ready worksheets. Every product page explains its included files, intended use and limitations.
+
+## Current commercial baseline
+
+The last checked Gumroad analytics window (2026-10-16 through 2026-11-15) showed zero recorded page views and zero sales. This is a traffic and validation problem, not evidence that any product has market demand. Do not describe any item as a bestseller.
+
+## Account-level items still requiring Gumroad Pages / profile access
+
+- Publish the custom storefront page from storefront/profile.html after running Gumroad's sanitizer preview.
+- Set the profile SEO title and description.
+- Confirm profile image, short bio, store theme and payout profile in Gumroad Settings.
+- Verify the newsletter follow form is enabled for this account.
+- Run a real mobile and desktop buyer-side visual check after publication.
+
+The available Gumroad product connector can manage products, descriptions, tags, covers and files, but does not expose profile custom-HTML publishing, profile SEO settings or global theme controls. Do not claim those account-level items are complete until the CLI/UI reports success.
 
 ## Pricing note
-The proposed prices are introductory prices chosen to reduce first-purchase friction for focused, text-based products. They are not based on verified conversion tests for this store. After traffic arrives, use product-level views, paid sales, refunds and support burden to test changes.
+
+Current prices are unchanged. They are introductory prices, not proven optimal prices. Test price changes only after relevant traffic and conversion data exist. Consider platform fees and net proceeds before changing any price.
