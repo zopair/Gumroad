@@ -25,7 +25,7 @@ jobs:
           set -euo pipefail
           count=0
           while IFS= read -r -d '' file; do
-            out="\${file%.svg}.png"
+            out="${file%.svg}.png"
             rsvg-convert --format=png --width=600 --height=600 "$file" > "$out"
             file "$out"
             count=$((count + 1))
