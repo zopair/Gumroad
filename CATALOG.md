@@ -23,6 +23,8 @@ Gumroad currently allows ten published product slots for this store. All ten are
 
 ## Source files and included downloads
 
+Each live Gumroad listing now includes three downloads: its Markdown guide, matching CSV worksheet and editable XLSX workbook.
+
 1. [Business Launch Planner](products/01-business-launch-planner.md) + [Customer Evidence Log CSV](products/01-business-launch-planner/customer-evidence-log.csv) — $9.
 2. [30-Day Content Calendar](products/02-30-day-content-calendar.md) + [30-Day Calendar CSV](products/02-content-calendar/30-day-content-calendar.csv) — $9.
 3. [100 Content Hooks](products/03-100-content-hooks.md) + [Hook Adaptation Planner CSV](products/03-content-hooks/hook-adaptation-planner.csv) — $7.
