@@ -1,0 +1,7 @@
+deliverable_id,deliverable,acceptance_criteria,format,owner,due_date,dependency,status,change_request_id
+D1,,,,,,,Draft,
+D2,,,,,,,Draft,
+D3,,,,,,,Draft,
+M1,Discovery,,,Provider,,,Planned,
+M2,Draft review,,,Client,,,Planned,
+M3,Final handoff,,,Provider,,,Planned,
