@@ -10,6 +10,7 @@
   <meta property="og:description" content="Editable business, marketing and client workflow resources. Clear deliverables, useful previews and instant digital access.">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#111827">
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/zopair/Gumroad/main/storefront/favicon.png">
   <style>
     :root {
       --bg: #f3f0e9;
@@ -51,7 +52,7 @@
     .topbar { border-bottom: 1px solid var(--line); }
     .nav { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
     .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .02em; }
-    .brand-mark { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #111827; background: linear-gradient(135deg,#f1d59b,#b9873c); font-size: 15px; font-weight: 900; box-shadow: 0 8px 18px rgba(214,168,95,.25); }
+    .brand-mark { width: 40px; height: 40px; border-radius: 13px; display: block; object-fit: cover; box-shadow: 0 8px 18px rgba(214,168,95,.25); }
     .brand small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
     .nav-links { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 13px; font-weight: 700; }
     .nav-links a:hover { color: var(--gold); }
@@ -147,7 +148,7 @@
   <header class="topbar">
     <div class="wrap nav">
       <a class="brand" href="#top" aria-label="Zubair Digital Kits home">
-        <span class="brand-mark">ZD</span>
+        <img class="brand-mark" src="https://raw.githubusercontent.com/zopair/Gumroad/main/storefront/brand-avatar.png" alt="">
         <span>ZUBAIR DIGITAL KITS<small>Practical tools for better work</small></span>
       </a>
       <nav class="nav-links" aria-label="Main navigation">
