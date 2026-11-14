@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - ".github/workflows/render-product-covers.yml"
       - "products/**/assets/cover.svg"
 jobs:
   render:
@@ -12,20 +13,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install SVG renderer
-        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin
       - name: Render PNG covers
         run: |
-          find products -path '*/assets/cover.svg' -print0 | while IFS= read -r -d '' file; do
-            rsvg-convert --format=png --width=1600 --height=1000 "$file" > "${file%.svg}.png"
-          done
+          set -euo pipefail
+          count=0
+          while IFS= read -r -d '' file; do
+            out="${file%.svg}.png"
+            rsvg-convert --format=png --width=1600 --height=1000 "$file" > "$out"
+            file "$out"
+            count=$((count + 1))
+          done < <(find products -type f -path '*/assets/cover.svg' -print0)
+          test "$count" -eq 10
       - name: Commit rendered covers
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add products/**/assets/*.png
+          find products -type f -path '*/assets/cover.png' -print0 | xargs -0 -r git add
           if git diff --cached --quiet; then
             echo "No rendered covers changed."
           else
-            git commit -m "Render product cover previews"
+            git commit -m "Render 10 Gumroad product covers as PNG"
             git push
           fi
