@@ -1,0 +1,13 @@
+variable,value,unit_or_note
+Desired monthly owner compensation,,currency per month
+Monthly fixed business costs,,currency per month
+Monthly variable costs,,currency per month
+Available work hours,,"hours per month; exclude leave and admin"
+Billable utilization,0.60,"decimal from 0 to 1"
+Target operating margin,0.20,"decimal from 0 to 1"
+Payment and platform fee rate,0.05,"decimal from 0 to 1"
+Contingency reserve rate,0.00,"decimal from 0 to 1"
+Scenario,Utilization,Target margin,Fee rate,Notes
+Conservative,0.45,0.15,0.05,Replace with your assumptions
+Base,0.60,0.20,0.05,Replace with your assumptions
+High utilization,0.75,0.20,0.05,Replace with your assumptions
