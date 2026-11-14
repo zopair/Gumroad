@@ -16,7 +16,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y librsvg2-bin
-      - name: Render product covers and gallery previews
+      - name: Render product covers, previews and mockups
         run: |
           set -euo pipefail
           count=0
@@ -26,7 +26,7 @@ jobs:
             file "$out"
             count=$((count + 1))
           done < <(find products -type f -path '*/assets/*.svg' -print0)
-          test "$count" -eq 30
+          test "$count" -eq 40
       - name: Commit rendered PNG assets
         run: |
           set -euo pipefail
@@ -36,6 +36,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No rendered product assets changed."
           else
-            git commit -m "Render product gallery preview assets"
+            git commit -m "Render product mockup gallery assets"
             git push
           fi
