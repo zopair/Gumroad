@@ -20,6 +20,14 @@ The reviewed page displayed 80 ratings and a creator-reported claim of 4,000+ ca
 
 Lesson: focused products with a specific repeatable outcome and clear previews can build trust. Never use another creator's numbers as our social proof.
 
+## Marketplace reality and strategy
+
+A third-party Gumroad sales tracker snapshot dated August 5, 2026 indexed about 3.8 million products and estimated that only around one listing in forty had recorded a sale, with the median listing at zero. These are third-party estimates, not official Gumroad reporting, but they illustrate how weak organic discovery can be for undifferentiated uploads. The same dataset shows that established products and bundles can accumulate substantial sales over years.
+
+Strategic consequence: metadata and visual polish are necessary, not sufficient. We must combine tangible product utility, credible previews, an audience, repeatable distribution and conversion measurement. With ten occupied product slots, the priority is to improve the value and reach of the existing ten rather than create more SKUs.
+
+Gumroad's current profile-page guidance confirms that custom HTML profiles can be indexed by search engines, profile pages can collect email followers after account compliance review, live prices should use Gumroad's data attributes, and the page should link to product pages rather than attempt to host product downloads. Gumroad supports up to eight product covers; PNG/JPEG/GIF/MOV and YouTube/Vimeo are supported cover types, and GIF animation is preserved.
+
 ## Positioning
 
 Practical, editable work systems for freelancers, creators and small businesses. The buyer pays to complete a task faster and with less uncertainty—not for a generic collection of prompts.
