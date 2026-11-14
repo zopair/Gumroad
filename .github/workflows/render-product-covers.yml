@@ -1,10 +1,11 @@
-name: Render product gallery assets
+name: Render product gallery and brand assets
 on:
   workflow_dispatch:
   push:
     paths:
       - ".github/workflows/render-product-covers.yml"
       - "products/**/assets/*.svg"
+      - "storefront/*.svg"
 concurrency:
   group: gumroad-product-assets
   cancel-in-progress: true
@@ -19,28 +20,35 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y librsvg2-bin
-      - name: Render product covers, previews and mockups
+      - name: Render product covers, previews, mockups and brand assets
         run: |
           set -euo pipefail
           count=0
           while IFS= read -r -d '' file; do
             out="${file%.svg}.png"
             rsvg-convert --format=png --width=1600 --height=1000 "$file" > "$out"
+            if [[ "$file" == "storefront/brand-avatar.svg" ]]; then
+              rsvg-convert --format=png --width=1024 --height=1024 "$file" > "$out"
+            elif [[ "$file" == "storefront/favicon.svg" ]]; then
+              rsvg-convert --format=png --width=128 --height=128 "$file" > "$out"
+            elif [[ "$file" == "storefront/brand-wordmark.svg" ]]; then
+              rsvg-convert --format=png --width=1600 --height=400 "$file" > "$out"
+            fi
             file "$out"
             count=$((count + 1))
-          done < <(find products -type f -path '*/assets/*.svg' -print0)
-          test "$count" -eq 40
+          done < <(find products storefront -type f -name '*.svg' -print0)
+          test "$count" -eq 43
       - name: Commit rendered PNG assets
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          find products -type f -path '*/assets/*.png' -print0 | xargs -0 -r git add
+          find products storefront -type f -name '*.png' -print0 | xargs -0 -r git add
           if git diff --cached --quiet; then
-            echo "No rendered product assets changed."
+            echo "No rendered assets changed."
             exit 0
           fi
-          git commit -m "Render product gallery preview and mockup assets"
+          git commit -m "Render product gallery and brand identity assets"
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main
