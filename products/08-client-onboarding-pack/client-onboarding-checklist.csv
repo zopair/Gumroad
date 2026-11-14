@@ -1,0 +1,12 @@
+phase,task,owner,due_date,status,dependency_or_reference,notes
+Before kickoff,Confirm approved scope,,,,,
+Before kickoff,Send welcome message,,,,,
+Intake,Collect project goals and constraints,,,,,
+Intake,Confirm required deliverables,,,,,
+Kickoff,Confirm stakeholders and decision owner,,,,,
+Kickoff,Agree timeline and feedback process,,,,,
+Access,Grant least-privilege named access,,,,,
+Access,Set MFA and access expiry,,,,,
+Delivery,Verify deliverables against acceptance criteria,,,,,
+Handoff,Send organized files and instructions,,,,,
+Closeout,Remove unnecessary access,,,,,
