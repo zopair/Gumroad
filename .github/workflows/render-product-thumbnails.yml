@@ -1,0 +1,43 @@
+name: Render Gumroad product thumbnails
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/render-product-thumbnails.yml"
+      - "products/**/assets/thumbnail.svg"
+concurrency:
+  group: gumroad-product-thumbnails
+  cancel-in-progress: true
+jobs:
+  thumbnails:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SVG renderer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin
+      - name: Render square thumbnails
+        run: |
+          set -euo pipefail
+          count=0
+          while IFS= read -r -d '' file; do
+            out="\${file%.svg}.png"
+            rsvg-convert --format=png --width=600 --height=600 "$file" > "$out"
+            file "$out"
+            count=$((count + 1))
+          done < <(find products -type f -name 'thumbnail.svg' -print0)
+          test "$count" -eq 10
+      - name: Commit thumbnails
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          find products -type f -name 'thumbnail.png' -print0 | xargs -0 -r git add
+          git commit -m "Add square Gumroad product thumbnails"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
