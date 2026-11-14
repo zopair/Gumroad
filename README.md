@@ -7,6 +7,9 @@ A curated catalog of ten published digital workbooks and templates for Gumroad.
 - Current Gumroad metadata and policies: [STORE_SETUP.md](STORE_SETUP.md)
 - Competitor research and growth plan: [GROWTH_PLAYBOOK.md](GROWTH_PLAYBOOK.md)
 - Prepared custom storefront page: [storefront/profile.html](storefront/profile.html)
+- Free samples: [samples/](samples/)
+- Organic campaign: [30-day launch plan](marketing/30-day-launch-plan.md), [Pinterest copy](marketing/pinterest/pin-copy.md), [vertical pins](marketing/pinterest/)
+- Brand identity: [storefront assets](storefront/)
 - Product workbooks: generated and tested through [build-product-workbooks.yml](.github/workflows/build-product-workbooks.yml)
 - Product image gallery and mockups: generated through [render-product-covers.yml](.github/workflows/render-product-covers.yml)
 
