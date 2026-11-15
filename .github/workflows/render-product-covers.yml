@@ -29,7 +29,7 @@ jobs:
           while IFS= read -r -d '' file; do
             out="${file%.svg}.png"
             if [[ "$file" == "storefront/brand-avatar.svg" ]]; then
-              rsvg-convert --format=png --width=1024 --height=1024 "$file" > "$out"
+              rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=1024 --height=1024 "$file" > "$out"
             elif [[ "$file" == "storefront/favicon.svg" ]]; then
               rsvg-convert --format=png --width=128 --height=128 "$file" > "$out"
             elif [[ "$file" == "storefront/brand-wordmark.svg" ]]; then
