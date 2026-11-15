@@ -22,10 +22,14 @@ Gumroad's current Help Center documents custom profile pages and the Gumroad CLI
 - Preview before publishing: `gumroad pages preview`
 - Publish the profile page: `gumroad pages push profile`
 - A custom page replaces the entire profile page/sections layout. Back up the current profile source before replacing it.
-- Gumroad's custom page can use `data-gumroad-follow` and `data-gumroad-follow-message` for the native follower form.
-- Live catalogue/prices are served with the Gumroad profile page. A standalone external page must not invent or hard-code claims that prices are live; link to the product page instead.
+- Gumroad's custom profile page can use `data-gumroad-follow` and `data-gumroad-follow-message` for the native follower form. The form is wired to the audience after the account is reviewed and marked compliant; before that, it may route visitors to the subscribe page.
+- For live prices, mark each element with `data-gumroad-product="[permalink]"` and `data-gumroad-field="price"` (or `currency` / `original-price`). Do not hard-code prices into the custom Gumroad profile page.
+- Gumroad injects the live catalogue into the profile page as JSON in `#gumroad-data` and price data in `#gumroad-prices`. The initial catalogue block contains up to the newest 100 eligible products; larger catalogues can request further pages through Gumroad's documented page wrapper. This store has ten products, so pagination is not currently needed.
+- Gumroad profile pages receive the live catalogue/prices; standalone Gumroad pages and external static sites do not receive the same profile data. On those pages, link to the product page rather than presenting stale hard-coded prices.
 - Do not link directly to downloadable files from a Gumroad custom page. Gumroad warns that browser downloads initiated from a custom page can be cancelled silently. Put buyer files in product content and link to the product.
 - The Gumroad product connector currently exposes product metadata, covers, and delivery-file management, but not custom profile HTML publishing. Use the documented CLI/UI for profile publishing; do not pretend the product API published the profile.
+
+The prepared `storefront/profile.html` currently contains literal price strings. Before publishing it as the native Gumroad profile, replace those values with the documented live-price attributes and verify the rendered prices in preview.
 
 Official guide: https://gumroad.com/help/article/124-your-gumroad-profile-page
 
