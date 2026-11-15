@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import ast
 import hashlib
+import html
 import json
 import zipfile
 from pathlib import Path
@@ -120,9 +121,11 @@ def _readme(product: dict[str, Any], seo: dict[str, Any]) -> str:
 1. Extract this ZIP to a folder.
 2. Install Python 3.11+ if it is not already installed.
 3. Open a terminal in this folder.
-4. Run: `python run.py examples/input.json`
-5. The JSON report is printed to the terminal. To save it, run:
-   `python run.py examples/input.json --output report.json`
+4. Run `python web.py`.
+5. Open the printed `http://127.0.0.1:...` address in your browser.
+6. Edit the sample JSON, then select **Run locally**. Copy or download the report.
+
+The browser workspace binds only to loopback, accepts JSON requests up to 1 MB, and does not log input contents. You can also run the CLI directly with `python run.py examples/input.json`.
 
 ## Input format
 Edit `examples/input.json` with your own information while preserving the JSON structure. The default run is fully local and does not send input to an external service.
@@ -203,6 +206,11 @@ def build_all(runtime_root: Path, output_dir: Path) -> list[Path]:
     workflow_source = (runtime_root / "src/jarvis_agents/workflows.py").read_text(encoding="utf-8")
     validation_source = (runtime_root / "src/jarvis_agents/validation.py").read_text(encoding="utf-8")
     provider_source = (runtime_root / "src/jarvis_agents/providers.py").read_text(encoding="utf-8")
+    web_server_source = (runtime_root / "web.py").read_text(encoding="utf-8")
+    web_root = runtime_root / "web"
+    web_index = (web_root / "index.html").read_text(encoding="utf-8")
+    web_script = (web_root / "app.js").read_text(encoding="utf-8")
+    web_styles = (web_root / "styles.css").read_text(encoding="utf-8")
     output_dir.mkdir(parents=True, exist_ok=True)
     archives = []
     seen = set()
@@ -230,7 +238,7 @@ def build_all(runtime_root: Path, output_dir: Path) -> list[Path]:
                 "version": "0.1.0-preview",
                 "runtime_dependencies": [],
                 "python_requires": ">=3.11",
-                "entrypoint": "python run.py examples/input.json",
+                "entrypoint": "python web.py",
                 "network_access": False,
                 "upstream_code_included": False,
                 "release_status": "preview_not_release_approved",
@@ -299,6 +307,16 @@ if __name__ == "__main__":
     raise SystemExit(main())
 """.replace("__PRODUCT_SLUG__", repr(slug)),
             "examples/input.json": sample_path.read_text(encoding="utf-8"),
+            "web.py": web_server_source,
+            "index.html": (
+                web_index
+                .replace("{{PRODUCT_NAME}}", html.escape(product["name"]))
+                .replace("{{TAGLINE}}", html.escape(product["short_description"]))
+                .replace("{{PRODUCT_SLUG}}", slug)
+                .replace("{{SAMPLE_JSON}}", html.escape(sample_path.read_text(encoding="utf-8"), quote=False))
+            ),
+            "app.js": web_script,
+            "styles.css": web_styles,
         }
         art_root = repo_root / "ai-agents" / "products" / slug / "assets"
         for art_name in ("cover.png", "cover.svg", "thumbnail.png", "thumbnail.svg"):
