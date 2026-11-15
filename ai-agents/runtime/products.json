@@ -10,7 +10,9 @@
       "upstream": {
         "url": "https://github.com/humanswith-ai/contentos-agent-lite",
         "commit": "3b204b05bac946e3cb7cca96e24e31a869192888",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "AI SEO content generator",
       "secondary_keywords": [
@@ -34,7 +36,8 @@
         "No ranking guarantees",
         "No automatic publishing"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "leadscout-bot",
@@ -42,7 +45,9 @@
       "upstream": {
         "url": "https://github.com/GURPREETKAURJETHRA/AI-Lead-Generation-Agent",
         "commit": "49254cb4ce9178dca207af595f2fe2762fb0c121",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "B2B lead generation assistant",
       "secondary_keywords": [
@@ -66,7 +71,8 @@
         "No personal-profile harvesting",
         "Scores do not verify buying intent"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "tradetrend-analyst",
@@ -74,7 +80,9 @@
       "upstream": {
         "url": "https://github.com/TauricResearch/TradingAgents",
         "commit": "9fa1196fffbcfd9de5146d2dd2869df84ab99838",
-        "license": "Apache-2.0"
+        "license": "Apache-2.0",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "AI financial market analysis",
       "secondary_keywords": [
@@ -98,7 +106,8 @@
         "No financial advice or profit claims",
         "No live order execution"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "docusense-support",
@@ -106,7 +115,9 @@
       "upstream": {
         "url": "https://github.com/LeonAchata/DocuChat-AI",
         "commit": "0cb4d059542c57e2c07cdd168169e13132270e45",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "PDF document question answering",
       "secondary_keywords": [
@@ -130,7 +141,8 @@
         "OCR and cloud processing are not included",
         "Page metadata must be supplied"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "socialsync-ai",
@@ -138,7 +150,9 @@
       "upstream": {
         "url": "https://github.com/langchain-ai/social-media-agent",
         "commit": "ec9d0ece32bfad999954e45b57f9325521c4e3d9",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "AI social media content planner",
       "secondary_keywords": [
@@ -162,7 +176,8 @@
         "Platform-specific limits require final review",
         "No reach or engagement guarantees"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "mailforge-pro",
@@ -170,7 +185,9 @@
       "upstream": {
         "url": "https://github.com/The-Pocket/PocketFlow-Tutorial-Cold-Email-Personalization",
         "commit": "200903e33e7756a880160f8b7c5d6e5dd51794a6",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "B2B cold email writing assistant",
       "secondary_keywords": [
@@ -194,7 +211,8 @@
         "No deliverability guarantees",
         "User must verify lawful contact basis and claims"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "contentflip-ai",
@@ -202,7 +220,9 @@
       "upstream": {
         "url": "https://github.com/DEKVIW/video-to-article",
         "commit": "d08a20493da7a1cfdb19c270108c1159e93247b7",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "video transcript to article converter",
       "secondary_keywords": [
@@ -226,7 +246,8 @@
         "No third-party video downloading",
         "Republishing rights remain the user's responsibility"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "estateguard-ai",
@@ -234,7 +255,9 @@
       "upstream": {
         "url": "https://github.com/gautampapat/Smart-PDF-Contract-Analyzer",
         "commit": "9d0355378dd8e0e5bd5eef318ab272c61b1caeff",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "AI contract review assistant",
       "secondary_keywords": [
@@ -258,7 +281,8 @@
         "Keyword checks may miss clauses",
         "Local legal review is required"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "codesentinel",
@@ -266,7 +290,9 @@
       "upstream": {
         "url": "https://github.com/alibaba/open-code-review",
         "commit": "7e5ce06c88de5ce81df5dc4f24e2e485b517fae8",
-        "license": "Apache-2.0"
+        "license": "Apache-2.0",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "AI code review security assistant",
       "secondary_keywords": [
@@ -290,7 +316,8 @@
         "No untrusted code execution",
         "No guarantee of complete vulnerability detection"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     },
     {
       "slug": "marketmind-ai",
@@ -298,7 +325,9 @@
       "upstream": {
         "url": "https://github.com/psrane8/Market-Research-Agent",
         "commit": "23f6d6e4e83d158fc8f5be25844c631fd07f7f0e",
-        "license": "MIT"
+        "license": "MIT",
+        "role": "reference_candidate_only",
+        "code_imported": false
       },
       "primary_keyword": "AI market research and competitor analysis",
       "secondary_keywords": [
@@ -322,7 +351,8 @@
         "Pricing and positioning require dated sources",
         "Not a substitute for primary market research"
       ],
-      "release_ready": false
+      "release_ready": false,
+      "implementation_status": "original_local_workflow_baseline"
     }
   ]
 }
