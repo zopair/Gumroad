@@ -5,6 +5,7 @@ A curated catalog of ten published digital workbooks and templates for Gumroad.
 - Storefront: https://zopair.gumroad.com
 - Live catalog and product source files: [CATALOG.md](CATALOG.md)
 - Current Gumroad metadata and policies: [STORE_SETUP.md](STORE_SETUP.md)
+- **Publishing, file delivery, image specifications, deployment limits and free/open-source tools:** [docs/PUBLISHING_AND_ASSET_STANDARDS.md](docs/PUBLISHING_AND_ASSET_STANDARDS.md)
 - Competitor research and growth plan: [GROWTH_PLAYBOOK.md](GROWTH_PLAYBOOK.md)
 - **Competitor benchmark and simple-product strategy:** [research/COMPETITOR_BENCHMARK.md](research/COMPETITOR_BENCHMARK.md)
 - Prepared custom storefront page: [storefront/profile.html](storefront/profile.html)
@@ -25,3 +26,4 @@ The ten product slots are occupied. Additional catalog ideas are internal backlo
 - Keep product title, summary, tags, description and preview aligned with included deliverables.
 - Do not claim sales, rankings, reviews or guaranteed outcomes without verified evidence.
 - Do not publish new products unless a published slot becomes available or the account limit changes.
+- Follow [Publishing & Asset Standards](docs/PUBLISHING_AND_ASSET_STANDARDS.md) for provider limits, file/image formats, deployment routes, and release checks.
