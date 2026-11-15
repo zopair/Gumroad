@@ -135,3 +135,26 @@ P1: perform a buyer-side mobile/desktop check of all ten product pages and downl
 P2: create authentic product walkthroughs, distribute channel-specific previews with UTMs, and review views/conversion weekly.
 
 Do not add new product SKUs until the ten current listings show measurable demand or the account's product limit changes.
+
+
+## Gumroad platform rules verified 2026-11-15
+
+Official references:
+- Discover and tag guidance: https://gumroad.com/help/article/79-gumroad-discover
+- Profile pages and custom HTML: https://gumroad.com/help/article/124-your-gumroad-profile-page
+- Cover and thumbnail guidance: https://gumroad.com/help/article/60-adding-a-cover-image
+
+Operational rules applied:
+1. Use one accurate marketplace category and up to ten specific, buyer-language tags per product. Avoid unrelated tags, repeated keyword variants and hidden keyword stuffing.
+2. Discover is not unlocked by metadata alone. Gumroad states that creator payout settings must be complete, the account must reach at least $100 in genuine sales, and the risk review must be passed. A product also needs at least one successful non-refunded sale, a category and ratings enabled.
+3. Keep the first gallery item a static image; additional images and motion media can follow it. Gumroad specifically warns that a video-first cover hides the gallery navigation indicators.
+4. Custom profile HTML is indexable and Gumroad supplies product structured data automatically. Do not inject fabricated review/rating schema or duplicate checkout widgets. Link to the actual product pages; do not link to direct downloads from the custom profile.
+5. The custom profile's follower form must use Gumroad's documented data attributes. Product links must remain direct and functional.
+6. The current account has ten published products and, in the latest 2026-10-16 through 2026-11-15 analytics window, all ten reported zero product-page views and zero sales. The immediate bottleneck is qualified traffic and distribution, not adding more SKUs or stuffing tags.
+
+Current execution:
+- Each published product now has ten relevant tags, a concise summary, a free sample link, related-product links, a purchase receipt message and a clear content button.
+- Descriptive product URLs have replaced the short opaque slugs; old product links are expected to continue redirecting per Gumroad's update behavior.
+- Each product now has five gallery covers, including a newly generated animated mockup GIF. Existing static images remain ahead of the GIF.
+- Ten square 600x600 thumbnail PNGs are generated in the repository but still need to be selected as Gumroad's separate product thumbnails through the authenticated product editor. Do not claim this last step is complete until verified.
+- The profile HTML is prepared in storefront/profile.html but is not published until secure creator authentication and CLI preview/push are completed.
