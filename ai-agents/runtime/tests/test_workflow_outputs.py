@@ -95,11 +95,8 @@ class WorkflowOutputTests(unittest.TestCase):
         self.assertIn("keyword", scope["method"].lower())
         self.assertIn("not legal advice", scope["disclaimer"].lower())
 
-if __name__ == "__main__":
-    unittest.main()
 
-
-    def test_contentflip_parses_srt_cues_and_preserves_timestamps(self):
+def test_contentflip_parses_srt_cues_and_preserves_timestamps(self):
         subtitles = """1
 00:00:01,250 --> 00:00:03,000
 Welcome to the session.
@@ -120,3 +117,7 @@ We explain <i>secure</i> document handling &amp; review.
     def test_contentflip_rejects_malformed_subtitle_file(self):
         with self.assertRaises(ValueError):
             run_agent("contentflip-ai", {"title":"Bad captions","subtitle_text":"not a subtitle file"})
+
+
+if __name__ == "__main__":
+    unittest.main()
