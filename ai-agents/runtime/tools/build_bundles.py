@@ -10,6 +10,14 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+EXAMPLES = {
+    "rankmaster-ai": "rankmaster.json", "leadscout-bot": "leadscout.json",
+    "tradetrend-analyst": "tradetrend.json", "docusense-support": "docusense.json",
+    "socialsync-ai": "socialsync.json", "mailforge-pro": "mailforge.json",
+    "contentflip-ai": "contentflip.json", "estateguard-ai": "estateguard.json",
+    "codesentinel": "codesentinel.json", "marketmind-ai": "marketmind.json",
+}
+
 FUNCTIONS = {
     "rankmaster-ai": "rankmaster",
     "leadscout-bot": "leadscout",
@@ -151,10 +159,7 @@ def build_all(runtime_root: Path, output_dir: Path) -> list[Path]:
         seen.add(slug)
         if slug not in listing_by_slug:
             raise ValueError(f"Missing SEO listing for {slug}")
-        sample_path = runtime_root / "examples" / f"{slug.removesuffix('-ai')}.json"
-        if not sample_path.is_file():
-            # Slug names do not always match the example file name.
-            sample_path = runtime_root / "examples" / f"{slug}.json"
+        sample_path = runtime_root / "examples" / EXAMPLES[slug]
         if not sample_path.is_file():
             raise FileNotFoundError(f"Missing sample input for {slug}")
         seo = listing_by_slug[slug]
