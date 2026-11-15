@@ -18,9 +18,10 @@
 
 ## Verification evidence
 
-- The complete 29-test suite and compile check passed on Python 3.11 and 3.12 at commit dec6d70ceddd9ff8a5d0d8d53e01b83c9d54ce16.
+- The complete 31-test suite and compile check passed on Python 3.11 and 3.12 at commit 0699febc303acba3925beec69196cdff542249e0.
 - The asset workflow passed: 10 listing drafts, 10 cover SVGs, 10 thumbnail SVGs, and 20 rendered PNG files were generated and committed.
-- The test suite covers the shared report contract, all ten workflow outputs, deterministic behavior, safety boundaries, provider opt-in, SEO bounds, and SVG validity.
+- The test suite covers the shared report contract, all ten workflow outputs, deterministic behavior, safety boundaries, provider opt-in, SEO bounds, SVG validity, and isolated ZIP execution for all ten products.
+- Ten isolated product ZIP previews were built and uploaded as GitHub Actions artifact `jarvis-product-previews` (workflow run 43752671656). Each contains one product workflow, its sample input, README, metadata, SEO listing, product art, third-party notice, and a seller-review draft license. The archives were smoke-tested by extracting and running every sample.
 
 ## Provenance and legal status
 
@@ -35,10 +36,10 @@ Before reusing any upstream code, pin and fetch the exact commit, inspect the fu
 - Licensed data/search connectors for live SEO, prospect research, market research, and financial data.
 - Authorized media transcription adapter for ContentFlip.
 - Language-aware code analyzers and broader security test coverage for CodeSentinel.
-- Dedicated standalone product bundles, clean-machine install tests, ZIP manifests/checksums, and per-product license files.
+- Clean-machine install tests on Windows/macOS, finalized seller-approved EULA/refund/privacy terms, and final product release approval.
 - Product-specific UI, actual screenshots from tested builds, demo data packs, and final support/privacy/terms documents.
 - Final commercial pricing review and owner approval.
 
 ## Release rule
 
-Every product remains marked not release-ready. Generated marketing copy and artwork are internal drafts only. No Gumroad product has been created, edited, unpublished, deleted, or published by this work.
+Every product remains marked not release-ready. The generated ZIPs are preview packages only: their included commercial license is explicitly a draft requiring seller/legal approval. Clean-machine testing beyond the CI Linux runner, full upstream provenance/dependency audit, and final buyer documentation remain release blockers. Generated marketing copy and artwork are internal drafts only. No Gumroad product has been created, edited, unpublished, deleted, or published by this work.
