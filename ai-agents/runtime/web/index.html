@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
+<title>{{PRODUCT_NAME}} · JARVIS</title>
+<link rel="stylesheet" href="/styles.css">
+<script src="/app.js" defer></script>
+</head>
+<body>
+<header class="top"><div class="brand"><span class="mark">J</span><span>JARVIS <small>BY ZUBAIR DIGITAL KITS</small></span></div><span class="local">LOCAL WORKSPACE</span></header>
+<main>
+<section class="hero"><p class="eyebrow">INTELLIGENT BUSINESS AGENT</p><h1>{{PRODUCT_NAME}}</h1><p>{{TAGLINE}}</p></section>
+<section class="workspace">
+<div class="panel"><div class="panel-head"><div><span class="step">01</span><h2>Input data</h2></div><button id="reset" class="quiet" type="button">Reset sample</button></div><label for="payload">Edit the JSON input for this workflow</label><textarea id="payload" spellcheck="false">{{SAMPLE_JSON}}</textarea><div class="actions"><button id="run" class="primary" type="button">Run locally</button><span id="status" role="status" aria-live="polite">Ready · No external service used</span></div></div>
+<div class="panel"><div class="panel-head"><div><span class="step">02</span><h2>Report</h2></div><div class="tools"><button id="copy" class="quiet" type="button" disabled>Copy</button><button id="download" class="quiet" type="button" disabled>Download JSON</button></div></div><pre id="report" aria-live="polite">Your structured report will appear here.</pre></div>
+</section>
+<section class="footnote"><strong>Privacy by default:</strong> this browser workspace runs on your device at 127.0.0.1. Inputs stay local unless you separately enable the optional AI provider through the command-line interface. Review every output before relying on it.</section>
+</main>
+<footer>© 2026 Zubair Digital Kits · JARVIS · Local-first edition</footer>
+</body>
+</html>
