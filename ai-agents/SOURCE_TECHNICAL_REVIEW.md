@@ -66,3 +66,28 @@ DocuSense's complete architecture includes Next.js, FastAPI, LangGraph and Postg
 ## License evidence
 
 Top-level upstream license texts were fetched from the default branch for all ten sources on 2026-11-15. MIT was confirmed for products 01, 02, 04, 05, 06, 07, 08 and 10; Apache-2.0 was confirmed for products 03 and 09. This does not establish that every dependency, model, dataset, icon, bundled binary, or service used by the projects is MIT/Apache-2.0.
+
+
+## Pinned dependency-manifest inspection (2026-11-15)
+
+The following manifests were read from the exact pinned upstream commits recorded above. This is a direct-dependency and architecture review, not a completed transitive SBOM or vulnerability audit.
+
+| Product | Observed direct dependency surface at pinned commit | Commercial packaging decision |
+|---|---|---|
+| RankMaster AI | `requests>=2.31,<3`; pyproject also declares Python >=3.10 and MIT | Smallest dependency surface of the ten. The JARVIS local workflow remains dependency-free; only consider requests if a separately reviewed, permissioned provider adapter needs HTTP. |
+| LeadScout Bot | `firecrawl-py==1.9.0`, `phidata==2.7.3`, `composio-phidata==0.6.15`, `composio==0.1.1`, `pydantic==2.10.5`, Streamlit | Do not import this stack into the product bundle. Service keys, platform terms, and profile-harvesting behavior require separate review. |
+| TradeTrend Analyst | LangChain provider adapters, LangGraph, SQLite checkpointing, pandas, yfinance, stockstats, requests, Typer/Rich, and multiple LLM integrations | Too broad for the lightweight local SKU. A separate market-data adapter would need explicit provider licensing, freshness and source labels, bounded requests, and no trading execution. |
+| DocuSense Support | Python >=3.12; Anthropic, LangGraph, fastembed, NumPy, pdfplumber, python-docx, FastAPI, multipart upload, Uvicorn; optional psycopg/pgvector | Heavy for a no-cost, single-file local product; model downloads and document parsing require their own audit. Current JARVIS SKU stays lexical and dependency-free until a tested optional parser/retrieval add-on is justified. |
+| SocialSync AI | LangGraph, LangChain Anthropic/OpenAI, Slack, Supabase, Firecrawl, Playwright, Google APIs, Reddit/Twitter clients, auth and server components; package marked private | Do not redistribute or vendor this application as-is. Preserve only the human-approval workflow concept unless specific components are independently cleared. |
+| MailForge Pro | OpenAI, Anthropic, Requests, PocketFlow, PyYAML, BeautifulSoup, Streamlit, Google API client | Tutorial dependencies add multiple paid-provider and Google API surfaces. Keep the local drafting workflow; add connectors only as optional, documented integrations. |
+| ContentFlip AI | yt-dlp, faster-whisper, ModelScope, FunASR, OpenAI/Anthropic SDKs, Pillow, requests | Large model and media-processing surface. No model weights, binaries, downloader, or third-party media source is included in the current SKU. Transcription must be a separately licensed optional module. |
+| EstateGuard AI | Streamlit, broad LangChain modules, Google/Groq providers, Chroma, sentence-transformers, PyTorch, pypdf, pdfplumber, Unstructured PDF, BM25 | Large dependency/model footprint. Do not bundle model weights or OCR components until each license, download, and privacy behavior is reviewed. |
+| CodeSentinel | Go 1.26.10 module with Anthropic/OpenAI/AWS SDKs, MCP SDK, Cobra, terminal UI packages, OpenTelemetry and extensive indirect dependencies | Full upstream application is not an appropriate product payload. Any future Go subset needs its own module graph, nested NOTICE review, vulnerability scan, and reproducible build. |
+| MarketMind AI | Streamlit, CrewAI, Google GenAI and OpenAI LangChain integrations | Prototype relies on external provider accounts and broad orchestration dependencies. Current local workflow remains dependency-free; live research is not claimed. |
+
+### What this audit means
+
+- The ten preview ZIPs are independently built from the original JARVIS local workflows and do not vendor any of the upstream repositories.
+- Each ZIP now carries an SPDX 2.3 inventory with `NOASSERTION` license conclusions, plus a SHA-256 file manifest. This is intentionally conservative: the commercial EULA remains a seller-review draft.
+- The repository's current no-third-party-runtime-dependency claim applies to these preview bundles only; it is not a statement about the upstream reference projects.
+- Before adding an upstream dependency or source file, pin its exact version/commit, generate a transitive SPDX/CycloneDX SBOM, inspect model and data provenance, review licenses and notices, run vulnerability checks, and add the source attribution to the affected product archive.
