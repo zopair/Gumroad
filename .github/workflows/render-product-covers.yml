@@ -7,6 +7,8 @@ on:
       - "products/**/assets/*.svg"
       - "storefront/*.svg"
       - "marketing/**/*.svg"
+      - "scripts/validate_gumroad_assets.py"
+      - "tests/test_validate_gumroad_assets.py"
 concurrency:
   group: gumroad-product-assets
   cancel-in-progress: true
@@ -18,6 +20,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Install SVG renderer
         run: |
           sudo apt-get update
@@ -31,18 +36,23 @@ jobs:
             if [[ "$file" == "storefront/brand-avatar.svg" ]]; then
               rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=1024 --height=1024 "$file" > "$out"
             elif [[ "$file" == "storefront/favicon.svg" ]]; then
-              rsvg-convert --format=png --width=128 --height=128 "$file" > "$out"
+              rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=128 --height=128 "$file" > "$out"
             elif [[ "$file" == "storefront/brand-wordmark.svg" ]]; then
-              rsvg-convert --format=png --width=1600 --height=400 "$file" > "$out"
+              rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=1600 --height=400 "$file" > "$out"
             elif [[ "$file" == marketing/* ]]; then
-              rsvg-convert --format=png --width=1000 --height=1500 "$file" > "$out"
+              rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=1000 --height=1500 "$file" > "$out"
             else
-              rsvg-convert --format=png --width=1600 --height=1000 "$file" > "$out"
+              rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=1600 --height=1000 "$file" > "$out"
             fi
             file "$out"
             count=$((count + 1))
           done < <(find products storefront marketing -type f -name '*.svg' ! -name 'thumbnail.svg' -print0)
           test "$count" -eq 53
+      - name: Validate Gumroad image limits and brand exports
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p "test_validate_gumroad_assets.py" -v
+          python scripts/validate_gumroad_assets.py
       - name: Commit rendered assets
         run: |
           set -euo pipefail
