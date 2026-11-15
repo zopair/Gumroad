@@ -18,9 +18,9 @@
 
 ## Verification evidence
 
-- Runtime test suite and compile check passed on Python 3.11 and 3.12 at commit 99691c43b5c828f808ed756f2d8142f981236a15.
-- Asset generation and SEO constraints passed; 10 listing drafts, 10 cover SVGs, 10 thumbnail SVGs, and 20 rendered PNG files were committed by the asset workflow.
-- Product workflow behavior tests have been added after that verification and are awaiting the next CI run.
+- The complete 29-test suite and compile check passed on Python 3.11 and 3.12 at commit dec6d70ceddd9ff8a5d0d8d53e01b83c9d54ce16.
+- The asset workflow passed: 10 listing drafts, 10 cover SVGs, 10 thumbnail SVGs, and 20 rendered PNG files were generated and committed.
+- The test suite covers the shared report contract, all ten workflow outputs, deterministic behavior, safety boundaries, provider opt-in, SEO bounds, and SVG validity.
 
 ## Provenance and legal status
 
