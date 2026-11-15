@@ -55,9 +55,9 @@ Goal: generate the first qualified visits and validate which of the ten live pro
 
 Use a distinct URL for each channel and product, for example:
 
-- Pinterest: https://zopair.gumroad.com/l/nkmder?utm_source=pinterest&utm_medium=organic&utm_campaign=30day_calendar
-- LinkedIn: https://zopair.gumroad.com/l/sjkkzdk?utm_source=linkedin&utm_medium=organic&utm_campaign=crm_tracker
-- Short video: https://zopair.gumroad.com/l/avcdz?utm_source=youtube&utm_medium=organic&utm_campaign=pricing_demo
+- Pinterest: https://zopair.gumroad.com/l/30-day-social-media-content-calendar?utm_source=pinterest&utm_medium=organic&utm_campaign=30day_calendar
+- LinkedIn: https://zopair.gumroad.com/l/simple-crm-lead-tracker?utm_source=linkedin&utm_medium=organic&utm_campaign=crm_tracker
+- Short video: https://zopair.gumroad.com/l/service-pricing-calculator?utm_source=youtube&utm_medium=organic&utm_campaign=pricing_demo
 
 Do not use the same UTM campaign for unrelated products. Record the final URLs in the campaign tracker.
 
