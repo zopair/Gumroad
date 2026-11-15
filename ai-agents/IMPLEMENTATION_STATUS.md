@@ -7,6 +7,8 @@
 
 ## Delivered in the repository
 
+- DocuSense retrieval upgraded from simple overlap counting to deterministic BM25 ranking, with stable source citations, relevance scores, bounded top-five evidence, explicit retrieval metadata, and abstention when no supplied passage matches. It remains lexical retrieval, not semantic-vector RAG.
+
 - Ten deterministic, side-effect-free local workflows behind a stable Python API.
 - A command-line runner and installable Python package; runtime dependencies are Python standard library only.
 - Explicit opt-in OpenAI-compatible provider adapter. Local mode never calls a provider; AI mode requires user-supplied environment variables and discloses external data transfer.
@@ -18,7 +20,7 @@
 
 ## Verification evidence
 
-- The complete 32-test suite and compile check passed on Python 3.11 and 3.12 at commit a1ba457cd476c5a3042afbf28d241fd47755b90e.
+- The 34-test suite and compile check passed on Python 3.11 and 3.12 after the DocuSense BM25/citation change (commit dcc0142a7e9afe38673e55fe53852b8ccb1ac08b).
 - The asset workflow passed: 10 listing drafts, 10 cover SVGs, 10 thumbnail SVGs, and 20 rendered PNG files were generated and committed.
 - The test suite covers the shared report contract, all ten workflow outputs, deterministic behavior, safety boundaries, provider opt-in, SEO bounds, SVG validity, and isolated ZIP execution for all ten products.
 - Ten isolated product ZIP previews were built and uploaded as GitHub Actions artifact `jarvis-product-previews` (workflow run 43753637852). Each contains one product workflow, a loopback-only browser workspace, CLI, sample input, README, metadata, SEO listing, product art, explicit opt-in AI provider adapter, third-party notice, seller-review draft license, SPDX 2.3 inventory, and SHA-256 file manifest. CI extracted every archive, ran its sample, verified the AI opt-in guard, and exercised its local HTTP UI and API. All 32 tests passed on both Python versions.
@@ -41,4 +43,4 @@ A pinned-commit review of the direct dependency manifests is now recorded in SOU
 
 ## Release rule
 
-Every product remains marked not release-ready. The generated ZIPs are preview packages only: their included commercial license is explicitly a draft requiring seller/legal approval. Clean-machine testing beyond the CI Linux runner, full upstream provenance/dependency audit, and final buyer documentation remain release blockers. Generated marketing copy and artwork are internal drafts only. No Gumroad product has been created, edited, unpublished, deleted, or published by this work.
+Every product remains marked not release-ready. The generated ZIPs are still preview packages only: their included commercial license is explicitly a draft requiring seller/legal approval. Clean-machine testing beyond the CI Linux runner, full upstream provenance/dependency audit, and final buyer documentation remain release blockers. Generated marketing copy and artwork are internal drafts only. No Gumroad product has been created, edited, unpublished, deleted, or published by this work.
