@@ -18,10 +18,10 @@
 
 ## Verification evidence
 
-- The complete 31-test suite and compile check passed on Python 3.11 and 3.12 at commit 0699febc303acba3925beec69196cdff542249e0.
+- The complete 32-test suite and compile check passed on Python 3.11 and 3.12 at commit 0699febc303acba3925beec69196cdff542249e0.
 - The asset workflow passed: 10 listing drafts, 10 cover SVGs, 10 thumbnail SVGs, and 20 rendered PNG files were generated and committed.
 - The test suite covers the shared report contract, all ten workflow outputs, deterministic behavior, safety boundaries, provider opt-in, SEO bounds, SVG validity, and isolated ZIP execution for all ten products.
-- Ten isolated product ZIP previews were built and uploaded as GitHub Actions artifact `jarvis-product-previews` (workflow run 43753069082). Each contains one product workflow, its sample input, README, metadata, SEO listing, product art, third-party notice, seller-review draft license, SPDX 2.3 inventory, and SHA-256 file manifest. The archives were smoke-tested by extracting and running every sample; all 31 tests passed on both Python versions.
+- Ten isolated product ZIP previews were built and uploaded as GitHub Actions artifact `jarvis-product-previews` (workflow run 43753637852). Each contains one product workflow, its sample input, README, metadata, SEO listing, product art, third-party notice, seller-review draft license, SPDX 2.3 inventory, and SHA-256 file manifest. The archives were smoke-tested by extracting and running every sample; all 32 tests passed on both Python versions.
 
 ## Provenance and legal status
 
@@ -37,7 +37,7 @@ A pinned-commit review of the direct dependency manifests is now recorded in SOU
 - Authorized media transcription adapter for ContentFlip.
 - Language-aware code analyzers and broader security test coverage for CodeSentinel.
 - Clean-machine install tests on Windows/macOS, finalized seller-approved EULA/refund/privacy terms, and final product release approval.
-- Product-specific UI, actual screenshots from tested builds, demo data packs, and final support/privacy/terms documents.
+- Browser screenshots captured from a real interactive browser session, clean-machine install tests on Windows/macOS, demo outputs, and final support/privacy/terms documents.
 - Final commercial pricing review and owner approval.
 
 ## Release rule
