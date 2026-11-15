@@ -82,5 +82,18 @@ class WorkflowOutputTests(unittest.TestCase):
         self.assertEqual(evidence[0]["citation"], "[policy-1, p. 2]")
         self.assertLessEqual(len(evidence), 5)
 
+    def test_estateguard_scores_high_impact_deposit_terms_and_cites_excerpt(self):
+        result = run_agent("estateguard-ai", {"contract_text":"Lease\nThe security deposit is non-refundable under all circumstances."})
+        finding = content(result, "Clause findings")[0]
+        self.assertEqual(finding["risk_level"], "high")
+        self.assertEqual(finding["line"], 2)
+        self.assertIn("non-refundable", finding["evidence"].lower())
+
+    def test_estateguard_marks_review_scope_and_never_claims_legal_conclusion(self):
+        result = run_agent("estateguard-ai", {"contract_text":"Agreement\nEither party may terminate with notice."})
+        scope = content(result, "Review scope")
+        self.assertIn("keyword", scope["method"].lower())
+        self.assertIn("not legal advice", scope["disclaimer"].lower())
+
 if __name__ == "__main__":
     unittest.main()
