@@ -42,6 +42,7 @@ Build ten independent, commercially distributable AI-agent products from careful
 ## Repository navigation
 
 - [Source register and license gate](SOURCE_REGISTER.md)
+- [Technical source qualification review](SOURCE_TECHNICAL_REVIEW.md)
 - [Product blueprints and acceptance criteria](PRODUCT_BLUEPRINTS.md)
 - [Brand and white-labeling standard](BRAND_SYSTEM.md)
 - [Packaging, security, and legal release gates](PACKAGING_AND_LEGAL.md)
