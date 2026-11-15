@@ -125,7 +125,10 @@ def _readme(product: dict[str, Any], seo: dict[str, Any]) -> str:
    `python run.py examples/input.json --output report.json`
 
 ## Input format
-Edit `examples/input.json` with your own information while preserving the JSON structure. The output is a structured JSON report. All work is performed locally; this package does not send input to an external service.
+Edit `examples/input.json` with your own information while preserving the JSON structure. The default run is fully local and does not send input to an external service.
+
+## Optional AI enhancement (explicit opt-in)
+To enhance report prose with an OpenAI-compatible provider, configure `JARVIS_API_KEY` and `JARVIS_MODEL` in your environment, then run `python run.py examples/input.json --ai`. Optionally set `JARVIS_BASE_URL` for another OpenAI-compatible endpoint. Only the explicit `--ai` flag sends input and the baseline report to that third-party endpoint. Provider usage may incur charges. Do not send confidential, personal, legal, or regulated information unless authorized and after reviewing the provider data terms. API keys are read from environment variables and are not written into files or logs.
 
 ## Product limitations
 {limits}
@@ -199,6 +202,7 @@ def build_all(runtime_root: Path, output_dir: Path) -> list[Path]:
     listing_by_slug = {item["slug"]: item for item in listings}
     workflow_source = (runtime_root / "src/jarvis_agents/workflows.py").read_text(encoding="utf-8")
     validation_source = (runtime_root / "src/jarvis_agents/validation.py").read_text(encoding="utf-8")
+    provider_source = (runtime_root / "src/jarvis_agents/providers.py").read_text(encoding="utf-8")
     output_dir.mkdir(parents=True, exist_ok=True)
     archives = []
     seen = set()
@@ -235,25 +239,52 @@ def build_all(runtime_root: Path, output_dir: Path) -> list[Path]:
             "SEO_LISTING.json": json.dumps(seo, ensure_ascii=False, indent=2) + "\n",
             "LICENSE.txt": LICENSE,
             "THIRD_PARTY_NOTICES.md": NOTICES,
-            "jarvis_agent/__init__.py": f'"""Isolated {product["name"]} workflow."""\nfrom .workflow import {function_name} as run_agent\n',
+            "jarvis_agent/__init__.py": (
+                f'"""Isolated {product["name"]} workflow."""\n'
+                "from typing import Any, Mapping\n"
+                f"from .workflow import {function_name} as _workflow\n"
+                "from .providers import enhance_report\n"
+                f"PRODUCT_SLUG = {slug!r}\n\n"
+                "def run_agent(payload: Mapping[str, Any], provider: Any | None = None) -> dict[str, Any]:\n"
+                "    result = _workflow(payload)\n"
+                '    result.update({"schema_version": "1.0", "agent": PRODUCT_SLUG, "actions": []})\n'
+                "    if provider is not None:\n"
+                "        result = enhance_report(PRODUCT_SLUG, payload, result, provider)\n"
+                "    return result\n"
+            ),
             "jarvis_agent/validation.py": validation_source,
+            "jarvis_agent/providers.py": provider_source,
             "jarvis_agent/workflow.py": _workflow_module(workflow_source, function_name),
             "run.py": """from __future__ import annotations
 import argparse
 import json
+import os
 from pathlib import Path
 from jarvis_agent import run_agent
+from jarvis_agent.providers import OpenAICompatibleProvider
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run this JARVIS product locally.")
     parser.add_argument("input", type=Path, help="UTF-8 JSON input file")
     parser.add_argument("--output", type=Path, help="Optional output JSON path")
+    parser.add_argument("--ai", action="store_true", help="Explicitly send input to your configured AI provider for text enhancement")
     args = parser.parse_args()
     payload = json.loads(args.input.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         parser.error("Input JSON must be an object.")
-    result = run_agent(payload)
-    result.update({"schema_version": "1.0", "agent": PRODUCT_SLUG, "actions": []})
+    provider = None
+    if args.ai:
+        api_key, model = os.environ.get("JARVIS_API_KEY"), os.environ.get("JARVIS_MODEL")
+        if not api_key or not model:
+            parser.error("--ai requires JARVIS_API_KEY and JARVIS_MODEL environment variables.")
+        provider = OpenAICompatibleProvider(
+            api_key=api_key,
+            model=model,
+            base_url=os.environ.get("JARVIS_BASE_URL", "https://api.openai.com/v1/chat/completions"),
+        )
+    result = run_agent(payload, provider=provider)
+    if provider is not None:
+        result["warnings"].append("AI provider usage may incur charges under your provider account.")
     rendered = json.dumps(result, ensure_ascii=False, indent=2) + "\\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
