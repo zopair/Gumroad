@@ -147,13 +147,60 @@ def mailforge(data: Mapping[str, Any]) -> dict[str, Any]:
     close = f"Hello,\n\nI will close the loop here. If improving how you {value} becomes a priority, I would be glad to reconnect.\n\nBest,"
     return report(f"Outreach sequence: {company}", f"Drafted a three-touch B2B sequence for a {role} at {company}.", [section("Personalization evidence", evidence or ["No source evidence supplied — do not imply prior research or familiarity."]), section("Email sequence", [{"step": 1, "subject": subject, "body": first}, {"step": 2, "subject": f"Re: {subject}", "body": follow}, {"step": 3, "subject": f"Closing the loop — {value}", "body": close}]), section("Compliance review", ["Confirm lawful basis and applicable email marketing rules", "Identify the sender accurately", "Include a valid opt-out mechanism where required", "Verify every personalization claim"])], ["Messages are drafts only. Never send automatically; require human approval before sending. No deliverability or inbox-placement guarantee is made.", "Use only lawful, relevant business contact data and honor opt-out requests."])
 
+def _parse_subtitles(source: str) -> list[dict[str, str]]:
+    """Parse plain SRT/WebVTT cues without downloading or transcribing media."""
+    import html
+    timestamp = re.compile(r"^(?:(\d{2,}):)?(\d{2}):(\d{2})[,.](\d{3})\s*-->\s*(?:(?:\d{2,}:)?\d{2}:\d{2}[,.]\d{3})")
+    cues: list[dict[str, str]] = []
+    lines = source.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    index = 0
+    while index < len(lines):
+        match = timestamp.match(lines[index].strip())
+        if not match:
+            index += 1
+            continue
+        hours, minutes, seconds, millis = match.groups()
+        start = (int(hours or 0) * 3600) + int(minutes) * 60 + int(seconds) + int(millis) / 1000
+        index += 1
+        text_lines: list[str] = []
+        while index < len(lines) and lines[index].strip():
+            line = re.sub(r"<[^>]+>", "", lines[index]).strip()
+            if line and line != "WEBVTT":
+                text_lines.append(html.unescape(line))
+            index += 1
+        cue_text = re.sub(r"\s+", " ", " ".join(text_lines)).strip()
+        if cue_text:
+            cues.append({"start_seconds": f"{start:.3f}", "timestamp": f"{int(start // 3600):02d}:{int(start % 3600 // 60):02d}:{start % 60:06.3f}", "text": cue_text})
+    return cues
+
+
 def contentflip(data: Mapping[str, Any]) -> dict[str, Any]:
-    title, transcript = required_text(data, "title"), required_text(data, "transcript"); parts = sentences(transcript)
-    if not parts: raise ValueError("'transcript' must contain readable text.")
+    title = required_text(data, "title")
+    subtitle_source = data.get("subtitle_text")
+    cues: list[dict[str, str]] = []
+    if subtitle_source is not None:
+        if not isinstance(subtitle_source, str) or not subtitle_source.strip():
+            raise ValueError("'subtitle_text' must be non-empty SRT or WebVTT text.")
+        cues = _parse_subtitles(subtitle_source)
+        if not cues:
+            raise ValueError("'subtitle_text' contains no valid timed subtitle cues.")
+        transcript = " ".join(cue["text"] for cue in cues)
+        source_type = "user-supplied SRT/WebVTT subtitles"
+    else:
+        transcript = required_text(data, "transcript")
+        source_type = "user-supplied transcript"
+    parts = sentences(transcript)
+    if not parts:
+        raise ValueError("The supplied source must contain readable text.")
     body = "\n\n".join(parts[1:]) if len(parts) > 1 else "Expand this section with supporting examples and practical detail."
     article = f"# {title}\n\n## Introduction\n\n{parts[0]}\n\n## Key discussion\n\n{body}\n\n## Practical takeaway\n\nSummarize the most useful action a reader can take based on the source material."
-    return report(f"Content repurposing: {title}", f"Converted {len(parts)} transcript sentence(s) into an editable article structure.", [section("Article draft (Markdown)", article), section("Source traceability", {"source_type": "user-supplied transcript", "sentence_count": len(parts), "requires_editorial_review": True})], ["This workflow transforms supplied text; it does not transcribe audio/video or download third-party media.", "Confirm ownership, permission, quotations, names, and factual accuracy before publication."])
-
+    traceability = {"source_type": source_type, "sentence_count": len(parts), "requires_editorial_review": True}
+    if cues:
+        traceability.update({"subtitle_cues": len(cues), "first_cue_timestamp": cues[0]["timestamp"], "last_cue_timestamp": cues[-1]["timestamp"]})
+    sections = [section("Article draft (Markdown)", article), section("Source traceability", traceability)]
+    if cues:
+        sections.append(section("Timed source segments", cues))
+    return report(f"Content repurposing: {title}", f"Converted {len(parts)} transcript sentence(s) into an editable article structure.", sections, ["Subtitle files are parsed locally; this workflow does not transcribe audio/video or download third-party media.", "Confirm ownership, permission, quotations, names, and factual accuracy before publication."])
 def estateguard(data: Mapping[str, Any]) -> dict[str, Any]:
     """Flag contract clauses for human review; never issue legal conclusions."""
     contract = required_text(data, "contract_text")
