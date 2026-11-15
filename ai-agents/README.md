@@ -56,6 +56,8 @@ Build ten independent, commercially distributable AI-agent products from careful
 - **Stage 4 — Commercial assets:** original cover, thumbnail, screenshots, demo, listing copy, ZIP and changelog.
 - **Stage 5 — Owner approval:** review final product and approve Gumroad listing/publishing.
 
-## Current status
+## Current implementation status
 
-Stage 0 is being established. The upstream LICENSE files for the ten candidate repositories were checked at their default branch heads on 2026-11-15. This is **not** a complete license audit: dependencies, model weights, datasets, assets, exact pinned commits, and current runtime behavior remain to be reviewed before any source is approved for redistribution.
+The executable local-first runtime is documented in [runtime/README.md](runtime/README.md). Completed work, verification evidence, provenance boundaries, and release blockers are tracked in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+
+The current runtime is an original implementation based on the product specifications. The upstream repositories remain reference candidates only; no upstream source code has been copied into the runtime. Their top-level license checks do not approve the full product or its dependencies for commercial redistribution.
