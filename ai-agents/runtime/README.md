@@ -21,6 +21,10 @@ Use jarvis-agents list to see the available products. Run an agent with: jarvis-
 
 Or import the library: from jarvis_agents import run_agent
 
+## Optional AI enhancement
+
+AI enhancement is explicit opt-in. Set JARVIS_API_KEY and JARVIS_MODEL, optionally set JARVIS_BASE_URL to an OpenAI-compatible chat-completions endpoint, then pass --ai. Only then is input and baseline report sent to that endpoint. Provider use may incur charges. Do not submit confidential, personal, legal, or regulated information unless authorized and after reviewing provider data terms. The adapter uses bounded timeouts and response sizes, does not log credentials, and does not retry paid requests automatically.
+
 ## Agent capabilities
 
 | Agent | Local baseline workflow | Important boundary |
@@ -44,9 +48,9 @@ Every input is a UTF-8 JSON object. Every report includes schema_version, agent,
 
 - Local workflows make no outbound network requests.
 - No telemetry or analytics are collected.
-- No API keys are required or read.
+- No API keys are required or read in local mode; AI mode reads only explicitly configured environment variables.
 - The runtime does not persist input documents unless the user chooses an output file.
-- No paid provider calls are made.
+- No paid provider calls are made unless the user explicitly supplies a provider and enables AI mode.
 
 ## Quality checks
 
