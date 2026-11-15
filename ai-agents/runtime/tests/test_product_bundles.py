@@ -1,4 +1,5 @@
 """Tests for isolated, self-contained per-product release archives."""
+import hashlib
 import json
 import pathlib
 import subprocess
@@ -28,6 +29,15 @@ class ProductBundleTests(unittest.TestCase):
                         self.assertIn("run.py", names)
                         self.assertIn("jarvis_agent/workflow.py", names)
                         self.assertIn("examples/input.json", names)
+                        self.assertIn("SBOM.spdx.json", names)
+                        self.assertIn("FILE_MANIFEST.sha256", names)
+                        sbom = json.loads(bundle.read("SBOM.spdx.json"))
+                        self.assertEqual(sbom["spdxVersion"], "SPDX-2.3")
+                        self.assertEqual(sbom["packages"][0]["name"], archive.stem)
+                        manifest_lines = bundle.read("FILE_MANIFEST.sha256").decode().splitlines()
+                        for line in manifest_lines:
+                            expected, filename = line.split("  ", 1)
+                            self.assertEqual(hashlib.sha256(bundle.read(filename)).hexdigest(), expected)
                         manifest = json.loads(bundle.read("manifest.json"))
                         self.assertEqual(manifest["slug"], archive.stem)
                         self.assertEqual(manifest["runtime_dependencies"], [])
