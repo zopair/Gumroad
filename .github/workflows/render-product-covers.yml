@@ -33,7 +33,9 @@ jobs:
           count=0
           while IFS= read -r -d '' file; do
             out="${file%.svg}.png"
-            if [[ "$file" == "storefront/brand-avatar.svg" ]]; then
+            if [[ "$file" == products/*/assets/thumbnail.svg ]]; then
+              rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=600 --height=600 "$file" > "$out"
+            elif [[ "$file" == "storefront/brand-avatar.svg" ]]; then
               rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=1024 --height=1024 "$file" > "$out"
             elif [[ "$file" == "storefront/favicon.svg" ]]; then
               rsvg-convert --format=png --dpi-x=96 --dpi-y=96 --width=128 --height=128 "$file" > "$out"
@@ -46,8 +48,8 @@ jobs:
             fi
             file "$out"
             count=$((count + 1))
-          done < <(find products storefront marketing -type f -name '*.svg' ! -name 'thumbnail.svg' -print0)
-          test "$count" -eq 53
+          done < <(find products storefront marketing -type f -name '*.svg' -print0)
+          test "$count" -eq 63
       - name: Validate Gumroad image limits and brand exports
         run: |
           set -euo pipefail
