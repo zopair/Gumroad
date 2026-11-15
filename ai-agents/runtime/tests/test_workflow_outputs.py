@@ -1,0 +1,68 @@
+"""Behavior tests for each product-specific local workflow."""
+import unittest
+from jarvis_agents import run_agent
+
+def content(report, heading):
+    return next(item["content"] for item in report["sections"] if item["heading"] == heading)
+
+class WorkflowOutputTests(unittest.TestCase):
+    def test_rankmaster_creates_audience_specific_brief(self):
+        result = run_agent("rankmaster-ai", {"topic":"ethical AI procurement","audience":"procurement leaders"})
+        self.assertIn("procurement leaders", content(result, "Targeting")["audience"])
+        self.assertEqual(len(content(result, "Content outline")), 5)
+
+    def test_leadscout_deduplicates_and_requires_source_provenance(self):
+        record = {"company":"Northstar","website":"https://northstar.example","source_url":"https://northstar.example/about"}
+        result = run_agent("leadscout-bot", {"industry":"design","region":"London","prospects":[record,record,{"company":"Unverified"}]})
+        self.assertEqual(len(content(result, "Qualified prospects")), 1)
+        quality = content(result, "Data quality")
+        self.assertEqual(quality["skipped_missing_or_invalid_source"], 1)
+        self.assertEqual(quality["deduplicated"], 1)
+
+    def test_tradetrend_computes_descriptive_price_metrics(self):
+        result = run_agent("tradetrend-analyst", {"asset":"DEMO","timeframe":"1d","candles":[{"close":100},{"close":110},{"close":100}]})
+        metrics = content(result, "Observed metrics")
+        self.assertAlmostEqual(metrics["simple_moving_average"], 103.333333, places=5)
+        self.assertEqual(metrics["period_change_percent"], 0.0)
+
+    def test_docusense_returns_page_evidence_and_abstains_without_match(self):
+        evidence = run_agent("docusense-support", {"query":"refund window","documents":[{"id":"terms","title":"Terms","chunks":[{"page":7,"text":"Refund requests must be made within thirty days."}]}]})
+        self.assertEqual(content(evidence, "Evidence")[0]["page"], 7)
+        abstain = run_agent("docusense-support", {"query":"refund","documents":[]})
+        self.assertIn("Insufficient evidence", content(abstain, "Answer"))
+
+    def test_codesentinel_flags_added_secret_and_dynamic_execution(self):
+        result = run_agent("codesentinel", {"diff":"+password = \"supersecretvalue\"\n+eval(user_input)\n"})
+        rules = {item["rule"] for item in content(result, "Findings")}
+        self.assertIn("possible_secret", rules)
+        self.assertIn("dynamic_eval", rules)
+
+    def test_estateguard_attaches_line_references_to_clause_flags(self):
+        result = run_agent("estateguard-ai", {"contract_text":"Agreement\nTenant pays rent monthly.\nTenant may terminate with notice."})
+        findings = content(result, "Clause findings")
+        self.assertEqual({item["line"] for item in findings}, {2,3})
+
+    def test_socialsync_creates_unpublished_channel_drafts(self):
+        result = run_agent("socialsync-ai", {"topic":"new service","audience":"founders","platforms":["linkedin","x"]})
+        drafts = content(result, "Drafts")
+        self.assertEqual(len(drafts), 2)
+        self.assertTrue(all(item["status"].startswith("DRAFT") for item in drafts))
+
+    def test_contentflip_preserves_supplied_transcript_words(self):
+        result = run_agent("contentflip-ai", {"title":"A field guide","transcript":"Measure the baseline. Improve one step. Review the result."})
+        article = content(result, "Article draft (Markdown)")
+        self.assertIn("Measure the baseline.", article)
+        self.assertIn("Review the result.", article)
+
+    def test_marketmind_marks_missing_source_evidence(self):
+        result = run_agent("marketmind-ai", {"market":"workflow tools","competitors":[{"name":"Example Rival","price":"$15"}]})
+        competitor = content(result, "Competitor comparison")[0]
+        self.assertEqual(competitor["evidence_status"], "unverified input")
+        self.assertIsNone(competitor["source_url"])
+
+    def test_tradetrend_rejects_non_positive_price(self):
+        with self.assertRaises(ValueError):
+            run_agent("tradetrend-analyst", {"asset":"DEMO","timeframe":"1d","candles":[{"close":0}]})
+
+if __name__ == "__main__":
+    unittest.main()
