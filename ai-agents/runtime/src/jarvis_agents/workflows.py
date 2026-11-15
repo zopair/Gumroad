@@ -155,14 +155,69 @@ def contentflip(data: Mapping[str, Any]) -> dict[str, Any]:
     return report(f"Content repurposing: {title}", f"Converted {len(parts)} transcript sentence(s) into an editable article structure.", [section("Article draft (Markdown)", article), section("Source traceability", {"source_type": "user-supplied transcript", "sentence_count": len(parts), "requires_editorial_review": True})], ["This workflow transforms supplied text; it does not transcribe audio/video or download third-party media.", "Confirm ownership, permission, quotations, names, and factual accuracy before publication."])
 
 def estateguard(data: Mapping[str, Any]) -> dict[str, Any]:
-    text = required_text(data, "contract_text")
-    patterns = [("deposit", r"\bdeposit\b", "Check amount, custody, deductions, and return deadline."), ("termination", r"\bterminat(?:e|ion|ed)\b", "Check notice period, permitted grounds, and cure rights."), ("rent_or_payment", r"\b(rent|payment|pay|fee)\b", "Check amount, due date, escalation, late fees, and payment method."), ("liability", r"\b(liability|indemnif(?:y|ication)|damages)\b", "Check scope, caps, exclusions, and mutuality."), ("renewal", r"\b(renew|renewal|extend|extension)\b", "Check renewal window, notice method, and pricing changes."), ("penalty", r"\b(penalty|fine|forfeit)\b", "Check trigger, calculation, enforceability, and proportionality.")]
-    findings = []
-    for line_no, line in enumerate(text.splitlines(), start=1):
-        for clause, pattern, review in patterns:
-            if re.search(pattern, line, flags=re.IGNORECASE): findings.append({"clause_type": clause, "line": line_no, "excerpt": line.strip()[:500], "review_prompt": review, "severity": "REVIEW"})
-    return report("Contract review triage", f"Flagged {len(findings)} clause reference(s) for human review.", [section("Clause findings", findings), section("Review limitations", ["The scan is keyword-based and may miss clauses expressed differently.", "Compare the full agreement, schedules, amendments, and governing-law clause.", "Escalate ambiguous or high-impact provisions to a qualified local lawyer."])], ["This tool provides document triage, not legal advice, legal interpretation, or an enforceability opinion. Jurisdiction-specific review is required."])
-
+    """Flag contract clauses for human review; never issue legal conclusions."""
+    contract = required_text(data, "contract_text")
+    rules = [
+        ("deposit", r"\b(deposit|security deposit)\b", "Check amount, custody, deductions, and return deadline."),
+        ("termination", r"\b(terminat(?:e|ion|ed)|early exit)\b", "Check notice period, permitted grounds, cure rights, and whether rights are mutual."),
+        ("rent_or_payment", r"\b(rent|payment|pay|fee|invoice)\b", "Check amount, due date, escalation, late fees, and payment method."),
+        ("liability", r"\b(liability|indemnif(?:y|ication)|damages)\b", "Check scope, caps, exclusions, and mutuality."),
+        ("renewal", r"\b(renew|renewal|extend|extension)\b", "Check renewal window, notice method, pricing changes, and opt-out process."),
+        ("penalty", r"\b(penalty|fine|forfeit|liquidated damages)\b", "Check trigger, calculation, enforceability, and proportionality."),
+        ("governing_law", r"\b(governing law|jurisdiction|choice of law)\b", "Confirm the named governing law and whether it matches the transaction and parties."),
+        ("dispute_resolution", r"\b(arbitration|mediation|dispute resolution|venue|court)\b", "Check forum, venue, costs, procedure, and access to urgent relief."),
+        ("confidentiality", r"\b(confidential(?:ity)?|non-disclosure)\b", "Check covered information, exclusions, duration, and permitted disclosures."),
+        ("maintenance", r"\b(maintenance|repair|structural|wear and tear)\b", "Clarify responsibility, response times, emergency repairs, and cost allocation."),
+        ("insurance", r"\b(insurance|insured|coverage)\b", "Check required coverage, limits, proof, and who bears deductibles."),
+        ("assignment", r"\b(assign(?:ment)?|sublet(?:ting)?)\b", "Check consent requirements, permitted transfers, and continuing liability."),
+        ("force_majeure", r"\b(force majeure|act of god|unforeseeable event)\b", "Check covered events, notice, mitigation, suspension, and termination rights."),
+        ("data_protection", r"\b(personal data|data protection|privacy|data breach)\b", "Check roles, permitted processing, security, breach notice, retention, and deletion."),
+    ]
+    high_risk_patterns = [
+        re.compile(r"\b(non[- ]refundable|under no circumstances|unlimited liability|sole discretion|automatic renewal|without notice|waive all claims)\b", re.I),
+        re.compile(r"\b(indemnif\w*\s+.*(?:all|any)\s+(?:loss|claim|damage))\b", re.I),
+    ]
+    findings: list[dict[str, Any]] = []
+    for line_no, line in enumerate(contract.splitlines(), start=1):
+        for clause, pattern, review_prompt in rules:
+            match = re.search(pattern, line, flags=re.IGNORECASE)
+            if not match:
+                continue
+            high_risk = any(risk.search(line) for risk in high_risk_patterns)
+            evidence = line.strip()[:500]
+            findings.append({
+                "clause_type": clause,
+                "line": line_no,
+                "citation": f"[contract line {line_no}]",
+                "evidence": evidence,
+                "excerpt": evidence,
+                "matched_term": match.group(0),
+                "risk_level": "high" if high_risk else "review",
+                "review_prompt": review_prompt,
+                "severity": "REVIEW",
+            })
+    return report(
+        "Contract review triage",
+        f"Flagged {len(findings)} clause reference(s) across {len(contract.splitlines())} line(s) for human review.",
+        [
+            section("Clause findings", findings),
+            section("Review scope", {
+                "method": "Transparent keyword and phrase rules with line-level evidence; not a legal reasoning engine.",
+                "disclaimer": "This report is not legal advice and makes no conclusion about enforceability or legal rights.",
+                "lines_scanned": len(contract.splitlines()),
+                "rules_applied": len(rules),
+            }),
+            section("Next review steps", [
+                "Compare the full agreement, schedules, amendments, and governing-law clause.",
+                "Verify each flagged passage against the original document and surrounding context.",
+                "Escalate ambiguous or high-impact provisions to a qualified lawyer in the relevant jurisdiction.",
+            ]),
+        ],
+        [
+            "Keyword rules can miss clauses expressed differently and can flag harmless wording; absence of a finding does not mean a contract is safe.",
+            "This tool provides document triage only, not legal advice, legal interpretation, or an enforceability opinion.",
+        ],
+    )
 def codesentinel(data: Mapping[str, Any]) -> dict[str, Any]:
     diff = required_text(data, "diff")
     rules = [
