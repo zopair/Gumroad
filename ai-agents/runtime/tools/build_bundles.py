@@ -184,12 +184,12 @@ def _add_sbom_and_checksums(files: dict[str, str | bytes], slug: str, product_na
             "relatedSpdxElement": "SPDXRef-Package",
         }],
     }
-    files["SBOM.spdx.json"] = json.dumps(sbom, ensure_ascii=False, indent=2) + "\\n"
+    files["SBOM.spdx.json"] = json.dumps(sbom, ensure_ascii=False, indent=2) + "\n"
     manifest = []
     for name, content in sorted(files.items()):
         raw = content.encode("utf-8") if isinstance(content, str) else content
         manifest.append(f"{hashlib.sha256(raw).hexdigest()}  {name}")
-    files["FILE_MANIFEST.sha256"] = "\\n".join(manifest) + "\\n"
+    files["FILE_MANIFEST.sha256"] = "\n".join(manifest) + "\n"
 
 def build_all(runtime_root: Path, output_dir: Path) -> list[Path]:
     runtime_root = Path(runtime_root).resolve()
