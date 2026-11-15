@@ -6,6 +6,9 @@
 **Primary upstream candidate:** https://github.com/gautampapat/Smart-PDF-Contract-Analyzer  
 **Top-level upstream license checked:** MIT (preliminary; see [source register](../../SOURCE_REGISTER.md)).
 
+## Current implementation snapshot — 2026-11-15
+The current local workflow scans supplied contract text using 14 transparent clause-category rules, returns line-level evidence and review prompts, and flags selected high-impact phrases for priority review. It does not yet parse PDF/DOCX files, perform OCR, extract structured obligations/dates, or provide jurisdiction-specific legal analysis.
+
 ## Product outcome
 Contract clause extraction and risk triage.
 

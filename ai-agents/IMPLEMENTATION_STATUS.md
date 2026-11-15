@@ -8,6 +8,7 @@
 ## Delivered in the repository
 
 - DocuSense retrieval upgraded from simple overlap counting to deterministic BM25 ranking, with stable source citations, relevance scores, bounded top-five evidence, explicit retrieval metadata, and abstention when no supplied passage matches. It remains lexical retrieval, not semantic-vector RAG.
+- EstateGuard expanded from six generic keyword flags to a transparent 14-category contract-triage ruleset, line-level citations and evidence excerpts, high-risk phrase flags, review prompts, and explicit legal-scope disclaimers. It remains a heuristic triage tool, not a legal reasoning system.
 
 - Ten deterministic, side-effect-free local workflows behind a stable Python API.
 - A command-line runner and installable Python package; runtime dependencies are Python standard library only.
@@ -20,10 +21,10 @@
 
 ## Verification evidence
 
-- The 34-test suite and compile check passed on Python 3.11 and 3.12 after the DocuSense BM25/citation change (commit dcc0142a7e9afe38673e55fe53852b8ccb1ac08b).
+- The 36-test suite and compile check passed on Python 3.11 and 3.12 after the DocuSense and EstateGuard improvements (commit 497595bc4c48a081e88e8852c07f54a99ddfa375).
 - The asset workflow passed: 10 listing drafts, 10 cover SVGs, 10 thumbnail SVGs, and 20 rendered PNG files were generated and committed.
 - The test suite covers the shared report contract, all ten workflow outputs, deterministic behavior, safety boundaries, provider opt-in, SEO bounds, SVG validity, and isolated ZIP execution for all ten products.
-- Ten isolated product ZIP previews were built and uploaded as GitHub Actions artifact `jarvis-product-previews` (workflow run 43753637852). Each contains one product workflow, a loopback-only browser workspace, CLI, sample input, README, metadata, SEO listing, product art, explicit opt-in AI provider adapter, third-party notice, seller-review draft license, SPDX 2.3 inventory, and SHA-256 file manifest. CI extracted every archive, ran its sample, verified the AI opt-in guard, and exercised its local HTTP UI and API. All 32 tests passed on both Python versions.
+- Ten isolated product ZIP previews were built and uploaded as GitHub Actions artifact `jarvis-product-previews` (workflow run 43753637852). Each contains one product workflow, a loopback-only browser workspace, CLI, sample input, README, metadata, SEO listing, product art, explicit opt-in AI provider adapter, third-party notice, seller-review draft license, SPDX 2.3 inventory, and SHA-256 file manifest. CI extracted every archive, ran its sample, verified the AI opt-in guard, and exercised its local HTTP UI and API. All 36 tests passed on both Python versions in the latest quality-gate run.
 
 ## Provenance and legal status
 

@@ -6,6 +6,9 @@
 **Primary upstream candidate:** https://github.com/LeonAchata/DocuChat-AI  
 **Top-level upstream license checked:** MIT (preliminary; see [source register](../../SOURCE_REGISTER.md)).
 
+## Current implementation snapshot — 2026-11-15
+The current local workflow performs deterministic BM25 lexical retrieval over supplied, pre-chunked text, returns up to five ranked passages with document/page citation labels, and abstains when no passage matches. It does not yet ingest PDF/DOCX files, perform OCR, persist an index, or provide semantic/vector retrieval.
+
 ## Product outcome
 PDF knowledge assistant with page-cited RAG.
 
