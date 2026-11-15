@@ -64,5 +64,23 @@ class WorkflowOutputTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             run_agent("tradetrend-analyst", {"asset":"DEMO","timeframe":"1d","candles":[{"close":0}]})
 
+    def test_docusense_ranks_rare_query_terms_above_common_word_matches(self):
+        result = run_agent("docusense-support", {"query":"refund chargeback deadline", "documents":[
+            {"id":"generic","title":"Generic", "chunks":[{"page":1,"text":"Refund information and general customer support details."}]},
+            {"id":"specific","title":"Specific", "chunks":[{"page":4,"text":"The chargeback deadline for a refund dispute is thirty days."}]}
+        ]})
+        evidence = content(result, "Evidence")
+        self.assertEqual(evidence[0]["document_id"], "specific")
+        self.assertEqual(evidence[0]["page"], 4)
+        self.assertGreater(evidence[0]["relevance_score"], 0)
+
+    def test_docusense_returns_stable_citations_and_bounded_evidence(self):
+        result = run_agent("docusense-support", {"query":"retention policy", "documents":[
+            {"id":"policy-1","title":"Retention", "chunks":[{"page":2,"text":"Records follow a retention policy for seven years."}]}
+        ]})
+        evidence = content(result, "Evidence")
+        self.assertEqual(evidence[0]["citation"], "[policy-1, p. 2]")
+        self.assertLessEqual(len(evidence), 5)
+
 if __name__ == "__main__":
     unittest.main()
