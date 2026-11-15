@@ -1,5 +1,6 @@
 """Tests for isolated, self-contained per-product release archives."""
 import hashlib
+import http.client
 import json
 import pathlib
 import subprocess
@@ -27,6 +28,10 @@ class ProductBundleTests(unittest.TestCase):
                         self.assertIn("LICENSE.txt", names)
                         self.assertIn("THIRD_PARTY_NOTICES.md", names)
                         self.assertIn("run.py", names)
+                        self.assertIn("web.py", names)
+                        self.assertIn("index.html", names)
+                        self.assertIn("app.js", names)
+                        self.assertIn("styles.css", names)
                         self.assertIn("jarvis_agent/workflow.py", names)
                         self.assertIn("jarvis_agent/providers.py", names)
                         self.assertIn("examples/input.json", names)
@@ -49,6 +54,42 @@ class ProductBundleTests(unittest.TestCase):
                         self.assertEqual(manifest["runtime_dependencies"], [])
                         source = bundle.read("jarvis_agent/workflow.py").decode()
                         self.assertEqual(source.count("\ndef "), 1, "Bundle must contain exactly one product workflow.")
+
+    def test_each_bundle_has_a_loopback_web_ui_that_runs_locally(self):
+        with tempfile.TemporaryDirectory() as temp:
+            archives = build_all(ROOT, pathlib.Path(temp))
+            for archive in archives:
+                with self.subTest(archive=archive.name):
+                    target = pathlib.Path(temp) / (archive.stem + "-web")
+                    target.mkdir()
+                    with zipfile.ZipFile(archive) as bundle:
+                        bundle.extractall(target)
+                    process = subprocess.Popen(
+                        [sys.executable, "web.py", "--port", "0"],
+                        cwd=target,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+                    try:
+                        ready = process.stdout.readline().strip()
+                        self.assertTrue(ready.startswith("JARVIS_UI_URL="), ready)
+                        port = int(ready.rsplit(":", 1)[1])
+                        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+                        connection.request("GET", "/")
+                        page = connection.getresponse()
+                        self.assertEqual(page.status, 200)
+                        self.assertIn(archive.stem, page.read().decode().lower())
+                        sample = (target / "examples/input.json").read_text(encoding="utf-8")
+                        connection.request("POST", "/api/run", body=sample, headers={"Content-Type": "application/json"})
+                        response = connection.getresponse()
+                        self.assertEqual(response.status, 200)
+                        report = json.loads(response.read())
+                        self.assertEqual(report["agent"], archive.stem)
+                        connection.close()
+                    finally:
+                        process.terminate()
+                        process.wait(timeout=5)
 
     def test_each_bundle_runs_its_sample_without_network_or_install(self):
         with tempfile.TemporaryDirectory() as temp:
