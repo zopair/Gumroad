@@ -1,25 +1,25 @@
 # Gumroad Store Setup — Live Account Metadata
 
-Store: Zubair Digital Kits
-Storefront: https://zopair.gumroad.com
-Currency: USD
-Published product limit: 10 — all ten slots are occupied.
+Store: Zubair Digital Kits  
+Storefront: https://zopair.gumroad.com  
+Currency: USD  
+Published product limit: 10 — all ten slots are occupied.  
 Last operational review: 2026-11-15
 
 ## Live products
 
 | # | Product title on Gumroad | Price | Category | Files attached | Gallery |
 |---:|---|---:|---|---|---:|
-| 1 | Business Launch Planner \| Startup Validation Workbook | $9 | business-and-money/entrepreneurship/resources | Markdown guide + CSV + XLSX workbook | 4 images |
-| 2 | 30-Day Social Media Content Calendar | $9 | business-and-money/marketing-and-sales/social-media | Markdown guide + CSV + XLSX workbook | 4 images |
-| 3 | 100 Content Hooks for Social Media | $7 | business-and-money/marketing-and-sales/social-media | Markdown hook library + CSV + XLSX workbook | 4 images |
-| 4 | Caption Writing Workbench \| Social Media Templates | $7 | business-and-money/marketing-and-sales/social-media | Markdown workbench + CSV + XLSX workbook | 4 images |
-| 5 | Welcome Email Sequence Kit \| 5 Email Templates | $9 | business-and-money/marketing-and-sales/email | Markdown sequence + CSV + XLSX workbook | 4 images |
-| 6 | Sales Follow-Up Message Templates | $9 | business-and-money/marketing-and-sales | Markdown scripts + CSV + XLSX workbook | 4 images |
-| 7 | Simple CRM & Lead Tracker Template | $12 | business-and-money/management-and-leadership | Markdown blueprint + CSV + XLSX workbook | 4 images |
-| 8 | Client Onboarding Pack for Freelancers | $9 | business-and-money/entrepreneurship/resources | Markdown pack + CSV + XLSX workbook | 4 images |
-| 9 | Proposal & Statement of Work (SOW) Template | $12 | business-and-money/entrepreneurship/resources | Markdown template + CSV + XLSX workbook | 4 images |
-| 10 | Service Pricing Calculator for Freelancers | $9 | business-and-money/accounting | Markdown workbook + CSV + XLSX workbook | 4 images |
+| 1 | Business Launch Planner \| Startup Validation Workbook | $9 | business-and-money/entrepreneurship/resources | Markdown guide + CSV + XLSX workbook | 5 images |
+| 2 | 30-Day Social Media Content Calendar | $9 | business-and-money/marketing-and-sales/social-media | Markdown guide + CSV + XLSX workbook | 5 images |
+| 3 | 100 Content Hooks for Social Media | $7 | business-and-money/marketing-and-sales/social-media | Markdown hook library + CSV + XLSX workbook | 5 images |
+| 4 | Caption Writing Workbench \| Social Media Templates | $7 | business-and-money/marketing-and-sales/social-media | Markdown workbench + CSV + XLSX workbook | 5 images |
+| 5 | Welcome Email Sequence Kit \| 5 Email Templates | $9 | business-and-money/marketing-and-sales/email | Markdown sequence + CSV + XLSX workbook | 5 images |
+| 6 | Sales Follow-Up Message Templates | $9 | business-and-money/marketing-and-sales | Markdown scripts + CSV + XLSX workbook | 5 images |
+| 7 | Simple CRM & Lead Tracker Template | $12 | business-and-money/management-and-leadership | Markdown blueprint + CSV + XLSX workbook | 5 images |
+| 8 | Client Onboarding Pack for Freelancers | $9 | business-and-money/entrepreneurship/resources | Markdown pack + CSV + XLSX workbook | 5 images |
+| 9 | Proposal & Statement of Work (SOW) Template | $12 | business-and-money/entrepreneurship/resources | Markdown template + CSV + XLSX workbook | 5 images |
+| 10 | Service Pricing Calculator for Freelancers | $9 | business-and-money/accounting | Markdown workbook + CSV + XLSX workbook | 5 images |
 
 ## Search metadata and policy guardrails
 
@@ -50,8 +50,12 @@ The last checked Gumroad analytics window (2026-10-16 through 2026-11-15) showed
 - Run a real mobile and desktop buyer-side visual check after profile publication.
 - Confirm that each of the three attached files downloads and opens from the buyer's Gumroad Library.
 
-The available Gumroad product connector can manage products, descriptions, tags, covers and files, but does not expose profile custom-HTML publishing, profile SEO settings or global theme controls. Do not claim those account-level items are complete until the CLI/UI reports success.
+The available Gumroad product connector can manage products, descriptions, tags, covers and files, but does not expose profile custom-HTML publishing, profile SEO settings or global theme controls. Use the official Gumroad Pages CLI workflow for custom profile publishing; see [Publishing & Asset Standards](docs/PUBLISHING_AND_ASSET_STANDARDS.md). Do not claim those account-level items are complete until the CLI/UI reports success.
 
 ## Pricing note
 
 Current prices are unchanged. They are introductory prices, not proven optimal prices. Test price changes only after relevant traffic and conversion data exist. Consider platform fees and net proceeds before changing any price.
+
+## Technical publishing and asset standards
+
+The authoritative limits, current export dimensions, file-size audit, supported image types, publishing architecture, free/open-source tools and release checklist are maintained in [docs/PUBLISHING_AND_ASSET_STANDARDS.md](docs/PUBLISHING_AND_ASSET_STANDARDS.md). Do not rely on old assumptions or change export settings without checking that specification.
