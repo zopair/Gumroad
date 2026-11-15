@@ -112,7 +112,7 @@ The existing `.github/workflows/render-product-covers.yml` uses `librsvg2-bin` o
 
 | Asset path/pattern | Current generated dimensions | Purpose |
 |---|---:|---|
-| `products/**` SVG (except `thumbnail.svg`) | 1600 × 1000 px | Product cover/gallery and preview artwork |
+| `products/**/assets/thumbnail.svg` | 600 × 600 px | Dedicated product thumbnail source |\n| Other `products/**` SVG | 1600 × 1000 px | Product cover/gallery and preview artwork |
 | `storefront/brand-avatar.svg` | 1024 × 1024 px | Brand avatar |
 | `storefront/favicon.svg` | 128 × 128 px | Favicon |
 | `storefront/brand-wordmark.svg` | 1600 × 400 px | Horizontal wordmark |
@@ -120,7 +120,7 @@ The existing `.github/workflows/render-product-covers.yml` uses `librsvg2-bin` o
 
 The current product export (1600 × 1000) exceeds Gumroad's minimum width and height. It is a 16:10 canvas, not 16:9; this is valid under Gumroad's guidance. Keep all images in one product gallery at a consistent ratio. Do not change source art or export dimensions globally without checking every asset class.
 
-**Automated compliance gate added:** `scripts/validate_gumroad_assets.py` now inspects generated PNG headers and checks product image dimensions, 72 DPI metadata, the 4096 px longest-side threshold, the under-50-MiB cover limit, the 600 × 600 square thumbnail rule, and fixed brand/campaign dimensions. `tests/test_validate_gumroad_assets.py` covers valid covers, undersized covers, DPI, thumbnails, and the size ceiling. The render workflow now requests 96 DPI and runs the unit tests plus the validator before committing rendered assets. The first CI run after this change still needs a confirmed successful result; until then, treat the new gate as implemented but not yet proven in CI. The workflow continues to exclude `thumbnail.svg` from rendering, so thumbnail source export/assignment remains a separate task.
+**Automated compliance gate added:** `scripts/validate_gumroad_assets.py` now inspects generated PNG headers and checks product image dimensions, 72 DPI metadata, the 4096 px longest-side threshold, the under-50-MiB cover limit, the 600 × 600 square thumbnail rule, and fixed brand/campaign dimensions. `tests/test_validate_gumroad_assets.py` covers valid covers, undersized covers, DPI, thumbnails, and the size ceiling. The render workflow now requests 96 DPI and runs the unit tests plus the validator before committing rendered assets. The first CI run after this change still needs a confirmed successful result; until then, treat the new gate as implemented but not yet proven in CI. The workflow now renders all ten `thumbnail.svg` sources to 600 × 600 PNG files. Assigning those files as Gumroad thumbnails remains a separate provider-side action and has not yet been verified.
 
 ## 4. Current GitHub Actions toolchain
 
@@ -143,10 +143,10 @@ File: `.github/workflows/render-product-covers.yml`
 - Runner: Ubuntu 22.04.
 - Renderer: `librsvg2-bin` / `rsvg-convert`.
 - Renders SVG sources to PNG at the fixed dimensions in §3.3 and requests 96 DPI metadata.
-- Expects 53 SVG source files to be rendered.
+- Renders all 63 SVG source files, including the ten 600 × 600 product thumbnails.
 - Runs `tests/test_validate_gumroad_assets.py` and `scripts/validate_gumroad_assets.py` before committing.
 - Commits rendered PNGs back to `main` only after the compliance gate passes.
-- Raster optimization and dedicated thumbnail rendering/assignment remain separate follow-up work.
+- Dedicated thumbnail rendering is included; assigning the generated thumbnail PNGs to the ten live Gumroad products remains a separate follow-up. Raster optimization remains separate.
 
 ### 4.3 GitHub Actions guardrails
 
