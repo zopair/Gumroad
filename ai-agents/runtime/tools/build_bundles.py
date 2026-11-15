@@ -5,7 +5,6 @@ import argparse
 import ast
 import hashlib
 import json
-import re
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -140,6 +139,58 @@ Edit `examples/input.json` with your own information while preserving the JSON s
 Review all generated material before relying on or publishing it. This tool does not guarantee business, financial, legal, security, search-ranking, or marketing outcomes. See `LICENSE.txt` (seller-review draft) and `THIRD_PARTY_NOTICES.md`.
 """
 
+def _add_sbom_and_checksums(files: dict[str, str | bytes], slug: str, product_name: str) -> None:
+    file_records = []
+    for name, content in sorted(files.items()):
+        raw = content.encode("utf-8") if isinstance(content, str) else content
+        digest = hashlib.sha256(raw).hexdigest()
+        file_records.append({
+            "fileName": f"./{name}",
+            "SPDXID": f"SPDXRef-File-{hashlib.sha256(name.encode('utf-8')).hexdigest()[:16]}",
+            "checksums": [{"algorithm": "SHA256", "checksumValue": digest}],
+            "licenseConcluded": "NOASSERTION",
+            "licenseInfoInFiles": ["NOASSERTION"],
+            "copyrightText": "NOASSERTION",
+        })
+    namespace_seed = json.dumps(file_records, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    namespace_hash = hashlib.sha256(namespace_seed).hexdigest()
+    sbom = {
+        "spdxVersion": "SPDX-2.3",
+        "dataLicense": "CC0-1.0",
+        "SPDXID": "SPDXRef-DOCUMENT",
+        "name": f"JARVIS {product_name} preview",
+        "documentNamespace": f"https://spdx.org/spdxdocs/jarvis-{slug}-{namespace_hash}",
+        "creationInfo": {
+            "creators": ["Tool: JARVIS isolated bundle builder"],
+            "created": "2026-11-15T00:00:00Z",
+            "comment": "Generated inventory for this preview archive. License conclusions are intentionally NOASSERTION; the included commercial license is a draft requiring seller approval.",
+        },
+        "packages": [{
+            "name": slug,
+            "SPDXID": "SPDXRef-Package",
+            "versionInfo": "0.1.0-preview",
+            "downloadLocation": "NOASSERTION",
+            "filesAnalyzed": True,
+            "licenseConcluded": "NOASSERTION",
+            "licenseDeclared": "NOASSERTION",
+            "copyrightText": "Copyright (c) 2026 Zubair Digital Kits",
+            "primaryPackagePurpose": "APPLICATION",
+            "packageComment": "Original local workflow package. No upstream repository source or third-party runtime package is included. Commercial terms remain subject to seller approval.",
+        }],
+        "files": file_records,
+        "relationships": [{
+            "spdxElementId": "SPDXRef-DOCUMENT",
+            "relationshipType": "DESCRIBES",
+            "relatedSpdxElement": "SPDXRef-Package",
+        }],
+    }
+    files["SBOM.spdx.json"] = json.dumps(sbom, ensure_ascii=False, indent=2) + "\\n"
+    manifest = []
+    for name, content in sorted(files.items()):
+        raw = content.encode("utf-8") if isinstance(content, str) else content
+        manifest.append(f"{hashlib.sha256(raw).hexdigest()}  {name}")
+    files["FILE_MANIFEST.sha256"] = "\\n".join(manifest) + "\\n"
+
 def build_all(runtime_root: Path, output_dir: Path) -> list[Path]:
     runtime_root = Path(runtime_root).resolve()
     repo_root = runtime_root.parents[1]
@@ -225,7 +276,7 @@ if __name__ == "__main__":
                 raise FileNotFoundError(f"Missing product artwork: {art_path}")
             files[f"assets/{art_name}"] = art_path.read_bytes()
 
-        archive_path = output_dir / f"{slug}.zip"
+        _add_sbom_and_checksums(files, slug, product["name"])\n\n        archive_path = output_dir / f"{slug}.zip"
         with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
             for name, content in sorted(files.items()):
                 info = zipfile.ZipInfo(name, date_time=ZIP_TIME)
