@@ -1,0 +1,328 @@
+{
+  "schema_version": "1.0",
+  "publisher": "Zubair Digital Kits",
+  "family": "JARVIS — Intelligent Business & Productivity Agents",
+  "locale": "en",
+  "products": [
+    {
+      "slug": "rankmaster-ai",
+      "name": "RankMaster AI",
+      "upstream": {
+        "url": "https://github.com/humanswith-ai/contentos-agent-lite",
+        "commit": "3b204b05bac946e3cb7cca96e24e31a869192888",
+        "license": "MIT"
+      },
+      "primary_keyword": "AI SEO content generator",
+      "secondary_keywords": [
+        "SEO content optimization tool",
+        "keyword research assistant",
+        "AI content brief generator",
+        "on-page SEO checklist"
+      ],
+      "listing_title": "RankMaster AI — SEO Content Generator & Optimization Assistant",
+      "short_description": "Create structured SEO briefs, content outlines, title and meta suggestions, and practical on-page checklists for your target audience.",
+      "features": [
+        "Search-intent brief structure",
+        "Content outline generation",
+        "Title and meta description suggestions",
+        "On-page optimization checklist",
+        "Markdown-ready report"
+      ],
+      "buyer": "Creators, website owners, and small SEO agencies",
+      "limitations": [
+        "No live search-volume or SERP data in the local edition",
+        "No ranking guarantees",
+        "No automatic publishing"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "leadscout-bot",
+      "name": "LeadScout Bot",
+      "upstream": {
+        "url": "https://github.com/GURPREETKAURJETHRA/AI-Lead-Generation-Agent",
+        "commit": "49254cb4ce9178dca207af595f2fe2762fb0c121",
+        "license": "MIT"
+      },
+      "primary_keyword": "B2B lead generation assistant",
+      "secondary_keywords": [
+        "business prospect research",
+        "company lead qualification",
+        "B2B prospect list builder",
+        "lead data cleanup"
+      ],
+      "listing_title": "LeadScout Bot — B2B Prospect Research & Lead Qualification",
+      "short_description": "Clean, deduplicate, qualify, and organize company-level prospects with source provenance and transparent scoring.",
+      "features": [
+        "Company record normalization",
+        "Duplicate detection",
+        "Evidence completeness scoring",
+        "Source URL provenance",
+        "Export-ready structured reports"
+      ],
+      "buyer": "B2B founders, sales teams, and agencies",
+      "limitations": [
+        "Processes supplied records only in the local edition",
+        "No personal-profile harvesting",
+        "Scores do not verify buying intent"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "tradetrend-analyst",
+      "name": "TradeTrend Analyst",
+      "upstream": {
+        "url": "https://github.com/TauricResearch/TradingAgents",
+        "commit": "9fa1196fffbcfd9de5146d2dd2869df84ab99838",
+        "license": "Apache-2.0"
+      },
+      "primary_keyword": "AI financial market analysis",
+      "secondary_keywords": [
+        "market trend analysis tool",
+        "trading scenario research",
+        "technical market statistics",
+        "paper trading analysis"
+      ],
+      "listing_title": "TradeTrend Analyst — AI Market Research & Scenario Analysis",
+      "short_description": "Turn supplied market prices into transparent performance statistics, volatility measures, and bull/base/bear research scenarios.",
+      "features": [
+        "Price-series statistics",
+        "Moving-average context",
+        "Return and volatility measures",
+        "Scenario framework",
+        "Risk-aware report"
+      ],
+      "buyer": "Market researchers and experienced traders",
+      "limitations": [
+        "No live market feed in the local edition",
+        "No financial advice or profit claims",
+        "No live order execution"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "docusense-support",
+      "name": "DocuSense Support",
+      "upstream": {
+        "url": "https://github.com/LeonAchata/DocuChat-AI",
+        "commit": "0cb4d059542c57e2c07cdd168169e13132270e45",
+        "license": "MIT"
+      },
+      "primary_keyword": "PDF document question answering",
+      "secondary_keywords": [
+        "document search assistant",
+        "PDF knowledge base",
+        "document evidence retrieval",
+        "customer support knowledge assistant"
+      ],
+      "listing_title": "DocuSense Support — PDF Knowledge Search & Evidence Assistant",
+      "short_description": "Search supplied document passages and surface relevant evidence with document and page references for support and operations teams.",
+      "features": [
+        "Multi-document evidence lookup",
+        "Page-level source references",
+        "Transparent lexical matching",
+        "Evidence-first responses",
+        "Insufficient-evidence fallback"
+      ],
+      "buyer": "Support teams, consultants, educators, and operations teams",
+      "limitations": [
+        "Baseline uses lexical retrieval, not semantic vector search",
+        "OCR and cloud processing are not included",
+        "Page metadata must be supplied"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "socialsync-ai",
+      "name": "SocialSync AI",
+      "upstream": {
+        "url": "https://github.com/langchain-ai/social-media-agent",
+        "commit": "ec9d0ece32bfad999954e45b57f9325521c4e3d9",
+        "license": "MIT"
+      },
+      "primary_keyword": "AI social media content planner",
+      "secondary_keywords": [
+        "social media post generator",
+        "multi-platform content drafts",
+        "social content calendar assistant",
+        "brand voice content workflow"
+      ],
+      "listing_title": "SocialSync AI — Social Media Content Planner & Drafting Assistant",
+      "short_description": "Prepare channel-specific social drafts, apply a consistent brand voice, and review every post before publishing.",
+      "features": [
+        "Channel-specific draft generation",
+        "Brand voice input",
+        "Editorial review checklist",
+        "Approval-first workflow",
+        "Structured content pack"
+      ],
+      "buyer": "Creators, marketing teams, and small businesses",
+      "limitations": [
+        "No automatic publishing or scheduling",
+        "Platform-specific limits require final review",
+        "No reach or engagement guarantees"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "mailforge-pro",
+      "name": "MailForge Pro",
+      "upstream": {
+        "url": "https://github.com/The-Pocket/PocketFlow-Tutorial-Cold-Email-Personalization",
+        "commit": "200903e33e7756a880160f8b7c5d6e5dd51794a6",
+        "license": "MIT"
+      },
+      "primary_keyword": "B2B cold email writing assistant",
+      "secondary_keywords": [
+        "personalized outreach email generator",
+        "sales email sequence writer",
+        "cold email templates",
+        "business outreach personalization"
+      ],
+      "listing_title": "MailForge Pro — Personalized B2B Cold Email Sequence Writer",
+      "short_description": "Draft a focused three-touch B2B outreach sequence using supplied company context and clearly identified personalization evidence.",
+      "features": [
+        "Three-step outreach sequence",
+        "Evidence-aware personalization",
+        "Subject line suggestions",
+        "Compliance review checklist",
+        "Editable email copy"
+      ],
+      "buyer": "Founders, consultants, and B2B sales teams",
+      "limitations": [
+        "Drafting only; never sends email",
+        "No deliverability guarantees",
+        "User must verify lawful contact basis and claims"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "contentflip-ai",
+      "name": "ContentFlip AI",
+      "upstream": {
+        "url": "https://github.com/DEKVIW/video-to-article",
+        "commit": "d08a20493da7a1cfdb19c270108c1159e93247b7",
+        "license": "MIT"
+      },
+      "primary_keyword": "video transcript to article converter",
+      "secondary_keywords": [
+        "transcript to blog post",
+        "video content repurposing",
+        "audio transcript article workflow",
+        "content repurposing assistant"
+      ],
+      "listing_title": "ContentFlip AI — Transcript to Article & Content Repurposing Tool",
+      "short_description": "Transform an authorized transcript into an editable article structure with source traceability and editorial review prompts.",
+      "features": [
+        "Transcript segmentation",
+        "Article structure generation",
+        "Markdown export",
+        "Source traceability",
+        "Editorial quality checklist"
+      ],
+      "buyer": "Educators, creators, podcasters, and marketers",
+      "limitations": [
+        "Does not transcribe media in the local edition",
+        "No third-party video downloading",
+        "Republishing rights remain the user's responsibility"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "estateguard-ai",
+      "name": "EstateGuard AI",
+      "upstream": {
+        "url": "https://github.com/gautampapat/Smart-PDF-Contract-Analyzer",
+        "commit": "9d0355378dd8e0e5bd5eef318ab272c61b1caeff",
+        "license": "MIT"
+      },
+      "primary_keyword": "AI contract review assistant",
+      "secondary_keywords": [
+        "real estate contract analyzer",
+        "contract clause risk checklist",
+        "lease agreement review tool",
+        "legal document triage"
+      ],
+      "listing_title": "EstateGuard AI — Real Estate Contract Review & Clause Triage",
+      "short_description": "Identify common contract clause references, capture source excerpts, and prepare a structured checklist for qualified human review.",
+      "features": [
+        "Clause keyword triage",
+        "Source line references",
+        "Review prompts by clause type",
+        "Evidence excerpts",
+        "Human review checklist"
+      ],
+      "buyer": "Property managers, investors, administrators, and legal operations teams",
+      "limitations": [
+        "Not legal advice",
+        "Keyword checks may miss clauses",
+        "Local legal review is required"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "codesentinel",
+      "name": "CodeSentinel",
+      "upstream": {
+        "url": "https://github.com/alibaba/open-code-review",
+        "commit": "7e5ce06c88de5ce81df5dc4f24e2e485b517fae8",
+        "license": "Apache-2.0"
+      },
+      "primary_keyword": "AI code review security assistant",
+      "secondary_keywords": [
+        "automated code review tool",
+        "diff security checks",
+        "source code risk scanner",
+        "developer code quality assistant"
+      ],
+      "listing_title": "CodeSentinel — Code Review & Security Finding Assistant",
+      "short_description": "Inspect added code diff lines for common credential, dynamic execution, shell, and SQL-construction risks without executing repository code.",
+      "features": [
+        "Diff-first static checks",
+        "Line-level candidate findings",
+        "Severity labels",
+        "Actionable review guidance",
+        "No-execution safety boundary"
+      ],
+      "buyer": "Developers, maintainers, and small engineering teams",
+      "limitations": [
+        "Pattern checks are incomplete",
+        "No untrusted code execution",
+        "No guarantee of complete vulnerability detection"
+      ],
+      "release_ready": false
+    },
+    {
+      "slug": "marketmind-ai",
+      "name": "MarketMind AI",
+      "upstream": {
+        "url": "https://github.com/psrane8/Market-Research-Agent",
+        "commit": "23f6d6e4e83d158fc8f5be25844c631fd07f7f0e",
+        "license": "MIT"
+      },
+      "primary_keyword": "AI market research and competitor analysis",
+      "secondary_keywords": [
+        "competitor analysis report",
+        "market intelligence brief",
+        "competitive positioning comparison",
+        "business market research assistant"
+      ],
+      "listing_title": "MarketMind AI — Market Research & Competitor Intelligence Assistant",
+      "short_description": "Structure competitor positioning, pricing inputs, source gaps, and SWOT research prompts into an executive-ready market brief.",
+      "features": [
+        "Competitor comparison matrix",
+        "Source provenance fields",
+        "Research gap checklist",
+        "SWOT prompt framework",
+        "Executive brief structure"
+      ],
+      "buyer": "Founders, consultants, and product marketers",
+      "limitations": [
+        "No independent live verification in the local edition",
+        "Pricing and positioning require dated sources",
+        "Not a substitute for primary market research"
+      ],
+      "release_ready": false
+    }
+  ]
+}
