@@ -97,27 +97,27 @@ class WorkflowOutputTests(unittest.TestCase):
 
 
     def test_contentflip_parses_srt_cues_and_preserves_timestamps(self):
-            subtitles = """1
-    00:00:01,250 --> 00:00:03,000
-    Welcome to the session.
-    
-    2
-    00:00:04,500 --> 00:00:06,000
-    We explain <i>secure</i> document handling &amp; review.
-    """
-            result = run_agent("contentflip-ai", {"title":"Session guide","subtitle_text":subtitles})
-            trace = content(result, "Source traceability")
-            self.assertEqual(trace["source_type"], "user-supplied SRT/WebVTT subtitles")
-            self.assertEqual(trace["subtitle_cues"], 2)
-            cues = content(result, "Timed source segments")
-            self.assertEqual(cues[0]["timestamp"], "00:00:01.250")
-            self.assertIn("secure document handling & review", cues[1]["text"])
-            self.assertIn("Welcome to the session.", content(result, "Article draft (Markdown)"))
-    
-        def test_contentflip_rejects_malformed_subtitle_file(self):
-            with self.assertRaises(ValueError):
-                run_agent("contentflip-ai", {"title":"Bad captions","subtitle_text":"not a subtitle file"})
-    
+        subtitles = """1
+00:00:01,250 --> 00:00:03,000
+Welcome to the session.
+
+2
+00:00:04,500 --> 00:00:06,000
+We explain <i>secure</i> document handling &amp; review.
+"""
+        result = run_agent("contentflip-ai", {"title":"Session guide","subtitle_text":subtitles})
+        trace = content(result, "Source traceability")
+        self.assertEqual(trace["source_type"], "user-supplied SRT/WebVTT subtitles")
+        self.assertEqual(trace["subtitle_cues"], 2)
+        cues = content(result, "Timed source segments")
+        self.assertEqual(cues[0]["timestamp"], "00:00:01.250")
+        self.assertIn("secure document handling & review", cues[1]["text"])
+        self.assertIn("Welcome to the session.", content(result, "Article draft (Markdown)"))
+
+    def test_contentflip_rejects_malformed_subtitle_file(self):
+        with self.assertRaises(ValueError):
+            run_agent("contentflip-ai", {"title":"Bad captions","subtitle_text":"not a subtitle file"})
+
 
 if __name__ == "__main__":
     unittest.main()
