@@ -276,7 +276,9 @@ if __name__ == "__main__":
                 raise FileNotFoundError(f"Missing product artwork: {art_path}")
             files[f"assets/{art_name}"] = art_path.read_bytes()
 
-        _add_sbom_and_checksums(files, slug, product["name"])\n\n        archive_path = output_dir / f"{slug}.zip"
+        _add_sbom_and_checksums(files, slug, product["name"])
+
+        archive_path = output_dir / f"{slug}.zip"
         with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
             for name, content in sorted(files.items()):
                 info = zipfile.ZipInfo(name, date_time=ZIP_TIME)
