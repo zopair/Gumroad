@@ -112,7 +112,8 @@ The existing `.github/workflows/render-product-covers.yml` uses `librsvg2-bin` o
 
 | Asset path/pattern | Current generated dimensions | Purpose |
 |---|---:|---|
-| `products/**/assets/thumbnail.svg` | 600 × 600 px | Dedicated product thumbnail source |\n| Other `products/**` SVG | 1600 × 1000 px | Product cover/gallery and preview artwork |
+| `products/**/assets/thumbnail.svg` | 600 × 600 px | Dedicated product thumbnail source |
+| Other `products/**` SVG | 1600 × 1000 px | Product cover/gallery and preview artwork |
 | `storefront/brand-avatar.svg` | 1024 × 1024 px | Brand avatar |
 | `storefront/favicon.svg` | 128 × 128 px | Favicon |
 | `storefront/brand-wordmark.svg` | 1600 × 400 px | Horizontal wordmark |
