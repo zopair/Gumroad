@@ -6,6 +6,7 @@ A curated catalog of ten published digital workbooks and templates for Gumroad.
 - Live catalog and product source files: [CATALOG.md](CATALOG.md)
 - Current Gumroad metadata and policies: [STORE_SETUP.md](STORE_SETUP.md)
 - Competitor research and growth plan: [GROWTH_PLAYBOOK.md](GROWTH_PLAYBOOK.md)
+- **Competitor benchmark and simple-product strategy:** [research/COMPETITOR_BENCHMARK.md](research/COMPETITOR_BENCHMARK.md)
 - Prepared custom storefront page: [storefront/profile.html](storefront/profile.html)
 - Free samples: [samples/](samples/)
 - Organic campaign: [30-day launch plan](marketing/30-day-launch-plan.md), [Pinterest copy](marketing/pinterest/pin-copy.md), [vertical pins](marketing/pinterest/)
