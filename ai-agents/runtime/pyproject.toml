@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Local-first, provider-neutral runtime for the JARVIS AI agent collection."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "Proprietary product packaging; upstream attributions remain per product." }
+license = "LicenseRef-Proprietary"
 authors = [{ name = "Zubair Digital Kits" }]
 dependencies = []
 
