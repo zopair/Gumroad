@@ -30,7 +30,7 @@ Last operational review: 2026-11-15
 - Every page distinguishes a planning template from hosted software, an automated service or a standalone application.
 - Email and sales templates include permission, unsubscribe and opt-out safeguards.
 - Pricing and financial workbooks carry educational-use and verification limitations.
-- Product covers are product-specific; three custom preview/mockup images were added alongside each original cover.
+- Each of the ten products currently has five product-specific image covers attached in its Gumroad gallery. Keep the strongest static image first and ensure every preview matches the actual downloadable files.\n- Dedicated 600 × 600 product thumbnails are separate from the cover gallery; their assignment in Gumroad has not yet been verified.
 - Current downloadable package: three files per product — a Markdown guide, matching CSV worksheet and editable XLSX workbook. The ten workbooks passed the GitHub Actions regression/build workflow and are attached to their matching published Gumroad products.
 
 ## Store description — recommended profile copy
