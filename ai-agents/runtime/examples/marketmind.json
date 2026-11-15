@@ -1,0 +1,17 @@
+{
+  "market": "workflow automation software",
+  "competitors": [
+    {
+      "name": "Alpha Tools",
+      "source_url": "https://example.com/alpha",
+      "price": "$20",
+      "positioning": "simple workflow automation"
+    },
+    {
+      "name": "Beta Desk",
+      "source_url": "https://example.com/beta",
+      "price": "$35",
+      "positioning": "team operations suite"
+    }
+  ]
+}

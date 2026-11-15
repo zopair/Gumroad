@@ -1,0 +1,19 @@
+{
+  "query": "refund period",
+  "documents": [
+    {
+      "id": "returns-policy",
+      "title": "Returns Policy",
+      "chunks": [
+        {
+          "page": 2,
+          "text": "Customers may request a refund within 30 days of purchase."
+        },
+        {
+          "page": 3,
+          "text": "Items must be returned in their original condition."
+        }
+      ]
+    }
+  ]
+}

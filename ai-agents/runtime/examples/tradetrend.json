@@ -1,0 +1,21 @@
+{
+  "asset": "DEMO-USD",
+  "timeframe": "1d",
+  "candles": [
+    {
+      "close": 100
+    },
+    {
+      "close": 102
+    },
+    {
+      "close": 101
+    },
+    {
+      "close": 105
+    },
+    {
+      "close": 104
+    }
+  ]
+}
