@@ -1,11 +1,11 @@
 # MarketMind AI
 
-> Turn scattered competitor notes into a decision brief.
+> Turn scattered competitor observations into an evidence-aware decision brief.
 
-**SEO title:** MarketMind AI | Market & Competitor Research  
-**Meta description:** Structure competitor positioning, pricing inputs and evidence gaps into a market intelligence brief with SWOT research prompts.  
+**SEO title:** MarketMind AI | Evidence-Aware Competitor Research  
+**Meta description:** Structure competitor positioning and pricing inputs with source URLs, observation dates, evidence excerpts, and explicit source-quality gaps.  
 **Primary keyword:** market and competitor research assistant  
-**Tags:** market research, competitor analysis, market intelligence, SWOT, business strategy
+**Tags:** market research, competitor analysis, market intelligence, source traceability, SWOT
 
 ## The problem
 
@@ -13,12 +13,14 @@ Competitor research often mixes dated facts, unverified assumptions, and incompl
 
 ## What this product does
 
-Organize supplied competitor records into a comparison matrix, highlight missing source evidence, and structure next-step research.
+Organize up to 200 supplied competitor records into a comparison matrix. MarketMind checks that source URLs use HTTP(S), captures the observation date and supporting excerpt, identifies incomplete evidence, and separates sourced observations from unverified input.
 
 ## What is included
 
 - Competitor comparison matrix
-- Source URL and evidence status
+- Source URL and normalized source domain
+- Observation date and evidence excerpt
+- Explicit source-completeness status
 - Pricing and positioning fields
 - Research gap checklist
 - SWOT prompt framework
@@ -27,11 +29,11 @@ Organize supplied competitor records into a comparison matrix, highlight missing
 
 ### Does it browse automatically?
 
-Not in the local baseline. It structures information and source links you provide.
+No. The local baseline does not fetch URLs or independently verify sources. It structures information and evidence you provide.
 
 ### Are competitor prices verified?
 
-No. Verify prices and plan details against dated primary sources.
+No. A date and excerpt improve traceability but do not prove accuracy or freshness. Verify prices and plan details against primary sources.
 
 ### Does it calculate TAM or market share?
 
@@ -39,7 +41,7 @@ No. Market sizing and share estimates require separate evidence-backed analysis.
 
 ## Next step
 
-Build a competitor brief with visible evidence gaps.
+Build a competitor brief that distinguishes observed evidence from assumptions.
 
 ---
 
