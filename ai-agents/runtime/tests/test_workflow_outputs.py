@@ -119,5 +119,29 @@ We explain <i>secure</i> document handling &amp; review.
             run_agent("contentflip-ai", {"title":"Bad captions","subtitle_text":"not a subtitle file"})
 
 
+    def test_codesentinel_scans_multiple_source_files_with_file_and_line_evidence(self):
+        result = run_agent("codesentinel", {"files":[
+            {"path":"src/api.py","language":"python","content":"import yaml\nconfig = yaml.load(request.data)\n"},
+            {"path":"src/client.py","language":"python","content":"requests.get(url, verify=False)\n"}
+        ]})
+        findings = content(result, "Findings")
+        self.assertEqual({item["file_path"] for item in findings}, {"src/api.py", "src/client.py"})
+        self.assertTrue(all(item["line"] > 0 and item["evidence"] for item in findings))
+        self.assertIn("unsafe_yaml_load", {item["rule"] for item in findings})
+        self.assertIn("tls_verification_disabled", {item["rule"] for item in findings})
+
+    def test_codesentinel_detects_insecure_deserialization_and_shell_true(self):
+        result = run_agent("codesentinel", {"files":[
+            {"path":"worker.py","content":"import pickle\npayload = pickle.loads(blob)\nsubprocess.run(command, shell=True)\n"}
+        ]})
+        rules = {item["rule"] for item in content(result, "Findings")}
+        self.assertIn("unsafe_deserialization", rules)
+        self.assertIn("shell_execution", rules)
+
+    def test_codesentinel_preserves_legacy_diff_and_does_not_flag_removed_lines(self):
+        result = run_agent("codesentinel", {"diff":"-eval(old_input)\n+safe = True\n"})
+        self.assertEqual(content(result, "Findings"), [])
+
+
 if __name__ == "__main__":
     unittest.main()
