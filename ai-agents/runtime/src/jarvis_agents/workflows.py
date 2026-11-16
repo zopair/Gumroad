@@ -266,20 +266,93 @@ def estateguard(data: Mapping[str, Any]) -> dict[str, Any]:
         ],
     )
 def codesentinel(data: Mapping[str, Any]) -> dict[str, Any]:
-    diff = required_text(data, "diff")
+    """Run bounded, non-executing security heuristics over supplied files or an added-line diff."""
     rules = [
-        ("possible_secret", re.compile(r"""(?i)(api[_-]?key|secret|password|token)\s*[:=]\s*['"][^'"]{6,}['"]"""), "high", "Possible hard-coded credential; rotate if real and move secrets to a secure runtime store."),
+        ("possible_secret", re.compile(r"""(?i)\b(api[_-]?key|secret|password|token)\s*[:=]\s*['"][^'"]{6,}['"]"""), "high", "Possible hard-coded credential; rotate if real and move secrets to a secure runtime store."),
         ("dynamic_eval", re.compile(r"\b(eval|exec)\s*\("), "high", "Dynamic code execution can enable injection; remove or tightly constrain the execution path."),
-        ("shell_execution", re.compile(r"(?i)(shell\s*=\s*true|os\.system\s*\(|subprocess\.(?:run|Popen)\s*\()"), "medium", "Review command construction, argument separation, and untrusted input boundaries."),
+        ("shell_execution", re.compile(r"(?i)(shell\s*=\s*true|os\.system\s*\(|subprocess\.(?:run|Popen|call)\s*\()"), "medium", "Review command construction, argument separation, and untrusted input boundaries."),
         ("sql_concatenation", re.compile(r"""(?i)(SELECT|UPDATE|INSERT|DELETE).*(\+|\.format\(|f['"])"""), "medium", "Review whether user-controlled values are concatenated into SQL; use parameterized queries."),
+        ("unsafe_yaml_load", re.compile(r"(?i)\byaml\.load\s*\((?![^)]*\bLoader\s*=\s*(?:yaml\.)?SafeLoader)"), "high", "Use yaml.safe_load or an explicitly safe loader for untrusted YAML."),
+        ("unsafe_deserialization", re.compile(r"(?i)\b(?:pickle\.(?:loads?|Unpickler)|joblib\.load)\s*\("), "high", "Do not deserialize untrusted data with pickle/joblib; use a safe, schema-validated format."),
+        ("tls_verification_disabled", re.compile(r"(?i)\bverify\s*=\s*False\b|CERT_NONE"), "high", "TLS certificate verification is disabled; restore verification and configure trusted certificates."),
+        ("weak_hash", re.compile(r"(?i)\bhashlib\.(?:md5|sha1)\s*\("), "low", "MD5/SHA-1 are unsuitable for security-sensitive integrity; use a modern hash such as SHA-256."),
     ]
-    findings = []
-    for line_no, line in enumerate(diff.splitlines(), start=1):
-        if not line.startswith("+") or line.startswith("+++"): continue
-        added = line[1:]
-        for rule, pattern, severity, recommendation in rules:
-            if pattern.search(added): findings.append({"rule": rule, "diff_line": line_no, "severity": severity, "evidence": added[:400], "recommendation": recommendation})
-    return report("Code review findings", f"Inspected added diff lines and identified {len(findings)} candidate issue(s).", [section("Findings", findings), section("Review scope", {"added_lines": sum(1 for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++")), "analysis_mode": "static pattern checks", "execution": "disabled"})], ["Static pattern checks are incomplete and may produce false positives or miss vulnerabilities.", "Untrusted source code is never executed. Confirm findings with language-aware analysis and human review."])
+    sources: list[tuple[str, str, str, bool]] = []
+    files = data.get("files")
+    if files is not None:
+        if not isinstance(files, list):
+            raise ValueError("'files' must be a list of source file objects.")
+        if len(files) > 100:
+            raise ValueError("'files' is limited to 100 source files per scan.")
+        total_chars = 0
+        for index, item in enumerate(files):
+            if not isinstance(item, Mapping):
+                raise ValueError(f"files[{index}] must be an object.")
+            path = str(item.get("path", f"file-{index + 1}")).strip() or f"file-{index + 1}"
+            source = item.get("content")
+            if not isinstance(source, str):
+                raise ValueError(f"files[{index}].content must be text.")
+            total_chars += len(source)
+            if len(source) > 200_000 or total_chars > 1_000_000:
+                raise ValueError("CodeSentinel source input exceeds the 1 MB total or 200 KB per-file scan limit.")
+            language = str(item.get("language", "unknown")).strip() or "unknown"
+            sources.append((path, language, source, False))
+    elif "diff" in data:
+        diff = required_text(data, "diff")
+        added_lines = []
+        for line_no, line in enumerate(diff.splitlines(), start=1):
+            if line.startswith("+") and not line.startswith("+++"):
+                added_lines.append((line_no, line[1:]))
+        sources.append(("diff", "diff", "\n".join(f"__JARVIS_LINE_{n}__ {line}" for n, line in added_lines), True))
+    else:
+        raise ValueError("Provide either 'files' (source file objects) or 'diff' (a unified diff).")
+
+    findings: list[dict[str, Any]] = []
+    scanned_lines = 0
+    for path, language, source, is_diff in sources:
+        lines = source.splitlines()
+        scanned_lines += len(lines)
+        for line_no, line in enumerate(lines, start=1):
+            original_line_no = line_no
+            inspected = line
+            if is_diff:
+                marker = re.match(r"__JARVIS_LINE_(\d+)__ (.*)", line)
+                if not marker:
+                    continue
+                original_line_no, inspected = int(marker.group(1)), marker.group(2)
+            for rule, pattern, severity, recommendation in rules:
+                if pattern.search(inspected):
+                    findings.append({
+                        "rule": rule, "file_path": path, "language": language,
+                        "line": original_line_no, "diff_line": original_line_no if is_diff else None,
+                        "severity": severity, "confidence": "heuristic",
+                        "evidence": inspected.strip()[:400],
+                        "recommendation": recommendation,
+                    })
+
+    findings.sort(key=lambda item: (item["file_path"].casefold(), item["line"], item["rule"]))
+    return report(
+        "Code review findings",
+        f"Scanned {len(sources)} supplied source artifact(s) and {scanned_lines} line(s); identified {len(findings)} candidate issue(s).",
+        [
+            section("Findings", findings),
+            section("Review scope", {
+                "analysis_mode": "bounded static pattern checks",
+                "artifacts_scanned": len(sources),
+                "lines_scanned": scanned_lines,
+                "rules_applied": [rule[0] for rule in rules],
+                "maximum_source_files": 100,
+                "maximum_total_source_characters": 1_000_000,
+                "execution": "disabled",
+                "network_access": "none",
+            }),
+        ],
+        [
+            "Static heuristics are not a complete SAST engine; false positives and missed vulnerabilities are possible.",
+            "Only supplied added diff lines or supplied source text are inspected; dependencies, control flow, and runtime behavior are not analyzed.",
+            "Untrusted source code is never executed. Confirm findings with language-aware analysis, dependency scanning, and human review.",
+        ],
+    )
 
 def marketmind(data: Mapping[str, Any]) -> dict[str, Any]:
     market, competitors = required_text(data, "market"), data.get("competitors", [])
