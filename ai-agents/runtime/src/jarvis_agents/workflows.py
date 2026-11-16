@@ -10,13 +10,60 @@ from .validation import optional_text, report, required_text, section, sentences
 def rankmaster(data: Mapping[str, Any]) -> dict[str, Any]:
     topic, audience = required_text(data, "topic"), required_text(data, "audience")
     keyword = optional_text(data, "primary_keyword", topic) or topic
+    raw_secondary = data.get("secondary_keywords", [])
+    if not isinstance(raw_secondary, list):
+        raise ValueError("'secondary_keywords' must be a list of phrases.")
+    if len(raw_secondary) > 20:
+        raise ValueError("'secondary_keywords' is limited to 20 phrases.")
+    secondary: list[str] = []
+    seen = {keyword.casefold()}
+    for item in raw_secondary:
+        if not isinstance(item, str):
+            raise ValueError("Every secondary keyword must be text.")
+        phrase = item.strip()
+        if not phrase:
+            continue
+        if len(phrase) > 80:
+            raise ValueError("Each secondary keyword must be 80 characters or fewer.")
+        if phrase.casefold() not in seen:
+            secondary.append(phrase)
+            seen.add(phrase.casefold())
+    intent = optional_text(data, "search_intent", "informational").casefold()
+    if intent not in {"informational", "commercial", "navigational", "transactional"}:
+        raise ValueError("'search_intent' must be informational, commercial, navigational, or transactional.")
+    title = f"{keyword.title()}: A Practical Guide for {audience.title()}"
     description = f"Learn how {keyword} can help {audience}. Explore practical considerations, useful steps, and questions to evaluate before choosing an approach."
-    outline = [f"What {keyword} means for {audience}", "The main problems and search intents to address", "Options, trade-offs, and evaluation criteria", "A practical step-by-step approach", "Common questions and next steps"]
+    outline = [
+        f"What {keyword} means for {audience}",
+        "The main problems and search intents to address",
+        "Options, trade-offs, and evaluation criteria",
+        "A practical step-by-step approach",
+        "Common questions and next steps",
+    ]
+    if secondary:
+        outline.extend(f"How to evaluate {phrase}" for phrase in secondary[:5])
+    placements = {
+        "title": title,
+        "meta_description": description,
+        "headings": outline,
+        "introduction": f"Answer the primary query '{keyword}' directly near the start.",
+        "body": "Use secondary phrases only where they add meaning; support claims with original evidence and examples.",
+        "faq": [f"What should readers know about {phrase}?" for phrase in secondary[:5]],
+    }
     return report(f"SEO brief: {topic}", f"Created a search-intent brief for '{topic}' aimed at {audience}.", [
-        section("Targeting", {"topic": topic, "primary_keyword": keyword, "audience": audience, "intent": "informational / commercial investigation — validate against live SERP data"}),
-        section("Suggested title", f"{keyword.title()}: A Practical Guide for {audience.title()}"), section("Meta description", description),
-        section("Content outline", outline), section("On-page checklist", ["Use the primary phrase naturally", "Answer the searcher's main question early", "Add first-hand evidence and original examples", "Use descriptive headings", "Link to relevant supporting pages", "Review title and description against the live SERP"])
-    ], ["No live search-volume, ranking, or SERP data was queried. Validate keyword intent and competition with a licensed search-data provider."])
+        section("Targeting", {"topic": topic, "primary_keyword": keyword, "audience": audience, "intent": intent}),
+        section("Keyword strategy", {"primary_keyword": keyword, "secondary_keywords": secondary, "keyword_cluster": [keyword, *secondary], "search_intent": intent, "recommended_placements": placements}),
+        section("Suggested title", title), section("Meta description", description),
+        section("Content outline", outline), section("On-page checklist", [
+            "Use the primary phrase naturally in the title, introduction, and one relevant heading",
+            "Use secondary phrases only where they match the section's meaning",
+            "Answer the searcher's main question early",
+            "Add first-hand evidence and original examples",
+            "Use descriptive headings and accessible image alt text",
+            "Link to relevant supporting pages",
+            "Review title and description against the live SERP",
+        ])
+    ], ["No live search-volume, ranking, or SERP data was queried. Keyword clusters are based only on supplied phrases; validate demand and competition with a licensed search-data provider."])
 
 def leadscout(data: Mapping[str, Any]) -> dict[str, Any]:
     industry, region = required_text(data, "industry"), required_text(data, "region")
