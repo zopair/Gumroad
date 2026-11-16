@@ -1,5 +1,11 @@
 {
   "topic": "sustainable office furniture",
   "audience": "small business owners",
-  "primary_keyword": "sustainable office furniture"
+  "primary_keyword": "sustainable office furniture",
+  "secondary_keywords": [
+    "eco-friendly office desks",
+    "recycled office furniture",
+    "sustainable workspace design"
+  ],
+  "search_intent": "commercial"
 }
