@@ -1,0 +1,62 @@
+name: Stage JARVIS packages for Gumroad
+on:
+  push:
+    branches:
+      - ops/jarvis-gumroad-staging-2026-11-16
+permissions:
+  contents: read
+  actions: read
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download existing verified CI artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 43780446445 --repo "$GITHUB_REPOSITORY" --name jarvis-product-previews --dir staging
+      - name: Verify checksums and extract individual packages
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          root = pathlib.Path("staging")
+          archive = root / "jarvis-product-previews.zip"
+          if not archive.exists():
+              candidates = list(root.glob("*.zip"))
+              if len(candidates) != 1:
+                  raise SystemExit(f"Expected one CI artifact archive, found {candidates}")
+              archive = candidates[0]
+          out = root / "packages"
+          out.mkdir(exist_ok=True)
+          with zipfile.ZipFile(archive) as z:
+              z.extractall(out)
+          sums = json.loads((out / "SHA256SUMS.json").read_text())
+          expected = {
+            "rankmaster-ai.zip","leadscout-bot.zip","tradetrend-analyst.zip",
+            "docusense-support.zip","socialsync-ai.zip","mailforge-pro.zip",
+            "contentflip-ai.zip","estateguard-ai.zip","codesentinel.zip","marketmind-ai.zip"
+          }
+          if set(sums) != expected:
+              raise SystemExit(f"Unexpected package set: {set(sums)}")
+          for name, digest in sums.items():
+              path = out / name
+              if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                  raise SystemExit(f"Checksum mismatch: {name}")
+              with zipfile.ZipFile(path) as package:
+                  if package.testzip() is not None:
+                      raise SystemExit(f"Corrupt package: {name}")
+          print("All ten package checksums and ZIP structures verified.")
+          PY
+      - name: Publish temporary staging release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create jarvis-agents-stage-20261116 staging/packages/*.zip \
+            --repo "$GITHUB_REPOSITORY" \
+            --target d9e18636bc5fe4fcc1b4718362545099a8667b5c \
+            --title "Temporary JARVIS package staging" \
+            --notes "Temporary unlisted staging assets used to transfer the verified JARVIS product ZIPs into Gumroad. Not a customer-facing product page."
+          gh release view jarvis-agents-stage-20261116 --repo "$GITHUB_REPOSITORY" --json url,assets
