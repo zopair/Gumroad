@@ -148,5 +148,26 @@ We explain <i>secure</i> document handling &amp; review.
             run_agent("codesentinel", {"files":[{"path":"large.py","content":"x" * 200001}]})
 
 
+    def test_rankmaster_builds_deduplicated_keyword_cluster_and_placement_map(self):
+        result = run_agent("rankmaster-ai", {
+            "topic":"AI procurement", "audience":"procurement teams",
+            "primary_keyword":"AI procurement",
+            "secondary_keywords":["vendor risk","AI procurement","supplier review","  "],
+            "search_intent":"commercial"
+        })
+        strategy = content(result, "Keyword strategy")
+        self.assertEqual(strategy["secondary_keywords"], ["vendor risk", "supplier review"])
+        self.assertEqual(strategy["search_intent"], "commercial")
+        self.assertIn("title", strategy["recommended_placements"])
+        self.assertIn("supplier review", " ".join(strategy["recommended_placements"]["headings"]))
+
+    def test_rankmaster_rejects_oversized_keyword_clusters(self):
+        with self.assertRaises(ValueError):
+            run_agent("rankmaster-ai", {
+                "topic":"AI procurement", "audience":"procurement teams",
+                "secondary_keywords":[f"keyword-{i}" for i in range(21)]
+            })
+
+
 if __name__ == "__main__":
     unittest.main()
