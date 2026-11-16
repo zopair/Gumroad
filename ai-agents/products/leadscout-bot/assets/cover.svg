@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+<title id="title">LeadScout Bot — JARVIS AI Agent</title><desc id="desc">Make your prospect list more useful and auditable.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#101A2B"/><stop offset="1" stop-color="#202C40"/></linearGradient>
+<linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7AA8FF" stop-opacity=".34"/><stop offset="1" stop-color="#7AA8FF" stop-opacity="0"/></linearGradient>
+<filter id="soft"><feGaussianBlur stdDeviation="36"/></filter>
+</defs>
+<rect width="100%" height="100%" fill="url(#bg)"/>
+<circle cx="1190" cy="470" r="290" fill="url(#glow)" filter="url(#soft)"/>
+<path d="M0 820 C360 720 560 1060 980 880 S1420 780 1600 860" fill="none" stroke="#7AA8FF" stroke-opacity=".13" stroke-width="2"/>
+<path d="M0 870 C360 770 560 1110 980 930 S1420 830 1600 910" fill="none" stroke="#FFFFFF" stroke-opacity=".06" stroke-width="2"/>
+<g transform="translate(1190 470) scale(2.2)" fill="none" stroke="#7AA8FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="-42" cy="-18" r="26"/><circle cx="42" cy="-18" r="26"/><circle cx="0" cy="48" r="26"/><path d="M-20 -4 L-6 24 M20 -4 L6 24 M-16 -18 H16"/></g>
+<circle cx="1190" cy="470" r="250" fill="none" stroke="#7AA8FF" stroke-opacity=".26" stroke-width="2"/>
+<circle cx="1190" cy="470" r="300" fill="none" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="2" stroke-dasharray="8 18"/>
+<text x="120" y="110" fill="#7AA8FF" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="700" letter-spacing="5">JARVIS  /  INTELLIGENT BUSINESS AGENTS</text>
+<text x="120" y="570" fill="#F4F0E7" font-family="Inter,Arial,sans-serif" font-size="82" font-weight="750">LeadScout Bot</text>
+<text x="120" y="660" fill="#C2CBD8" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="500"><tspan x="120" dy="0">MAKE YOUR PROSPECT LIST MORE USEFUL AND</tspan><tspan x="120" dy="38">AUDITABLE.</tspan></text>
+<rect x="120" y="900" width="90" height="5" rx="2.5" fill="#7AA8FF"/>
+<text x="120" y="948" fill="#9AA4B2" font-family="Inter,Arial,sans-serif" font-size="20" letter-spacing="3">ZUBAIR DIGITAL KITS</text>
+<text x="1520" y="948" fill="#9AA4B2" font-family="Inter,Arial,sans-serif" font-size="18" text-anchor="end">LOCAL-FIRST EDITION</text>
+</svg>
