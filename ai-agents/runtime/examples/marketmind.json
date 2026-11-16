@@ -2,14 +2,18 @@
   "market": "workflow automation software",
   "competitors": [
     {
-      "name": "Alpha Tools",
+      "name": "Alpha Tools (synthetic example)",
       "source_url": "https://example.com/alpha",
+      "source_date": "2026-11-16",
+      "evidence": "Synthetic sample: the example pricing page lists a $20 plan.",
       "price": "$20",
       "positioning": "simple workflow automation"
     },
     {
-      "name": "Beta Desk",
+      "name": "Beta Desk (synthetic example)",
       "source_url": "https://example.com/beta",
+      "source_date": "2026-11-16",
+      "evidence": "Synthetic sample: the example product page describes a team operations suite.",
       "price": "$35",
       "positioning": "team operations suite"
     }
