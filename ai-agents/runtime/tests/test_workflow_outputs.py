@@ -191,5 +191,27 @@ We explain <i>secure</i> document handling &amp; review.
         self.assertEqual(row["evidence_status"], "unverified input")
 
 
+    def test_tradetrend_adds_technical_indicators_for_sufficient_history(self):
+        closes = list(range(100, 115))
+        result = run_agent("tradetrend-analyst", {
+            "asset":"DEMO", "timeframe":"1d",
+            "candles":[{"close":value} for value in closes]
+        })
+        indicators = content(result, "Technical indicators")
+        self.assertEqual(indicators["rsi_14"], 100.0)
+        self.assertIsNotNone(indicators["ema_20"])
+        self.assertIsNone(indicators["sma_20"])
+        self.assertIsNone(indicators["macd"])
+
+    def test_tradetrend_reports_max_drawdown_and_historical_loss_metrics(self):
+        result = run_agent("tradetrend-analyst", {
+            "asset":"DEMO", "timeframe":"1d",
+            "candles":[{"close":value} for value in [100, 120, 90, 110]]
+        })
+        risk = content(result, "Risk metrics")
+        self.assertAlmostEqual(risk["max_drawdown_percent"], 25.0)
+        self.assertAlmostEqual(risk["historical_var_95_percent"], 25.0)
+
+
 if __name__ == "__main__":
     unittest.main()
