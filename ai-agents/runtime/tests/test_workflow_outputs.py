@@ -169,5 +169,27 @@ We explain <i>secure</i> document handling &amp; review.
             })
 
 
+    def test_marketmind_separates_dated_evidence_from_incomplete_sources(self):
+        result = run_agent("marketmind-ai", {"market":"workflow tools","competitors":[
+            {"name":"Dated Rival","price":"$20","positioning":"SMB workflows",
+             "source_url":"https://rival.example/pricing","source_date":"2026-11-10",
+             "evidence":"Pricing page lists the starter plan at $20."},
+            {"name":"Undated Rival","source_url":"https://undated.example"}
+        ]})
+        rows = {row["competitor"]: row for row in content(result, "Competitor comparison")}
+        self.assertEqual(rows["Dated Rival"]["evidence_status"], "dated evidence supplied")
+        self.assertEqual(rows["Dated Rival"]["source_domain"], "rival.example")
+        self.assertEqual(rows["Undated Rival"]["evidence_status"], "source incomplete")
+        self.assertIsNone(rows["Undated Rival"]["source_date"])
+
+    def test_marketmind_rejects_non_http_evidence_urls(self):
+        result = run_agent("marketmind-ai", {"market":"workflow tools","competitors":[
+            {"name":"Unsafe Source","source_url":"javascript:alert(1)","source_date":"2026-11-10","evidence":"Claim"}
+        ]})
+        row = content(result, "Competitor comparison")[0]
+        self.assertIsNone(row["source_url"])
+        self.assertEqual(row["evidence_status"], "unverified input")
+
+
 if __name__ == "__main__":
     unittest.main()
