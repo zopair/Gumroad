@@ -402,15 +402,87 @@ def codesentinel(data: Mapping[str, Any]) -> dict[str, Any]:
     )
 
 def marketmind(data: Mapping[str, Any]) -> dict[str, Any]:
+    """Structure competitor observations and make source completeness explicit."""
+    from datetime import date
     market, competitors = required_text(data, "market"), data.get("competitors", [])
-    if not isinstance(competitors, list): raise ValueError("'competitors' must be a list.")
-    rows, missing_sources = [], 0
+    if not isinstance(competitors, list):
+        raise ValueError("'competitors' must be a list.")
+    if len(competitors) > 200:
+        raise ValueError("'competitors' is limited to 200 records per report.")
+    rows: list[dict[str, Any]] = []
+    missing_sources = incomplete_sources = skipped = 0
     for item in competitors:
-        if not isinstance(item, Mapping): continue
-        name, source_url = str(item.get("name", "")).strip(), str(item.get("source_url", "")).strip()
-        if not name: continue
-        valid_source = urlparse(source_url).scheme in {"http", "https"}
-        if not valid_source: missing_sources += 1
-        rows.append({"competitor": name, "positioning": item.get("positioning"), "price": item.get("price"), "source_url": source_url if valid_source else None, "evidence_status": "source supplied" if valid_source else "unverified input"})
+        if not isinstance(item, Mapping):
+            skipped += 1
+            continue
+        name = str(item.get("name", "")).strip()
+        if not name:
+            skipped += 1
+            continue
+        raw_url = str(item.get("source_url", "")).strip()
+        parsed = urlparse(raw_url)
+        valid_source = parsed.scheme in {"http", "https"} and bool(parsed.hostname)
+        source_url = raw_url if valid_source else None
+        if not valid_source:
+            missing_sources += 1
+        raw_date = str(item.get("source_date", "")).strip()
+        source_date = None
+        if raw_date:
+            try:
+                source_date = date.fromisoformat(raw_date).isoformat()
+            except ValueError:
+                source_date = None
+        evidence = str(item.get("evidence", "")).strip()[:500] or None
+        if not valid_source:
+            evidence_status = "unverified input"
+        elif source_date and evidence:
+            evidence_status = "dated evidence supplied"
+        else:
+            evidence_status = "source incomplete"
+            incomplete_sources += 1
+        rows.append({
+            "competitor": name,
+            "positioning": item.get("positioning"),
+            "price": item.get("price"),
+            "source_url": source_url,
+            "source_domain": parsed.hostname.casefold() if valid_source and parsed.hostname else None,
+            "source_date": source_date,
+            "evidence_excerpt": evidence,
+            "evidence_status": evidence_status,
+        })
     rows.sort(key=lambda row: row["competitor"].casefold())
-    return report(f"Market intelligence brief: {market}", f"Structured {len(rows)} competitor record(s) for the {market} market.", [section("Competitor comparison", rows), section("Evidence gaps", {"competitors_without_valid_source": missing_sources, "research_needed": ["Validate current pricing and plan limits", "Capture dated source evidence for positioning claims", "Compare target segments and distribution channels", "Separate observed facts from hypotheses"]}), section("Initial SWOT prompts", {"strengths": "Identify capabilities supported by customer evidence.", "weaknesses": "Identify gaps in product, reach, or economics.", "opportunities": "Look for underserved segments and unmet workflows.", "threats": "Assess substitutes, switching costs, regulation, and platform dependence."})], ["This report structures supplied inputs; it does not independently verify market coverage, pricing, or competitor claims.", "Add dated, attributable sources before relying on findings for investment or strategic decisions."])
+    return report(
+        f"Market intelligence brief: {market}",
+        f"Structured {len(rows)} competitor record(s) for the {market} market.",
+        [
+            section("Competitor comparison", rows),
+            section("Evidence quality", {
+                "competitors_without_valid_source": missing_sources,
+                "competitors_with_incomplete_source_evidence": incomplete_sources,
+                "skipped_invalid_records": skipped,
+                "dated_evidence_records": sum(row["evidence_status"] == "dated evidence supplied" for row in rows),
+                "requirements_for_strong_evidence": [
+                    "A public HTTP(S) source URL with a hostname",
+                    "An ISO date in YYYY-MM-DD format showing when the observation was captured",
+                    "A concise excerpt or factual note supporting the observation",
+                ],
+                "research_needed": [
+                    "Verify the source still supports the observation",
+                    "Compare equivalent plans, billing periods, currencies, and feature limits",
+                    "Capture dated evidence for positioning, target segments, and distribution channels",
+                    "Separate observed facts from hypotheses",
+                ],
+            }),
+            section("Initial SWOT prompts", {
+                "strengths": "Identify capabilities supported by customer evidence.",
+                "weaknesses": "Identify gaps in product, reach, or economics.",
+                "opportunities": "Look for underserved segments and unmet workflows.",
+                "threats": "Assess substitutes, switching costs, regulation, and platform dependence.",
+            }),
+        ],
+        [
+            "This workflow structures supplied observations; it does not fetch URLs or independently verify market coverage, pricing, or competitor claims.",
+            "A dated source and excerpt improve traceability but do not prove that a claim is accurate or current.",
+            "Add independently checked, attributable evidence before relying on findings for investment or strategic decisions.",
+        ],
+    )
