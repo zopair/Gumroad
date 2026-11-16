@@ -143,5 +143,10 @@ We explain <i>secure</i> document handling &amp; review.
         self.assertEqual(content(result, "Findings"), [])
 
 
+    def test_codesentinel_enforces_per_file_scan_limit(self):
+        with self.assertRaises(ValueError):
+            run_agent("codesentinel", {"files":[{"path":"large.py","content":"x" * 200001}]})
+
+
 if __name__ == "__main__":
     unittest.main()
