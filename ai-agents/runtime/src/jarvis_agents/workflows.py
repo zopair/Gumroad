@@ -87,21 +87,108 @@ def leadscout(data: Mapping[str, Any]) -> dict[str, Any]:
 def tradetrend(data: Mapping[str, Any]) -> dict[str, Any]:
     asset, timeframe = required_text(data, "asset"), required_text(data, "timeframe")
     candles = data.get("candles", [])
-    if not isinstance(candles, list) or not candles: raise ValueError("'candles' must be a non-empty list of objects with positive close values.")
+    if not isinstance(candles, list) or not candles:
+        raise ValueError("'candles' must be a non-empty list of objects with positive close values.")
     closes: list[float] = []
     for index, candle in enumerate(candles):
-        if not isinstance(candle, Mapping): raise ValueError(f"candle {index} must be an object.")
-        try: close = float(candle["close"])
-        except (KeyError, TypeError, ValueError): raise ValueError(f"candle {index} requires a numeric close value.") from None
-        if not math.isfinite(close) or close <= 0: raise ValueError(f"candle {index} close must be a finite positive number.")
+        if not isinstance(candle, Mapping):
+            raise ValueError(f"candle {index} must be an object.")
+        try:
+            close = float(candle["close"])
+        except (KeyError, TypeError, ValueError):
+            raise ValueError(f"candle {index} requires a numeric close value.") from None
+        if not math.isfinite(close) or close <= 0:
+            raise ValueError(f"candle {index} close must be a finite positive number.")
         closes.append(close)
-    returns = [(b / a) - 1 for a, b in zip(closes, closes[1:])]
+
+    def ema_series(values: list[float], period: int) -> list[float]:
+        if not values:
+            return []
+        alpha = 2.0 / (period + 1.0)
+        result = [values[0]]
+        for value in values[1:]:
+            result.append((alpha * value) + ((1.0 - alpha) * result[-1]))
+        return result
+
+    returns = [(current / previous) - 1.0 for previous, current in zip(closes, closes[1:])]
     mean_return = sum(returns) / len(returns) if returns else 0.0
-    volatility = math.sqrt(sum((r - mean_return) ** 2 for r in returns) / (len(returns) - 1)) if len(returns) > 1 else 0.0
+    volatility = math.sqrt(sum((value - mean_return) ** 2 for value in returns) / (len(returns) - 1)) if len(returns) > 1 else 0.0
+
+    running_peak = closes[0]
+    max_drawdown = 0.0
+    for close in closes:
+        running_peak = max(running_peak, close)
+        if running_peak:
+            max_drawdown = max(max_drawdown, (running_peak - close) / running_peak)
+
+    sorted_returns = sorted(returns)
+    var_index = math.floor(0.05 * (len(sorted_returns) - 1)) if sorted_returns else 0
+    historical_var = max(0.0, -sorted_returns[var_index] * 100.0) if sorted_returns else 0.0
+
+    ema20 = ema_series(closes, 20)[-1]
+    sma20 = sum(closes[-20:]) / 20.0 if len(closes) >= 20 else None
+    rsi14 = None
+    if len(closes) >= 15:
+        changes = [current - previous for previous, current in zip(closes, closes[1:])]
+        gains = [max(change, 0.0) for change in changes]
+        losses = [max(-change, 0.0) for change in changes]
+        average_gain = sum(gains[:14]) / 14.0
+        average_loss = sum(losses[:14]) / 14.0
+        for gain, loss in zip(gains[14:], losses[14:]):
+            average_gain = ((average_gain * 13.0) + gain) / 14.0
+            average_loss = ((average_loss * 13.0) + loss) / 14.0
+        if average_loss == 0 and average_gain == 0:
+            rsi14 = 50.0
+        elif average_loss == 0:
+            rsi14 = 100.0
+        elif average_gain == 0:
+            rsi14 = 0.0
+        else:
+            rsi14 = round(100.0 - (100.0 / (1.0 + average_gain / average_loss)), 4)
+
+    macd = None
+    if len(closes) >= 34:
+        fast_ema, slow_ema = ema_series(closes, 12), ema_series(closes, 26)
+        macd_line = [fast - slow for fast, slow in zip(fast_ema[25:], slow_ema[25:])]
+        signal_line = ema_series(macd_line, 9)
+        macd = {
+            "line": round(macd_line[-1], 6),
+            "signal": round(signal_line[-1], 6),
+            "histogram": round(macd_line[-1] - signal_line[-1], 6),
+        }
+
     return report(f"Market observation: {asset}", f"Computed descriptive statistics for {asset} using {len(closes)} supplied closing prices on timeframe {timeframe}.", [
-        section("Observed metrics", {"observations": len(closes), "first_close": closes[0], "last_close": closes[-1], "simple_moving_average": round(sum(closes) / len(closes), 6), "period_change_percent": round((closes[-1] / closes[0] - 1) * 100, 4), "mean_period_return_percent": round(mean_return * 100, 4), "sample_return_volatility_percent": round(volatility * 100, 4)}),
-        section("Scenario framework", {"bull_case": "Sustained closes above the observed average with improving breadth; requires independent confirmation.", "base_case": "Price remains near the observed average; monitor range and volatility.", "bear_case": "A sustained move below the observed average with rising volatility; define risk before acting."})
-    ], ["Descriptive analysis of supplied data only; no live market feed was queried.", "This is not investment advice or a trade signal. No order is placed; verify data quality, fees, liquidity, and risk independently."])
+        section("Observed metrics", {
+            "observations": len(closes), "first_close": closes[0], "last_close": closes[-1],
+            "simple_moving_average": round(sum(closes) / len(closes), 6),
+            "period_change_percent": round((closes[-1] / closes[0] - 1) * 100, 4),
+            "mean_period_return_percent": round(mean_return * 100, 4),
+            "sample_return_volatility_percent": round(volatility * 100, 4),
+        }),
+        section("Technical indicators", {
+            "sma_20": round(sma20, 6) if sma20 is not None else None,
+            "ema_20": round(ema20, 6),
+            "rsi_14": rsi14,
+            "macd": macd,
+            "indicator_notes": "RSI uses Wilder smoothing. MACD (12, 26, 9) is withheld until sufficient history is supplied.",
+        }),
+        section("Risk metrics", {
+            "max_drawdown_percent": round(max_drawdown * 100, 4),
+            "historical_var_95_percent": round(historical_var, 4),
+            "worst_observed_period_return_percent": round(min(returns) * 100, 4) if returns else 0.0,
+            "return_observations": len(returns),
+            "method": "Historical descriptive metrics from supplied closes; not a forecast or risk guarantee.",
+        }),
+        section("Scenario framework", {
+            "bull_case": "Sustained closes above the observed average with improving breadth; requires independent confirmation.",
+            "base_case": "Price remains near the observed average; monitor range and volatility.",
+            "bear_case": "A sustained move below the observed average with rising volatility; define risk before acting.",
+        }),
+    ], [
+        "Descriptive analysis of supplied data only; no live market feed was queried.",
+        "Indicators and historical risk metrics depend on the accuracy, ordering, and frequency of supplied prices.",
+        "This is not investment advice or a trade signal. No order is placed; verify data quality, fees, liquidity, and risk independently.",
+    ])
 
 def docusense(data: Mapping[str, Any]) -> dict[str, Any]:
     """Retrieve auditable passages with a deterministic BM25 lexical ranker."""
