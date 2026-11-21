@@ -212,8 +212,11 @@ def chat_completion(messages: list[dict], token: str = "", *, temperature: float
                 raise RuntimeError(f"non-JSON reply: {r.text[:80]!r}") from exc
         return call
 
-    return run_chain("llm", [(p["name"], make(p)) for p in LLM_PROVIDERS],
-                     validate=lambda s: isinstance(s, str) and len(s.strip()) > 20)
+    name, content = run_chain("llm", [(p["name"], make(p)) for p in LLM_PROVIDERS],
+                              validate=lambda s: isinstance(s, str) and len(s.strip()) > 20)
+    if name.startswith("pollinations") and not os.environ.get("POLLINATIONS_TOKEN"):
+        pollinations_backoff(POLL_INTERVAL)  # text + image share one anonymous per-IP quota
+    return name, content
 
 
 # Open-source discovery helper
