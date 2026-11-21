@@ -1,0 +1,26 @@
+name: Product Factory Tests
+on:
+  pull_request:
+    paths:
+      - "scripts/product_factory.py"
+      - "tests/test_product_factory.py"
+      - ".github/workflows/product-factory-tests.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/product_factory.py"
+      - "tests/test_product_factory.py"
+      - ".github/workflows/product-factory-tests.yml"
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run focused unit tests
+        run: python -m unittest discover -s tests -p "test_product_factory.py" -v
