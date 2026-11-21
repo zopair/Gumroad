@@ -93,3 +93,7 @@ The ten product slots are occupied. Additional catalog ideas are internal backlo
 - Do not claim sales, rankings, reviews or guaranteed outcomes without verified evidence.
 - Do not publish new products unless a published slot becomes available or the account limit changes.
 - Follow [Publishing & Asset Standards](docs/PUBLISHING_AND_ASSET_STANDARDS.md) for provider limits, file/image formats, deployment routes, and release checks.
+
+## Cross-channel Product Factory
+
+The manual intake and owner-approval control layer for Gumroad kits and the existing Amazon KDP / RelayMind production engines is documented in [Product Factory](docs/PRODUCT_FACTORY.md). Start a draft through [Product Factory - Intake](.github/workflows/product-factory-intake.yml); intake never publishes automatically.

@@ -1,0 +1,132 @@
+name: Product Factory - Intake
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Unique lowercase product slug"
+        required: true
+        type: string
+      channel:
+        description: "Target production channel"
+        required: true
+        type: choice
+        options:
+          - gumroad-kit
+          - kdp-paperback
+          - kdp-kindle
+      idea:
+        description: "One-line product idea"
+        required: true
+        type: string
+      language:
+        description: "Comma-separated: en, ar, or en,ar"
+        required: true
+        default: "en"
+        type: string
+      theme:
+        description: "Product theme"
+        required: true
+        default: "general"
+        type: string
+      audience:
+        description: "Target audience"
+        required: true
+        default: "general"
+        type: string
+      price:
+        description: "Proposed USD price"
+        required: true
+        default: "9.00"
+        type: string
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: product-factory-intake
+  cancel-in-progress: false
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate inputs and create manifest
+        id: manifest
+        env:
+          SLUG: ${{ inputs.slug }}
+          CHANNEL: ${{ inputs.channel }}
+          IDEA: ${{ inputs.idea }}
+          LANGUAGE: ${{ inputs.language }}
+          THEME: ${{ inputs.theme }}
+          AUDIENCE: ${{ inputs.audience }}
+          PRICE: ${{ inputs.price }}
+        run: |
+          set -euo pipefail
+          python scripts/product_factory.py create --slug "$SLUG" --channel "$CHANNEL" --idea "$IDEA" --language "$LANGUAGE" --theme "$THEME" --audience "$AUDIENCE" --price "$PRICE"
+          echo "path=manifests/$SLUG.json" >> "$GITHUB_OUTPUT"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+      - name: Create owner approval issue
+        id: approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SLUG: ${{ steps.manifest.outputs.slug }}
+          MANIFEST: ${{ steps.manifest.outputs.path }}
+        run: |
+          set -euo pipefail
+          VERSION_SHA256=$(python - <<'PY'
+          import hashlib, json, os
+          data=json.load(open(os.environ["MANIFEST"], encoding="utf-8"))
+          stable={k:v for k,v in data.items() if k not in {"approval_issue","status","outputs","published","version_sha256"}}
+          encoded=json.dumps(stable, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+          print(hashlib.sha256(encoded).hexdigest())
+          PY
+          )
+          export VERSION_SHA256
+          gh label create owner-approval-required --color D93F0B --description "Owner review required before approval" 2>/dev/null || true
+          gh label create approved-to-publish --color 0E8A16 --description "Explicit owner approval for this exact product version" 2>/dev/null || true
+          cat > approval-issue.md <<EOF
+          ## Product version review
+
+          Manifest: `$MANIFEST`
+          Version SHA-256: `$VERSION_SHA256`
+
+          - [ ] Review all final deliverable files and previews
+          - [ ] Review listing text, keywords, categories and price
+          - [ ] Verify artwork originality, provenance and licenses
+          - [ ] Confirm channel-specific quality reports pass
+          - [ ] Confirm rights and AI-content disclosure
+          - [ ] Explicitly approve this exact version by applying `approved-to-publish`
+
+          **This issue does not publish anything.** Publishing remains a separate owner-operated step.
+          EOF
+          ISSUE_URL=$(gh issue create --title "Product approval: $SLUG" --label "owner-approval-required" --body-file approval-issue.md)
+          echo "url=$ISSUE_URL" >> "$GITHUB_OUTPUT"
+      - name: Save issue reference in manifest
+        env:
+          MANIFEST: ${{ steps.manifest.outputs.path }}
+          ISSUE_URL: ${{ steps.approval.outputs.url }}
+        run: |
+          python - <<'PY'
+          import json, os, re
+          path=os.environ["MANIFEST"]
+          data=json.load(open(path, encoding="utf-8"))
+          match=re.search(r"/issues/(\d+)$", os.environ["ISSUE_URL"])
+          if not match: raise SystemExit("Could not parse approval issue number")
+          data["approval_issue"]=int(match.group(1))
+          open(path,"w",encoding="utf-8").write(json.dumps(data,ensure_ascii=False,indent=2)+"\n")
+          PY
+      - name: Commit manifest
+        env:
+          SLUG: ${{ steps.manifest.outputs.slug }}
+          ISSUE_URL: ${{ steps.approval.outputs.url }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "manifests/$SLUG.json"
+          git commit -m "Add product intake manifest: $SLUG"
+          git push
+          echo "Approval issue: $ISSUE_URL"
