@@ -1,6 +1,7 @@
 """Silent prompt enhancer: raw idea -> viral short-form script + 9:16 visual prompts.
 
-Primary: free GitHub Models (rotating models via resolver.chat_completion).
+Primary: keyless Pollinations text API (OpenAI-compatible), then an optional custom
+endpoint, then GitHub Models (retired 2026-07-30, kept as a last quick attempt).
 Fallback: deterministic local template engine, so a script ALWAYS exists.
 """
 from __future__ import annotations
@@ -61,6 +62,9 @@ def normalize(script: dict[str, Any], topic: str, lang: str) -> dict[str, Any]:
             visual += STYLE_SUFFIX
         scenes.append({"text": text[:260], "visual": visual[:400],
                        "keyword": str(s.get("keyword") or topic).strip()[:40]})
+    hook = str(script.get("hook") or "").strip()
+    if hook and scenes and hook[:20].lower() not in scenes[0]["text"].lower():
+        scenes.insert(0, {"text": hook[:200], "visual": scenes[0]["visual"], "keyword": scenes[0]["keyword"]})
     if len(scenes) < MIN_SCENES:
         return local_script(topic, lang)
     scenes = scenes[:MAX_SCENES]
@@ -110,7 +114,10 @@ _VISUALS = [
 
 
 def local_script(topic: str, lang: str = "en") -> dict[str, Any]:
-    t = topic.strip().rstrip(".!?") or ("هذا الموضوع" if lang == "ar" else "this topic")
+    t = topic.strip().rstrip(".!?؟")
+    if lang == "en" and t[:1].isupper() and not t[:2].isupper():
+        t = t[0].lower() + t[1:]
+    t = t or ("هذا الموضوع" if lang == "ar" else "this topic")
     lines = _AR if lang == "ar" else _EN
     seed = int(hashlib.sha256(t.encode()).hexdigest(), 16)
     scenes = []
@@ -137,7 +144,7 @@ def enhance(topic: str, lang: str = "en", token: str = "") -> dict[str, Any]:
                 return normalize(pre, pre.get("title", "video"), lang)
         except Exception:  # noqa: BLE001
             pass
-    if token and not resolver.offline():
+    if not resolver.offline():
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT.replace("LANGUAGE", LANG_NAMES[lang])},
             {"role": "user", "content": f"Idea: {topic}"},

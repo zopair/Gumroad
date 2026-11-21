@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RelayMind — Ideas to vertical videos</title>
+<meta name="description" content="Type an idea, get a 1080x1920 vertical video. Runs free on your own GitHub account.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111'/%3E%3Cpath d='M11 9h10v3h-3.5v8H21v3H11v-3h3.5v-8H11z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#FFFFFF;--fg:#111114;--muted:#6b6b76;--line:#ececf0;--soft:#f6f6f8;--card:#ffffff;
+  --accent:#111114;--accent-fg:#ffffff;--ok:#12805c;--ok-bg:#e8f6f0;--err:#b42318;--err-bg:#fdecea;
+  --warn:#8a5a00;--warn-bg:#fff6e0;--shadow:0 10px 40px rgba(0,0,0,.08);--radius:18px;
+  --font:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic","Noto Sans",Arial,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0f0f12;--fg:#ececf1;--muted:#9a9aa6;--line:#25252c;--soft:#18181d;--card:#141418;
+  --accent:#ececf1;--accent-fg:#0f0f12;--ok:#4ade9b;--ok-bg:#0f2a20;--err:#ff8a80;--err-bg:#2c1414;
+  --warn:#ffcc66;--warn-bg:#2a2210;--shadow:0 10px 40px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--font);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:inherit}
+.app{display:flex;flex-direction:column;height:100%;min-height:100dvh}
+header{display:flex;align-items:center;gap:8px;padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:5}
+.brand{display:flex;align-items:center;gap:8px;font-weight:650;letter-spacing:-.01em;margin-inline-end:auto}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font:700 15px/1 Georgia,serif}
+.badge{font-size:11px;padding:3px 8px;border-radius:99px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.badge.pro{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.icon-btn{border:1px solid var(--line);background:var(--card);border-radius:12px;height:36px;min-width:36px;padding:0 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:14px}
+.icon-btn:hover{background:var(--soft)}
+main{flex:1;overflow-y:auto;padding:8px 16px 180px}
+.thread{max-width:720px;margin:0 auto}
+.hero{min-height:52vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.hero h1{font-size:clamp(26px,4.5vw,38px);letter-spacing:-.02em;margin:0;font-weight:650}
+.hero p{margin:0;color:var(--muted);max-width:460px;line-height:1.55}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-size:14px;cursor:pointer;color:var(--fg)}
+.chip:hover{background:var(--soft)}
+.msg{margin:18px 0;display:flex}
+.msg.user{justify-content:flex-end}
+.bubble{max-width:85%;padding:12px 16px;border-radius:var(--radius);line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
+.user .bubble{background:var(--soft);border:1px solid var(--line)}
+.bot .bubble{background:transparent;padding-inline:0;max-width:100%;width:100%}
+.steps{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;font-size:14px}
+.steps li{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.steps li.done{color:var(--fg)}
+.steps li.active{color:var(--fg);font-weight:550}
+.dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:10px}
+li.done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
+li.active .dot{border-color:var(--fg);border-top-color:transparent;animation:spin 1s linear infinite}
+li.fail .dot{background:var(--err);border-color:var(--err)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.player{margin-top:14px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.player video{width:min(300px,100%);aspect-ratio:9/16;border-radius:16px;background:#000;box-shadow:var(--shadow)}
+.actions{display:flex;flex-direction:column;gap:8px;min-width:200px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:11px 16px;border:1px solid var(--line);background:var(--card);cursor:pointer;text-decoration:none;font-size:14px;font-weight:550}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.primary:hover{opacity:.9}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.note{font-size:13px;color:var(--muted);line-height:1.5}
+.script-box{margin-top:10px;font-size:13px;color:var(--muted);border-inline-start:3px solid var(--line);padding-inline-start:12px}
+.composer-wrap{position:fixed;inset-inline:0;bottom:0;background:linear-gradient(to top,var(--bg) 70%,transparent);padding:20px 16px calc(14px + env(safe-area-inset-bottom))}
+.composer{max-width:720px;margin:0 auto;border:1px solid var(--line);background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:10px 10px 10px 16px;display:flex;align-items:flex-end;gap:8px}
+[dir="rtl"] .composer{padding:10px 16px 10px 10px}
+.composer textarea{flex:1;border:0;outline:0;resize:none;background:transparent;max-height:180px;min-height:24px;line-height:1.5;padding:6px 0;font-size:16px}
+.vlang{border:1px solid var(--line);border-radius:10px;background:var(--soft);padding:6px 8px;font-size:13px;cursor:pointer}
+.send{width:40px;height:40px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:grid;place-items:center;flex:none}
+.send[disabled]{opacity:.35;cursor:not-allowed}
+.foot{max-width:720px;margin:8px auto 0;text-align:center;font-size:12px;color:var(--muted)}
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;inset-inline-end:0;width:min(440px,100%);background:var(--bg);border-inline-start:1px solid var(--line);z-index:21;transform:translateX(105%);transition:transform .25s ease;display:flex;flex-direction:column}
+[dir="rtl"] .drawer{transform:translateX(-105%)}
+.drawer.open{transform:none!important}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.drawer-head h2{margin:0;font-size:17px}
+.drawer-body{overflow-y:auto;padding:16px 18px 40px;display:grid;gap:14px}
+.card{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card)}
+.card h3{margin:0 0 4px;font-size:15px;display:flex;align-items:center;gap:10px}
+.num{width:24px;height:24px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.card.ok .num{background:var(--ok);color:#fff}
+.card p{margin:4px 0 10px;font-size:13px;color:var(--muted);line-height:1.5}
+.field{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);outline:0;font-size:14px;margin-top:8px}
+.field:focus{border-color:var(--fg)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.status{font-size:13px;margin-top:8px;padding:8px 10px;border-radius:10px;display:none;line-height:1.45}
+.status.show{display:block}
+.status.ok{background:var(--ok-bg);color:var(--ok)}
+.status.err{background:var(--err-bg);color:var(--err)}
+.status.info{background:var(--soft);color:var(--muted)}
+.status.warn{background:var(--warn-bg);color:var(--warn)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:560px){.player video{width:100%}.actions{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><div class="logo">I</div><span>RelayMind</span><span class="badge" id="modeBadge">Demo</span></div>
+    <button class="icon-btn" id="langBtn" aria-label="Language">عربي</button>
+    <button class="icon-btn" id="themeBtn" aria-label="Theme">🌙</button>
+    <button class="icon-btn" id="setupBtn"><span aria-hidden="true">☰</span><span data-i18n="setup">Setup</span></button>
+  </header>
+
+  <main id="main">
+    <div class="thread" id="thread">
+      <section class="hero" id="hero">
+        <h1 data-i18n="heroTitle">What video should we make?</h1>
+        <p data-i18n="heroSub">Type any idea. RelayMind writes the script, adds a voice, picks visuals and renders a vertical 1080×1920 video.</p>
+        <div class="chips" id="chips"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="composer-wrap">
+    <form class="composer" id="composer" autocomplete="off">
+      <label class="sr" for="idea" data-i18n="placeholder">Describe your video idea…</label>
+      <textarea id="idea" rows="1" maxlength="600" data-i18n-ph="placeholder" placeholder="Describe your video idea…"></textarea>
+      <select class="vlang" id="vlang" aria-label="Video language">
+        <option value="en">EN</option><option value="ar">AR</option>
+      </select>
+      <button class="send" id="sendBtn" type="submit" aria-label="Send" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      </button>
+    </form>
+    <div class="foot" id="footNote" data-i18n="footDemo">Demo mode · open Setup to render full HD videos on your free GitHub account</div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Setup">
+  <div class="drawer-head"><h2 data-i18n="setupTitle">Setup</h2><button class="icon-btn" id="closeDrawer" aria-label="Close">✕</button></div>
+  <div class="drawer-body">
+    <div class="card" id="cardLicense">
+      <h3><span class="num">★</span><span data-i18n="licTitle">Activation</span></h3>
+      <p data-i18n="licSub">Demo mode works right away. Enter your license key to unlock full rendering on your GitHub account.</p>
+      <input class="field" id="licInput" placeholder="RELAY-XXXX-XXXX" autocomplete="off" spellcheck="false">
+      <div class="status" id="licStatus"></div>
+    </div>
+
+    <div class="card" id="card1">
+      <h3><span class="num">1</span><span data-i18n="s1Title">Your GitHub account</span></h3>
+      <p data-i18n="s1Sub">GitHub is free. Your videos render on your own account, so you control everything.</p>
+      <div class="row"><a class="btn" href="https://github.com/signup" target="_blank" rel="noopener" data-i18n="s1Btn">Create free GitHub account</a></div>
+      <input class="field" id="repoInput" placeholder="https://github.com/your-name" autocomplete="off" spellcheck="false">
+      <p class="note" style="margin:6px 0 0" data-i18n="s1Hint">Paste your profile link (we create a private “relaymind-studio” repo) or an existing repo link.</p>
+      <div class="status" id="s1Status"></div>
+    </div>
+
+    <div class="card" id="card2">
+      <h3><span class="num">2</span><span data-i18n="s2Title">Create your access key</span></h3>
+      <p data-i18n="s2Sub">Opens GitHub with the right boxes already ticked. Choose an expiry, scroll down and press “Generate token”, then copy it.</p>
+      <div class="row"><a class="btn primary" href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=RelayMind" target="_blank" rel="noopener" data-i18n="s2Btn">Open GitHub key page</a></div>
+    </div>
+
+    <div class="card" id="card3">
+      <h3><span class="num">3</span><span data-i18n="s3Title">Paste key & connect</span></h3>
+      <p data-i18n="s3Sub">Paste the key and press Enter. We prepare your repo automatically.</p>
+      <input class="field" id="tokenInput" type="password" placeholder="ghp_…" autocomplete="off" spellcheck="false">
+      <div class="row" style="margin-top:8px"><button class="btn primary" id="connectBtn" type="button" data-i18n="s3Btn">Connect</button><button class="btn" id="disconnectBtn" type="button" data-i18n="s3Off" style="display:none">Disconnect</button></div>
+      <div class="status" id="s3Status"></div>
+    </div>
+
+    <div class="card" id="card4">
+      <h3><span class="num">4</span><span data-i18n="s4Title">Delivery (optional)</span></h3>
+      <p data-i18n="s4Sub">Get every finished video sent to Telegram automatically. Create a bot with @BotFather and get your numeric chat ID from @userinfobot.</p>
+      <div class="row"><a class="btn" href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a><a class="btn" href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a></div>
+      <input class="field" id="tgToken" type="password" placeholder="123456:ABC-DEF…" autocomplete="off" data-i18n-ph="tgTokPh">
+      <input class="field" id="tgChat" inputmode="numeric" placeholder="Chat ID (e.g. 123456789)" autocomplete="off" data-i18n-ph="tgChatPh">
+      <input class="field" id="waNum" inputmode="tel" placeholder="WhatsApp number (e.g. 201001234567)" autocomplete="off" data-i18n-ph="waPh">
+      <div class="row" style="margin-top:8px"><button class="btn" id="saveDelivery" type="button" data-i18n="save">Save</button></div>
+      <div class="status" id="s4Status"></div>
+    </div>
+    <p class="note" data-i18n="privacy">Your key stays in this browser only. It is never saved in links or in your repository.</p>
+  </div>
+</aside>
+
+<!-- Inline copy of templates/client_workflow.yml (used if the CDN is unreachable). Synced by scripts/sync_relaymind_template.py -->
+<script type="text/plain" id="workflowTemplate">
+# RelayMind client workflow  (injected automatically by the RelayMind web app)
+# Path in client repo: .github/workflows/relaymind.yml
+# Zero-cost rules: manual dispatch only, 1 render at a time, 4-minute hard ceiling,
+# pip cache, engine pulled from jsDelivr CDN (never hammers github.com/zopair).
+name: RelayMind Render
+run-name: "RelayMind ${{ inputs.request_id }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Video idea (or pre-enhanced script JSON)"
+        required: true
+        type: string
+      lang:
+        description: "Narration language"
+        required: false
+        default: "en"
+        type: choice
+        options: ["en", "ar"]
+      voice:
+        description: "Optional edge-tts voice (e.g. en-US-AriaNeural, ar-EG-SalmaNeural)"
+        required: false
+        default: ""
+        type: string
+      request_id:
+        description: "Request id used by the web app to find this run"
+        required: false
+        default: "manual"
+        type: string
+
+permissions:
+  contents: write   # publish latest render to the relaymind-renders branch
+  models: read      # free GitHub Models for the silent prompt enhancer
+  actions: read
+
+concurrency:
+  group: relaymind-render
+  cancel-in-progress: true
+
+env:
+  ENGINE_REPO: zopair/Gumroad
+  ENGINE_REF: main
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Fetch RelayMind engine (jsDelivr CDN)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p rm/engine
+          files="runner.py requirements.txt engine/__init__.py engine/resolver.py engine/prompt_enhancer.py engine/media_factory.py"
+          for f in $files; do
+            ok=0
+            for base in "https://cdn.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
+                        "https://fastly.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
+                        "https://raw.githubusercontent.com/${ENGINE_REPO}/${ENGINE_REF}"; do
+              if curl -fsSL --retry 2 --max-time 20 "$base/$f" -o "rm/$f"; then ok=1; break; fi
+            done
+            [ "$ok" = 1 ] || { echo "::error::could not fetch $f"; exit 1; }
+          done
+          ls -la rm rm/engine
+
+      - name: Set up Python (pip cache)
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: rm/requirements.txt
+
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check -q -r rm/requirements.txt
+
+      - name: Render vertical video
+        env:
+          TOPIC: ${{ inputs.topic }}
+          LANG_CODE: ${{ inputs.lang }}
+          VOICE: ${{ inputs.voice }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
+        run: python rm/runner.py --out output
+
+      - name: Upload MP4 artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: relaymind-video
+          path: |
+            output/final_short.mp4
+            output/poster.jpg
+            output/script.json
+            output/report.json
+          retention-days: 3
+          if-no-files-found: warn
+
+      - name: Publish latest render for the in-app player
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUEST_ID: ${{ inputs.request_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir pub && cp output/final_short.mp4 output/poster.jpg output/report.json pub/
+          printf '{"request_id":"%s","run_id":"%s"}\n' "$REQUEST_ID" "$GITHUB_RUN_ID" > pub/render.json
+          cd pub
+          git init -q -b relaymind-renders
+          git config user.name "relaymind-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -qm "RelayMind render $REQUEST_ID"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" relaymind-renders
+</script>
+
+<script>
+(() => {
+"use strict";
+/* ------------------------------------------------------------------ constants */
+const ENGINE_REPO = "zopair/Gumroad";
+const CDN = `https://cdn.jsdelivr.net/gh/${ENGINE_REPO}@main`;
+const API = "https://api.github.com";
+const LLM_URL = "https://text.pollinations.ai/openai";   // keyless, CORS-enabled (GitHub Models retired 2026-07-30)
+const WF_FILE = "relaymind.yml";
+const WF_PATH = `.github/workflows/${WF_FILE}`;
+const DEFAULT_REPO = "relaymind-studio";
+const LICENSE_SHA256 = "da77a00a5106a9d5c0841bd79706275217fd3433701407dea13e922e090b53d2";
+const POLL_MS = 8000;
+const STORE_KEY = "relaymind.cfg";
+const TOKEN_KEY = "relaymind.tok";
+
+/* ------------------------------------------------------------------ i18n */
+const T = {
+  en: {
+    setup:"Setup", setupTitle:"Setup", heroTitle:"What video should we make?",
+    heroSub:"Type any idea. RelayMind writes the script, adds a voice, picks visuals and renders a vertical 1080×1920 video.",
+    placeholder:"Describe your video idea…", footDemo:"Demo mode · open Setup to render full HD videos on your free GitHub account",
+    footLive:"Connected to {repo} · videos render on your free GitHub minutes",
+    licTitle:"Activation", licSub:"Demo mode works right away. Enter your license key to unlock full rendering on your GitHub account.",
+    licOk:"License active. Full rendering unlocked.", licBad:"That key isn't valid. Check for typos.",
+    s1Title:"Your GitHub account", s1Sub:"GitHub is free. Your videos render on your own account, so you control everything.",
+    s1Btn:"Create free GitHub account", s1Hint:"Paste your profile link (we create a private “relaymind-studio” repo) or an existing repo link.",
+    s1Ok:"Will use {repo}", s1Bad:"Paste a link like https://github.com/your-name",
+    s2Title:"Create your access key", s2Sub:"Opens GitHub with the right boxes already ticked. Choose an expiry, scroll down and press “Generate token”, then copy it.",
+    s2Btn:"Open GitHub key page", s3Title:"Paste key & connect", s3Sub:"Paste the key and press Enter. We prepare your repo automatically.",
+    s3Btn:"Connect", s3Off:"Disconnect", s4Title:"Delivery (optional)",
+    s4Sub:"Get every finished video sent to Telegram automatically. Create a bot with @BotFather and get your numeric chat ID from @userinfobot.",
+    tgTokPh:"Telegram bot token", tgChatPh:"Telegram chat ID (numbers)", waPh:"WhatsApp number (e.g. 201001234567)", save:"Save",
+    privacy:"Your key stays in this browser only. It is never saved in links or in your repository.",
+    needLicense:"Enter your license key first (Activation).", needRepo:"Add your GitHub link in step 1 first.",
+    checking:"Checking your key…", creatingRepo:"Creating your private repo…", initRepo:"Preparing your repo…",
+    installing:"Installing the video engine…", savingCfg:"Saving settings…", connected:"Connected ✓ {repo} is ready. Close this panel and type an idea.",
+    badToken:"GitHub didn't accept this key. Create a new one in step 2.", scopeMiss:"The key needs the “repo” and “workflow” boxes ticked. Create a new one in step 2.",
+    notOwner:"This key can't write to {repo}. Use a key from the account that owns it.",
+    tgSaved:"Saved ✓ Telegram delivery is on.", savedLocal:"Saved ✓", tgNeedConn:"Connect GitHub (step 3) to turn on Telegram delivery.",
+    stEnhance:"Writing a viral script", stDispatch:"Starting your render", stQueue:"Waiting for a free GitHub computer",
+    stRender:"Rendering video ({s}s)", stFetch:"Downloading your video", stDone:"Ready",
+    demoStRender:"Building demo preview",
+    download:"Download MP4", downloadWebm:"Download preview", shareWa:"Send to WhatsApp", share:"Share", again:"Make another",
+    demoNote:"Demo preview (silent, low resolution). Activate & connect in Setup for full HD MP4 with AI voice.",
+    tgSent:"Also sent to your Telegram.", failed:"Something went wrong: {e}", runFailed:"The render didn't finish. Details: {e}",
+    timeout:"This is taking longer than usual. Your video will still appear in your GitHub repo when it finishes.",
+    chips:["5 habits of successful people","Why octopuses are geniuses","How to save money fast","The history of coffee in 30 seconds"],
+    script:"Script", disconnected:"Disconnected."
+  },
+  ar: {
+    setup:"الإعداد", setupTitle:"الإعداد", heroTitle:"عايز تعمل فيديو عن إيه؟",
+    heroSub:"اكتب أي فكرة. RelayMind يكتب السكريبت، ويضيف صوت، ويختار الصور، ويطلع فيديو طولي 1080×1920.",
+    placeholder:"اكتب فكرة الفيديو…", footDemo:"وضع التجربة · افتح الإعداد لإنتاج فيديوهات كاملة الجودة على حساب GitHub المجاني",
+    footLive:"متصل بـ {repo} · الفيديوهات بتتعمل على دقائق GitHub المجانية بتاعتك",
+    licTitle:"التفعيل", licSub:"وضع التجربة شغال فورًا. اكتب مفتاح الترخيص لفتح الإنتاج الكامل على حسابك.",
+    licOk:"الترخيص مفعل. الإنتاج الكامل مفتوح.", licBad:"المفتاح ده مش صحيح. راجع الكتابة.",
+    s1Title:"حساب GitHub بتاعك", s1Sub:"GitHub مجاني. الفيديوهات بتتعمل على حسابك أنت، وأنت المتحكم في كل حاجة.",
+    s1Btn:"أنشئ حساب GitHub مجاني", s1Hint:"الصق رابط حسابك (هننشئ مستودع خاص اسمه relaymind-studio) أو رابط مستودع موجود.",
+    s1Ok:"هنستخدم {repo}", s1Bad:"الصق رابط زي https://github.com/your-name",
+    s2Title:"أنشئ مفتاح الدخول", s2Sub:"هيفتح GitHub والاختيارات المطلوبة متعلمة. اختار مدة، انزل تحت ودوس “Generate token”، وبعدين انسخه.",
+    s2Btn:"افتح صفحة المفتاح", s3Title:"الصق المفتاح واربط", s3Sub:"الصق المفتاح ودوس Enter. هنجهز المستودع تلقائيًا.",
+    s3Btn:"اربط", s3Off:"افصل", s4Title:"التسليم (اختياري)",
+    s4Sub:"استلم كل فيديو جاهز على تيليجرام تلقائيًا. أنشئ بوت من @BotFather وخد رقم الشات من @userinfobot.",
+    tgTokPh:"توكن بوت تيليجرام", tgChatPh:"رقم شات تيليجرام", waPh:"رقم واتساب (مثال 201001234567)", save:"حفظ",
+    privacy:"المفتاح بتاعك بيفضل في المتصفح ده بس، ومش بيتحفظ في أي رابط أو في المستودع.",
+    needLicense:"اكتب مفتاح الترخيص الأول (التفعيل).", needRepo:"ضيف رابط GitHub في الخطوة 1 الأول.",
+    checking:"بنراجع المفتاح…", creatingRepo:"بننشئ المستودع الخاص…", initRepo:"بنجهز المستودع…",
+    installing:"بنركب محرك الفيديو…", savingCfg:"بنحفظ الإعدادات…", connected:"تم الربط ✓ {repo} جاهز. اقفل اللوحة واكتب فكرتك.",
+    badToken:"GitHub مقبلش المفتاح ده. أنشئ واحد جديد من الخطوة 2.", scopeMiss:"المفتاح محتاج اختيار “repo” و“workflow”. أنشئ واحد جديد من الخطوة 2.",
+    notOwner:"المفتاح ده مش بيقدر يكتب في {repo}. استخدم مفتاح من الحساب صاحب المستودع.",
+    tgSaved:"تم الحفظ ✓ التسليم على تيليجرام شغال.", savedLocal:"تم الحفظ ✓", tgNeedConn:"اربط GitHub (الخطوة 3) عشان تشغل تيليجرام.",
+    stEnhance:"بنكتب سكريبت جذاب", stDispatch:"بنبدأ الإنتاج", stQueue:"مستنيين جهاز GitHub مجاني",
+    stRender:"بنعمل الفيديو ({s} ث)", stFetch:"بننزل الفيديو", stDone:"جاهز",
+    demoStRender:"بنجهز معاينة تجريبية",
+    download:"تحميل MP4", downloadWebm:"تحميل المعاينة", shareWa:"ابعت على واتساب", share:"مشاركة", again:"فيديو جديد",
+    demoNote:"معاينة تجريبية (بدون صوت وجودة أقل). فعّل واربط من الإعداد عشان MP4 كامل الجودة بصوت ذكي.",
+    tgSent:"واتبعت كمان على تيليجرام.", failed:"حصلت مشكلة: {e}", runFailed:"الإنتاج ماكملش. التفاصيل: {e}",
+    timeout:"الموضوع واخد وقت أطول من العادي. الفيديو هيظهر في مستودعك على GitHub لما يخلص.",
+    chips:["5 عادات للناجحين","ليه الأخطبوط عبقري","إزاي توفر فلوس بسرعة","تاريخ القهوة في 30 ثانية"],
+    script:"السكريبت", disconnected:"تم الفصل."
+  }
+};
+
+/* ------------------------------------------------------------------ 4-layer persistence */
+const $ = (id) => document.getElementById(id);
+const safe = (fn, fb) => { try { return fn(); } catch { return fb; } };
+const b64e = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const b64d = (s) => decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
+const defaults = { lang:"en", theme:"light", vlang:"en", license:"", owner:"", repo:"", connected:false,
+                   tgChat:"", tgOn:false, wa:"", updated:0 };
+let cfg = { ...defaults };
+let token = "";
+
+function readLayers() {
+  const found = [];
+  const ls = safe(() => JSON.parse(localStorage.getItem(STORE_KEY) || "null"));
+  const ss = safe(() => JSON.parse(sessionStorage.getItem(STORE_KEY) || "null"));
+  const wn = safe(() => { const o = JSON.parse(window.name || "null"); return o && o.relaymind ? o.relaymind : null; });
+  const hm = safe(() => { const m = location.hash.match(/cfg=([\w-]+)/); return m ? JSON.parse(b64d(m[1])) : null; });
+  [ls, ss, wn && wn.cfg, hm].forEach((c) => c && typeof c === "object" && found.push(c));
+  found.sort((a, b) => (a.updated || 0) - (b.updated || 0));
+  found.forEach((c) => Object.assign(cfg, c));
+  token = safe(() => localStorage.getItem(TOKEN_KEY)) || safe(() => sessionStorage.getItem(TOKEN_KEY)) || (wn && wn.t) || "";
+}
+function save() {
+  cfg.updated = Date.now();
+  const json = JSON.stringify(cfg);
+  safe(() => localStorage.setItem(STORE_KEY, json));
+  safe(() => sessionStorage.setItem(STORE_KEY, json));
+  safe(() => { token ? localStorage.setItem(TOKEN_KEY, token) : localStorage.removeItem(TOKEN_KEY); });
+  safe(() => { token ? sessionStorage.setItem(TOKEN_KEY, token) : sessionStorage.removeItem(TOKEN_KEY); });
+  safe(() => { window.name = JSON.stringify({ relaymind: { cfg, t: token } }); });
+  // URL hash never carries the token
+  const pub = { ...cfg }; delete pub.license;
+  safe(() => history.replaceState(null, "", location.pathname + location.search + "#cfg=" + b64e(JSON.stringify(pub))));
+}
+
+/* ------------------------------------------------------------------ UI basics */
+const t = (k, vars = {}) => (T[cfg.lang][k] ?? T.en[k] ?? k).toString().replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? "");
+const licensed = () => !!cfg.license;
+const live = () => licensed() && cfg.connected && token && cfg.owner && cfg.repo;
+const repoFull = () => `${cfg.owner}/${cfg.repo}`;
+
+function applyI18n() {
+  const ar = cfg.lang === "ar";
+  document.documentElement.lang = cfg.lang;
+  document.documentElement.dir = ar ? "rtl" : "ltr";
+  $("langBtn").textContent = ar ? "English" : "عربي";
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
+  const chips = $("chips"); chips.innerHTML = "";
+  (T[cfg.lang].chips).forEach((c) => {
+    const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.textContent = c;
+    b.onclick = () => { $("idea").value = c; $("vlang").value = cfg.lang; onInput(); $("idea").focus(); };
+    chips.appendChild(b);
+  });
+  refreshMode();
+}
+function applyTheme() {
+  document.documentElement.dataset.theme = cfg.theme;
+  $("themeBtn").textContent = cfg.theme === "dark" ? "☀️" : "🌙";
+}
+function refreshMode() {
+  const b = $("modeBadge");
+  b.textContent = live() ? "Pro" : "Demo";
+  b.classList.toggle("pro", !!live());
+  $("footNote").textContent = live() ? t("footLive", { repo: repoFull() }) : t("footDemo");
+  $("card3").classList.toggle("ok", !!(cfg.connected && token));
+  $("card1").classList.toggle("ok", !!cfg.owner);
+  $("cardLicense").classList.toggle("ok", licensed());
+  $("card4").classList.toggle("ok", !!cfg.tgOn);
+  $("disconnectBtn").style.display = cfg.connected ? "" : "none";
+}
+function status(id, kind, text) {
+  const el = $(id); el.className = "status show " + kind; el.textContent = text;
+}
+function openDrawer(v) { $("drawer").classList.toggle("open", v); $("scrim").classList.toggle("open", v); }
+
+/* ------------------------------------------------------------------ GitHub helpers */
+async function gh(path, opts = {}) {
+  const headers = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...(opts.headers || {}) };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(path.startsWith("http") ? path : API + path, { ...opts, headers, cache: "no-store" });
+  return res;
+}
+async function ghJson(path, opts) {
+  const r = await gh(path, opts);
+  let body = null; try { body = await r.json(); } catch {}
+  return { ok: r.ok, status: r.status, body, headers: r.headers };
+}
+const utf8b64 = (s) => btoa(unescape(encodeURIComponent(s)));
+async function putFile(path, content, message, branch) {
+  const q = branch ? `?ref=${encodeURIComponent(branch)}` : "";
+  const cur = await ghJson(`/repos/${repoFull()}/contents/${path}${q}`);
+  const body = { message, content: utf8b64(content) };
+  if (branch) body.branch = branch;
+  if (cur.ok && cur.body && cur.body.sha) {
+    if (cur.body.content && atob(cur.body.content.replace(/\n/g, "")) === unescape(encodeURIComponent(content))) return { ok: true, status: 200 };
+    body.sha = cur.body.sha;
+  }
+  return ghJson(`/repos/${repoFull()}/contents/${path}`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-Type": "application/json" } });
+}
+async function workflowTemplate() {
+  try {
+    const r = await fetch(`${CDN}/templates/client_workflow.yml`, { cache: "no-store" });
+    if (r.ok) { const txt = await r.text(); if (txt.includes("workflow_dispatch")) return txt; }
+  } catch {}
+  return $("workflowTemplate").textContent.trim() + "\n";
+}
+function parseRepoUrl(v) {
+  v = (v || "").trim().replace(/\.git$/, "").replace(/\/+$/, "");
+  const m = v.match(/^(?:https?:\/\/)?(?:www\.)?github\.com\/([A-Za-z0-9-]{1,39})(?:\/([\w.-]{1,100}))?/i) || v.match(/^([A-Za-z0-9-]{1,39})(?:\/([\w.-]{1,100}))?$/);
+  if (!m) return null;
+  return { owner: m[1], repo: m[2] || "" };
+}
+
+/* ------------------------------------------------------------------ setup actions */
+async function sha256Hex(s) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function checkLicense() {
+  const v = $("licInput").value.trim().toUpperCase();
+  if (!v) return;
+  if ((await sha256Hex(v)) === LICENSE_SHA256) { cfg.license = v; save(); status("licStatus", "ok", t("licOk")); }
+  else { cfg.license = ""; save(); status("licStatus", "err", t("licBad")); }
+  refreshMode();
+}
+function onRepoInput() {
+  const p = parseRepoUrl($("repoInput").value);
+  if (!p) { status("s1Status", "err", t("s1Bad")); return; }
+  cfg.owner = p.owner; cfg.repo = p.repo || DEFAULT_REPO; cfg.repoGiven = !!p.repo; cfg.connected = false;
+  save(); status("s1Status", "ok", t("s1Ok", { repo: repoFull() })); refreshMode();
+}
+
+async function connect() {
+  const tok = $("tokenInput").value.trim() || token;
+  if (!licensed()) { status("s3Status", "err", t("needLicense")); return; }
+  if (!cfg.owner) { status("s3Status", "err", t("needRepo")); return; }
+  if (!tok) return;
+  token = tok;
+  $("connectBtn").disabled = true;
+  try {
+    status("s3Status", "info", t("checking"));
+    const me = await ghJson("/user");
+    if (!me.ok) throw new Error(t("badToken"));
+    const scopes = (me.headers.get("x-oauth-scopes") || "");
+    if (scopes && !(scopes.includes("repo") && scopes.includes("workflow"))) throw new Error(t("scopeMiss"));
+    const login = me.body.login;
+
+    let repo = await ghJson(`/repos/${repoFull()}`);
+    if (repo.status === 404) {
+      if (cfg.owner.toLowerCase() !== login.toLowerCase()) throw new Error(t("notOwner", { repo: repoFull() }));
+      status("s3Status", "info", t("creatingRepo"));
+      const cr = await ghJson("/user/repos", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: cfg.repo, private: true, auto_init: true, description: "RelayMind video studio (free GitHub Actions renders)" }) });
+      if (!(cr.status === 201 || cr.status === 200)) throw new Error(`HTTP ${cr.status}: ${(cr.body && cr.body.message) || ""}`);
+      cfg.owner = cr.body.owner.login;
+      await new Promise((r) => setTimeout(r, 1500));
+      repo = await ghJson(`/repos/${repoFull()}`);
+    }
+    if (!repo.ok) throw new Error(`HTTP ${repo.status}: ${(repo.body && repo.body.message) || ""}`);
+    if (repo.body.permissions && !repo.body.permissions.push) throw new Error(t("notOwner", { repo: repoFull() }));
+
+    status("s3Status", "info", t("initRepo"));
+    const br = await ghJson(`/repos/${repoFull()}/branches?per_page=1`);
+    if (!br.ok || !Array.isArray(br.body) || br.body.length === 0) {
+      const rd = await putFile("README.md", "# RelayMind Studio\n\nVideos made with RelayMind render here on free GitHub Actions minutes.\n", "Initialize RelayMind studio");
+      if (!(rd.status === 200 || rd.status === 201)) throw new Error(`README HTTP ${rd.status}`);
+      repo = await ghJson(`/repos/${repoFull()}`);
+    }
+    cfg.branch = repo.body.default_branch || "main";
+
+    status("s3Status", "info", t("installing"));
+    const wf = await putFile(WF_PATH, await workflowTemplate(), "Install RelayMind render workflow", cfg.branch);
+    if (!(wf.status === 200 || wf.status === 201)) throw new Error(`workflow HTTP ${wf.status}: ${(wf.body && wf.body.message) || ""}`);
+
+    status("s3Status", "info", t("savingCfg"));
+    await saveRepoConfig();
+    gh(`/repos/${repoFull()}/actions/permissions`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ enabled: true, allowed_actions: "all" }) }).catch(() => {});
+
+    cfg.connected = true; save(); $("tokenInput").value = "";
+    status("s3Status", "ok", t("connected", { repo: repoFull() }));
+  } catch (e) {
+    cfg.connected = false; save();
+    status("s3Status", "err", String(e.message || e));
+  } finally { $("connectBtn").disabled = false; refreshMode(); }
+}
+async function saveRepoConfig() {
+  const pub = { app: "RelayMind", version: 1, lang: cfg.lang, vlang: cfg.vlang, theme: cfg.theme, tgOn: !!cfg.tgOn,
+                tgChat: cfg.tgChat || "", wa: cfg.wa || "", updated: new Date().toISOString() };
+  return putFile("relaymind.config.json", JSON.stringify(pub, null, 2) + "\n", "Update RelayMind settings", cfg.branch);
+}
+async function loadRepoConfig() {
+  if (!token || !cfg.connected) return;
+  const r = await ghJson(`/repos/${repoFull()}/contents/relaymind.config.json`);
+  if (!r.ok || !r.body || !r.body.content) return;
+  const c = safe(() => JSON.parse(decodeURIComponent(escape(atob(r.body.content.replace(/\n/g, ""))))), null);
+  if (!c) return;
+  ["tgChat", "wa", "tgOn"].forEach((k) => { if (!cfg[k] && c[k]) cfg[k] = c[k]; });
+  save(); fillInputs(); refreshMode();
+}
+async function setSecret(name, value) {
+  const mod = await import("https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.7.15/+esm");
+  const sodium = mod.default || mod; await sodium.ready;
+  const key = await ghJson(`/repos/${repoFull()}/actions/secrets/public-key`);
+  if (!key.ok) throw new Error(`public-key HTTP ${key.status}`);
+  const sealed = sodium.crypto_box_seal(sodium.from_string(value), sodium.from_base64(key.body.key, sodium.base64_variants.ORIGINAL));
+  const r = await ghJson(`/repos/${repoFull()}/actions/secrets/${name}`, { method: "PUT", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ encrypted_value: sodium.to_base64(sealed, sodium.base64_variants.ORIGINAL), key_id: key.body.key_id }) });
+  if (!(r.status === 201 || r.status === 204)) throw new Error(`${name} HTTP ${r.status}`);
+}
+async function saveDelivery() {
+  const tok = $("tgToken").value.trim(), chat = $("tgChat").value.trim(), wa = $("waNum").value.replace(/[^\d]/g, "");
+  cfg.wa = wa;
+  if (chat) cfg.tgChat = chat;
+  try {
+    if (tok || chat) {
+      if (!(cfg.connected && token)) { save(); status("s4Status", "warn", t("tgNeedConn")); return; }
+      if (tok) await setSecret("TG_TOKEN", tok);
+      if (chat) await setSecret("TG_CHAT_ID", chat);
+      cfg.tgOn = true; $("tgToken").value = "";
+      save(); await saveRepoConfig();
+      status("s4Status", "ok", t("tgSaved"));
+    } else { save(); if (cfg.connected && token) await saveRepoConfig(); status("s4Status", "ok", t("savedLocal")); }
+  } catch (e) { status("s4Status", "err", String(e.message || e)); }
+  refreshMode();
+}
+function disconnect() {
+  token = ""; cfg.connected = false; save(); refreshMode(); status("s3Status", "info", t("disconnected"));
+}
+
+/* ------------------------------------------------------------------ chat rendering */
+function addMsg(role, text) {
+  $("hero") && $("hero").remove();
+  const wrap = document.createElement("div"); wrap.className = "msg " + role;
+  const b = document.createElement("div"); b.className = "bubble"; if (text) b.textContent = text;
+  wrap.appendChild(b); $("thread").appendChild(wrap);
+  $("main").scrollTop = $("main").scrollHeight;
+  return b;
+}
+function stepper(bubble, keys) {
+  const ul = document.createElement("ul"); ul.className = "steps";
+  const items = keys.map((k) => { const li = document.createElement("li"); li.innerHTML = '<span class="dot"></span><span></span>'; li.lastChild.textContent = t(k); ul.appendChild(li); return li; });
+  bubble.appendChild(ul);
+  return {
+    set(i, label) { items.forEach((li, j) => { li.className = j < i ? "done" : j === i ? "active" : ""; if (j < i) li.firstChild.textContent = "✓"; }); if (label && items[i]) items[i].lastChild.textContent = label; },
+    done() { items.forEach((li) => { li.className = "done"; li.firstChild.textContent = "✓"; }); },
+    fail(i) { if (items[i]) items[i].className = "fail"; },
+  };
+}
+function showResult(bubble, blob, { demo = false, script = null, report = null } = {}) {
+  const url = URL.createObjectURL(blob);
+  const isMp4 = (blob.type || "").includes("mp4");
+  const ext = isMp4 ? "mp4" : "webm";
+  const box = document.createElement("div"); box.className = "player";
+  const v = document.createElement("video"); v.src = url; v.controls = true; v.playsInline = true; v.loop = demo; v.preload = "metadata";
+  const acts = document.createElement("div"); acts.className = "actions";
+  const dl = document.createElement("a"); dl.className = "btn primary"; dl.href = url; dl.download = `relaymind-short.${ext}`;
+  dl.textContent = demo ? t("downloadWebm") : t("download");
+  acts.appendChild(dl);
+  const file = new File([blob], `relaymind-short.${ext}`, { type: blob.type || "video/mp4" });
+  if (navigator.canShare && safe(() => navigator.canShare({ files: [file] }), false)) {
+    const sh = document.createElement("button"); sh.className = "btn"; sh.type = "button"; sh.textContent = cfg.wa ? t("shareWa") : t("share");
+    sh.onclick = () => navigator.share({ files: [file], title: (script && script.title) || "RelayMind" }).catch(() => {});
+    acts.appendChild(sh);
+  } else if (cfg.wa) {
+    const wa = document.createElement("a"); wa.className = "btn"; wa.target = "_blank"; wa.rel = "noopener";
+    wa.href = `https://wa.me/${cfg.wa}?text=${encodeURIComponent((script && script.title ? script.title + "\n" : "") + "🎬 RelayMind")}`;
+    wa.textContent = t("shareWa"); acts.appendChild(wa);
+  }
+  const again = document.createElement("button"); again.className = "btn"; again.type = "button"; again.textContent = t("again");
+  again.onclick = () => { $("idea").focus(); }; acts.appendChild(again);
+  const note = document.createElement("div"); note.className = "note";
+  note.textContent = demo ? t("demoNote") : (report && report.telegram ? t("tgSent") : "");
+  acts.appendChild(note);
+  box.append(v, acts); bubble.appendChild(box);
+  if (script && script.scenes) {
+    const sb = document.createElement("details"); sb.className = "script-box";
+    const sm = document.createElement("summary"); sm.textContent = t("script") + (script.title ? ` · ${script.title}` : ""); sb.appendChild(sm);
+    script.scenes.forEach((s, i) => { const p = document.createElement("p"); p.textContent = `${i + 1}. ${s.text}`; sb.appendChild(p); });
+    bubble.appendChild(sb);
+  }
+  $("main").scrollTop = $("main").scrollHeight;
+}
+
+/* ------------------------------------------------------------------ local script (demo + fallback) */
+const LOCAL = {
+  en: ["Stop scrolling: here is what nobody tells you about {t}.", "Most people get {t} completely wrong.",
+       "Secret one: start small, but start today.", "Secret two: focus on the one action that matters most.",
+       "Secret three: track every small win.", "Try this for seven days and feel the difference.", "Follow for more!"],
+  ar: ["استنى لحظة، ده اللي محدش بيقولك عليه عن {t}.", "معظم الناس بيفهموا {t} غلط.", "أول سر: ابدأ صغير، بس ابدأ النهارده.",
+       "تاني سر: ركز على أهم خطوة.", "تالت سر: تابع كل نجاح صغير.", "جرب ده سبع أيام وهتحس بالفرق.", "تابعنا للمزيد!"]
+};
+function localScript(topic, lang) {
+  const tt = topic.replace(/[.!?؟]+$/, "");
+  return { title: tt, lang, source: "local", scenes: LOCAL[lang].map((l) => ({ text: l.replace("{t}", tt), visual: tt, keyword: tt })) };
+}
+
+/* ------------------------------------------------------------------ silent prompt enhancer (browser) */
+async function enhanceInBrowser(idea, lang) {
+  const sys = `You are a short-form video scriptwriter. Return ONLY JSON {"title":str,"hook":str,"scenes":[{"text":str,"visual":str,"keyword":str}],"hashtags":[str],"caption":str}. 5-7 scenes, scene 1 is a scroll-stopping hook (max 12 words), each scene max 25 spoken words in ${lang === "ar" ? "Arabic" : "English"}, end with a call to action. "visual" is a vivid English 9:16 photo prompt without text; "keyword" is 1-2 English words.`;
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 30000);
+  try {
+    const r = await fetch(LLM_URL, { method: "POST", signal: ctl.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "openai", temperature: 0.8, max_tokens: 900, response_format: { type: "json_object" },
+        messages: [{ role: "system", content: sys }, { role: "user", content: "Idea: " + idea }] }) });
+    if (!r.ok) return null;
+    const j = await r.json(); const raw = j.choices[0].message.content; const s = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1));
+    return Array.isArray(s.scenes) && s.scenes.length >= 4 ? s : null;
+  } catch { return null; } finally { clearTimeout(timer); }
+}
+
+/* ------------------------------------------------------------------ live generation */
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function generateLive(idea, vlang, bubble) {
+  const st = stepper(bubble, ["stEnhance", "stDispatch", "stQueue", "stRender", "stFetch"]);
+  const reqId = "rm-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  st.set(0);
+  const pre = await enhanceInBrowser(idea, vlang);
+  const topic = pre ? JSON.stringify(pre).slice(0, 60000) : idea;
+
+  st.set(1);
+  const repo = await ghJson(`/repos/${repoFull()}`);           // auto-detect default branch every time
+  if (!repo.ok) throw new Error(`HTTP ${repo.status}`);
+  cfg.branch = repo.body.default_branch || cfg.branch || "main"; save();
+  const d = await ghJson(`/repos/${repoFull()}/actions/workflows/${WF_FILE}/dispatches`, { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ref: cfg.branch, inputs: { topic, lang: vlang, voice: "", request_id: reqId } }) });
+  if (!(d.status === 204 || d.status === 200)) throw new Error(`dispatch HTTP ${d.status}: ${(d.body && d.body.message) || ""}`);
+
+  st.set(2);
+  const t0 = Date.now(); let run = null;
+  while (Date.now() - t0 < 12 * 60 * 1000) {
+    await sleep(POLL_MS);
+    if (!run) {
+      const runs = await ghJson(`/repos/${repoFull()}/actions/workflows/${WF_FILE}/runs?event=workflow_dispatch&per_page=15`);
+      run = runs.ok && runs.body.workflow_runs.find((r) => (r.display_title || r.name || "").includes(reqId)) || null;
+      if (!run) continue;
+    } else {
+      const r = await ghJson(`/repos/${repoFull()}/actions/runs/${run.id}`);
+      if (r.ok) run = r.body;
+    }
+    if (run.status === "in_progress") st.set(3, t("stRender", { s: Math.round((Date.now() - new Date(run.run_started_at || run.created_at).getTime()) / 1000) }));
+    if (run.status === "completed") break;
+  }
+  if (!run || run.status !== "completed") { bubble.appendChild(Object.assign(document.createElement("p"), { className: "note", textContent: t("timeout") })); st.fail(3); return; }
+
+  st.set(4);
+  let blob = null, report = null, script = pre;
+  const arts = await ghJson(`/repos/${repoFull()}/actions/runs/${run.id}/artifacts`);
+  const art = arts.ok && arts.body.artifacts.find((a) => a.name === "relaymind-video" && !a.expired);
+  if (art) {
+    try {
+      const z = await gh(art.archive_download_url);
+      if (z.ok) {
+        const JSZip = await loadJSZip();
+        const zip = await JSZip.loadAsync(await z.arrayBuffer());
+        const mp4 = zip.file("final_short.mp4");
+        if (zip.file("report.json")) report = JSON.parse(await zip.file("report.json").async("string"));
+        if (mp4) blob = new Blob([await mp4.async("arraybuffer")], { type: "video/mp4" });
+      }
+    } catch (e) { console.warn("artifact download failed, using render branch", e); }
+  }
+  if (!blob && run.conclusion === "success") {                 // fallback: latest render branch via API
+    const raw = { headers: { Accept: "application/vnd.github.raw+json" } };
+    const meta = await gh(`/repos/${repoFull()}/contents/render.json?ref=relaymind-renders&_=${Date.now()}`, raw);
+    if (meta.ok) {
+      const m = await meta.json().catch(() => ({}));
+      if (!m.request_id || m.request_id === reqId) {
+        const v = await gh(`/repos/${repoFull()}/contents/final_short.mp4?ref=relaymind-renders&_=${Date.now()}`, raw);
+        if (v.ok) blob = new Blob([await v.arrayBuffer()], { type: "video/mp4" });
+        const rp = await gh(`/repos/${repoFull()}/contents/report.json?ref=relaymind-renders`, raw);
+        if (rp.ok) report = await rp.json().catch(() => null);
+      }
+    }
+  }
+  if (report && report.script) script = report.script;
+  if (!blob) { st.fail(4); throw new Error(t("runFailed", { e: (report && report.error) || run.conclusion })); }
+  st.done();
+  showResult(bubble, blob, { script, report });
+}
+let jszipPromise = null;
+function loadJSZip() {
+  if (window.JSZip) return Promise.resolve(window.JSZip);
+  jszipPromise = jszipPromise || new Promise((res, rej) => {
+    const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
+    s.onload = () => res(window.JSZip); s.onerror = rej; document.head.appendChild(s);
+  });
+  return jszipPromise;
+}
+
+/* ------------------------------------------------------------------ demo generation (in-browser canvas) */
+async function generateDemo(idea, vlang, bubble) {
+  const st = stepper(bubble, ["stEnhance", "demoStRender"]);
+  st.set(0); await sleep(500);
+  const script = localScript(idea, vlang);
+  st.set(1);
+  const blob = await renderCanvasVideo(script);
+  st.done();
+  showResult(bubble, blob, { demo: true, script });
+}
+function renderCanvasVideo(script) {
+  return new Promise((resolve, reject) => {
+    const W = 540, H = 960, FPS = 30, PER = 2.6;
+    const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d");
+    if (!c.captureStream || !window.MediaRecorder) { reject(new Error("This browser can't record video previews.")); return; }
+    const types = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm"];
+    const mime = types.find((m) => MediaRecorder.isTypeSupported(m)) || "";
+    const rec = new MediaRecorder(c.captureStream(FPS), mime ? { mimeType: mime, videoBitsPerSecond: 3_000_000 } : {});
+    const chunks = []; rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+    rec.onstop = () => resolve(new Blob(chunks, { type: (mime || "video/webm").split(";")[0] }));
+    const pal = [["#ff0080", "#28005a"], ["#00c8ff", "#0a1450"], ["#ff8c00", "#780028"], ["#00ffaa", "#003246"], ["#ffdc00", "#c81e5a"], ["#9650ff", "#0a0028"]];
+    const total = script.scenes.length * PER; const rtl = script.lang === "ar";
+    const font = '800 44px Inter, "Noto Sans Arabic", system-ui, sans-serif';
+    function wrap(text) {
+      g.font = font; const words = (rtl ? text : text.toUpperCase()).split(/\s+/); const lines = []; let cur = "";
+      for (const w of words) { const cand = cur ? cur + " " + w : w; if (g.measureText(cand).width > W - 80 && cur) { lines.push(cur); cur = w; } else cur = cand; }
+      if (cur) lines.push(cur); return lines;
+    }
+    const start = performance.now(); rec.start(250);
+    (function frame() {
+      const el = (performance.now() - start) / 1000;
+      if (el >= total) { rec.stop(); return; }
+      const i = Math.min(script.scenes.length - 1, Math.floor(el / PER)); const local = (el - i * PER) / PER;
+      const [a, b] = pal[i % pal.length];
+      const ang = el * 0.6; const gr = g.createLinearGradient(W / 2 + Math.cos(ang) * W, 0, W / 2 - Math.cos(ang) * W, H);
+      gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      for (let k = 0; k < 6; k++) { g.beginPath(); g.fillStyle = "rgba(255,255,255,.07)"; g.arc((k * 97 + el * 40 * (k % 2 ? 1 : -1)) % W, (k * 173 + el * 25) % H, 60 + k * 18, 0, 7); g.fill(); }
+      g.fillStyle = "#FFD600"; g.fillRect(0, 0, W * el / total, 6);
+      const lines = wrap(script.scenes[i].text); const s = 0.9 + 0.1 * Math.min(1, local * 4);
+      g.save(); g.translate(W / 2, H * 0.55); g.scale(s, s); g.globalAlpha = Math.min(1, local * 5);
+      g.font = font; g.textAlign = "center"; g.textBaseline = "middle"; g.direction = rtl ? "rtl" : "ltr";
+      lines.forEach((ln, j) => { const y = (j - (lines.length - 1) / 2) * 58; g.lineWidth = 8; g.strokeStyle = "rgba(0,0,0,.85)"; g.strokeText(ln, 0, y); g.fillStyle = "#fff"; g.fillText(ln, 0, y); });
+      g.restore();
+      g.font = '600 18px Inter, system-ui'; g.fillStyle = "rgba(255,255,255,.75)"; g.textAlign = "center"; g.fillText("RelayMind · demo", W / 2, H - 40);
+      requestAnimationFrame(frame);
+    })();
+  });
+}
+
+/* ------------------------------------------------------------------ composer */
+let busy = false;
+function onInput() {
+  const ta = $("idea"); ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 180) + "px";
+  $("sendBtn").disabled = busy || !ta.value.trim();
+}
+async function submit(e) {
+  e && e.preventDefault();
+  const idea = $("idea").value.trim(); if (!idea || busy) return;
+  const vlang = $("vlang").value; cfg.vlang = vlang; save();
+  busy = true; $("idea").value = ""; onInput();
+  addMsg("user", idea);
+  const bubble = addMsg("bot", "");
+  try { live() ? await generateLive(idea, vlang, bubble) : await generateDemo(idea, vlang, bubble); }
+  catch (err) { const p = document.createElement("p"); p.className = "status show err"; p.textContent = t("failed", { e: err.message || err }); bubble.appendChild(p); }
+  finally { busy = false; onInput(); }
+}
+
+/* ------------------------------------------------------------------ wiring */
+function fillInputs() {
+  if (cfg.owner) $("repoInput").value = cfg.repoGiven ? `https://github.com/${repoFull()}` : `https://github.com/${cfg.owner}`;
+  if (cfg.license) $("licInput").value = cfg.license;
+  $("tgChat").value = cfg.tgChat || ""; $("waNum").value = cfg.wa || ""; $("vlang").value = cfg.vlang || cfg.lang;
+}
+function init() {
+  readLayers(); applyTheme(); applyI18n(); fillInputs();
+  if (cfg.license) status("licStatus", "ok", t("licOk"));
+  if (cfg.connected && token) status("s3Status", "ok", t("connected", { repo: repoFull() }));
+  $("langBtn").onclick = () => { cfg.lang = cfg.lang === "ar" ? "en" : "ar"; $("vlang").value = cfg.lang; save(); applyI18n(); };
+  $("themeBtn").onclick = () => { cfg.theme = cfg.theme === "dark" ? "light" : "dark"; save(); applyTheme(); };
+  $("setupBtn").onclick = () => openDrawer(true);
+  $("closeDrawer").onclick = $("scrim").onclick = () => openDrawer(false);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") openDrawer(false); });
+  $("licInput").addEventListener("keydown", (e) => { if (e.key === "Enter") checkLicense(); });
+  $("licInput").addEventListener("change", checkLicense);
+  $("repoInput").addEventListener("change", onRepoInput);
+  $("repoInput").addEventListener("keydown", (e) => { if (e.key === "Enter") onRepoInput(); });
+  $("tokenInput").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); connect(); } });
+  $("connectBtn").onclick = connect; $("disconnectBtn").onclick = disconnect;
+  $("saveDelivery").onclick = saveDelivery;
+  $("idea").addEventListener("input", onInput);
+  $("idea").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) submit(e); });
+  $("composer").addEventListener("submit", submit);
+  loadRepoConfig().catch(() => {});
+}
+init();
+})();
+</script>
+</body>
+</html>

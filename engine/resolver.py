@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import random
+import re
 import time
 from typing import Any, Callable, Iterable, Optional, Sequence
 
@@ -23,12 +24,14 @@ RETRYABLE = {408, 409, 425, 429, 500, 502, 503, 504, 522, 524}
 # --------------------------------------------------------------------------- #
 # Endpoint registry (verified November 2026)
 # --------------------------------------------------------------------------- #
-LLM_ENDPOINT = "https://models.github.ai/inference/chat/completions"
-LLM_MODELS: list[str] = [
-    "openai/gpt-4o-mini",
-    "meta/llama-3.3-70b-instruct",
-    "openai/gpt-4.1-mini",
-    "mistral-ai/mistral-small-2503",
+# NOTE: GitHub Models (models.github.ai) was retired on 2026-07-30
+# (https://docs.github.com/en/rest/models/inference). It is kept as a quick last
+# attempt only; keyless Pollinations text endpoints are the primary free LLMs.
+LLM_PROVIDERS: list[dict] = [
+    {"name": "pollinations-text", "url": "https://text.pollinations.ai/openai", "model": "openai", "auth": "pollinations"},
+    {"name": "pollinations-gen", "url": "https://gen.pollinations.ai/v1/chat/completions", "model": "openai", "auth": "pollinations-key"},
+    {"name": "custom", "url": os.environ.get("LLM_BASE_URL", ""), "model": os.environ.get("LLM_MODEL", "gpt-4o-mini"), "auth": "custom"},
+    {"name": "github-models", "url": "https://models.github.ai/inference/chat/completions", "model": "openai/gpt-4o-mini", "auth": "github"},
 ]
 IMAGE_ENDPOINTS: list[str] = [
     # {prompt} {w} {h} {seed} are formatted at call time
@@ -41,7 +44,7 @@ GITHUB_SEARCH_API = "https://api.github.com/search/repositories"
 TELEGRAM_API = "https://api.telegram.org/bot{token}/{method}"
 
 HEALTH_TARGETS = {
-    "github_models": "https://models.github.ai",
+    "pollinations_text": "https://text.pollinations.ai",
     "pollinations": "https://image.pollinations.ai",
     "wikimedia": "https://commons.wikimedia.org",
     "openverse": "https://api.openverse.org/v1/",
@@ -166,39 +169,53 @@ def health_check(timeout: float = 6) -> dict[str, bool]:
 
 
 # --------------------------------------------------------------------------- #
-# GitHub Models (free, uses the workflow GITHUB_TOKEN with models: read)
+# Free LLM rotation (Pollinations keyless -> custom OpenAI-compatible -> GitHub Models)
 # --------------------------------------------------------------------------- #
-def chat_completion(messages: list[dict], token: str, *, models: Iterable[str] = LLM_MODELS,
-                    temperature: float = 0.8, max_tokens: int = 900,
-                    json_mode: bool = True) -> tuple[str, str]:
-    """Rotate across free GitHub Models until one answers. Returns (model, content)."""
-    if not token:
-        raise ChainExhausted("no GITHUB_TOKEN available for GitHub Models")
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Content-Type": "application/json",
-    }
+def chat_completion(messages: list[dict], token: str = "", *, temperature: float = 0.8,
+                    max_tokens: int = 1200, json_mode: bool = True) -> tuple[str, str]:
+    """Rotate across free OpenAI-compatible endpoints. Returns (provider, content)."""
 
-    def make(model: str) -> Callable[[], str]:
+    def make(p: dict) -> Callable[[], str]:
         def call() -> str:
-            body: dict[str, Any] = {"model": model, "messages": messages,
+            headers = {"Content-Type": "application/json", "Accept": "application/json"}
+            if p["auth"] == "pollinations-key" and not os.environ.get("POLLINATIONS_TOKEN"):
+                raise RuntimeError("needs free POLLINATIONS_TOKEN")
+            if p["auth"].startswith("pollinations") and os.environ.get("POLLINATIONS_TOKEN"):
+                headers["Authorization"] = "Bearer " + os.environ["POLLINATIONS_TOKEN"]
+            elif p["auth"] == "custom":
+                if not p["url"]:
+                    raise RuntimeError("LLM_BASE_URL not set")
+                if os.environ.get("LLM_API_KEY"):
+                    headers["Authorization"] = "Bearer " + os.environ["LLM_API_KEY"]
+            elif p["auth"] == "github":
+                if not token:
+                    raise RuntimeError("no GITHUB_TOKEN")
+                headers.update({"Authorization": f"Bearer {token}", "X-GitHub-Api-Version": "2022-11-28"})
+            body: dict[str, Any] = {"model": p["model"], "messages": messages,
                                     "temperature": temperature, "max_tokens": max_tokens}
-            if json_mode and model.startswith("openai/"):
+            if json_mode:
                 body["response_format"] = {"type": "json_object"}
-            r = request_with_retry("POST", LLM_ENDPOINT, headers=headers, json=body,
-                                   attempts=2, timeout=45)
+            r = request_with_retry("POST", p["url"], headers=headers, json=body, attempts=2,
+                                   timeout=60 if p["auth"].startswith("pollinations") else 30)
+            if r.status_code == 402 and p["auth"] == "pollinations":
+                m = re.search(r"[Rr]etry after (\d+)s", r.text)
+                wait = int(m.group(1)) + 1 if m else 46
+                if wait <= 30:  # anonymous tier: 1 reply / 45 s / IP
+                    log.info("pollinations text cooling down %ss", wait)
+                    time.sleep(wait)
+                    r = request_with_retry("POST", p["url"], headers=headers, json=body, attempts=1, timeout=60)
             if r.status_code != 200:
-                raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
-            return r.json()["choices"][0]["message"]["content"]
+                raise RuntimeError(f"HTTP {r.status_code}: {r.text[:160]}")
+            try:
+                return r.json()["choices"][0]["message"]["content"]
+            except Exception as exc:  # noqa: BLE001
+                raise RuntimeError(f"non-JSON reply: {r.text[:80]!r}") from exc
         return call
 
-    return run_chain("llm", [(m, make(m)) for m in models],
+    return run_chain("llm", [(p["name"], make(p)) for p in LLM_PROVIDERS],
                      validate=lambda s: isinstance(s, str) and len(s.strip()) > 20)
 
 
-# --------------------------------------------------------------------------- #
 # Open-source discovery helper
 # --------------------------------------------------------------------------- #
 def discover_repos(query: str, token: str = "", limit: int = 5) -> list[dict]:
