@@ -36,7 +36,7 @@ def validate_manifest(data: dict) -> list[str]:
 
 def version_fingerprint(data: dict) -> str:
     """Hash product-defining inputs; workflow metadata does not change the product version."""
-    stable = {k: v for k, v in data.items() if k not in {"approval_issue", "status", "outputs", "published"}}
+    stable = {k: v for k, v in data.items() if k not in {"approval_issue", "status", "outputs", "published", "version_sha256"}}
     encoded = json.dumps(stable, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
 
