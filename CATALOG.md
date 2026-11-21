@@ -48,7 +48,7 @@ Each live Gumroad listing now includes three downloads: its Markdown guide, matc
 
 ## Product backlog — not published
 
-Previous draft ideas 11–20 are retained as internal research leads only. They are not available for sale and are not part of the live catalog. Prioritize improving the ten existing products and measuring demand before developing additional SKUs.
+Previous draft ideas 11–20 are retained as internal research leads only. Draft 21 (AI Agent Reliability Scorecard) is also backlog only - not published, no live slot. They are not available for sale and are not part of the live catalog. Prioritize improving the ten existing products and measuring demand before developing additional SKUs.
 
 ## Brand and license
 
