@@ -85,6 +85,7 @@ jobs:
           with open(os.environ["GITHUB_ENV"], "a") as env:
               env.write(f"VERSION_SHA256={fingerprint}\n")
           PY
+          gh label create owner-approval-required --color D93F0B --description "Owner review required before approval" 2>/dev/null || true
           gh label create approved-to-publish --color 0E8A16 --description "Explicit owner approval for this exact product version" 2>/dev/null || true
           ISSUE_URL=$(gh issue create --title "Product approval: $SLUG" --label "owner-approval-required" --body "## Product version review\n\nManifest: `$MANIFEST`\nVersion SHA-256: `$VERSION_SHA256`\n\n- [ ] Review all final deliverable files and previews\n- [ ] Review listing text, keywords, categories and price\n- [ ] Verify artwork originality, provenance and licenses\n- [ ] Confirm channel-specific quality reports pass\n- [ ] Confirm rights and AI-content disclosure\n- [ ] Explicitly approve this exact version by applying `approved-to-publish`\n\n**This issue does not publish anything.** Publishing remains a separate owner-operated step.")
           echo "url=$ISSUE_URL" >> "$GITHUB_OUTPUT"
