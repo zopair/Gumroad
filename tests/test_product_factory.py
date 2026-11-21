@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -35,6 +36,17 @@ class ProductFactoryTests(unittest.TestCase):
         first = self.manifest()
         second = {**first, "status": "approved", "approval_issue": 12}
         self.assertEqual(version_fingerprint(first), version_fingerprint(second))
+
+    def test_version_fingerprint_matches_workflow_with_stored_hash(self):
+        data = self.manifest()
+        data["version_sha256"] = version_fingerprint(data)
+        workflow_fields = {"approval_issue", "status", "outputs", "published", "version_sha256"}
+        stable = {key: value for key, value in data.items() if key not in workflow_fields}
+        workflow_hash = hashlib.sha256(json.dumps(
+            stable, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode()).hexdigest()
+        self.assertEqual(data["version_sha256"], workflow_hash)
+        self.assertEqual(version_fingerprint(data), workflow_hash)
 
     def test_creates_manifest_without_overwriting(self):
         with tempfile.TemporaryDirectory() as tmp:
