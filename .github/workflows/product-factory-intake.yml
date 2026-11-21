@@ -76,18 +76,33 @@ jobs:
           MANIFEST: ${{ steps.manifest.outputs.path }}
         run: |
           set -euo pipefail
-          python - <<'PY'
+          VERSION_SHA256=$(python - <<'PY'
           import hashlib, json, os
           data=json.load(open(os.environ["MANIFEST"], encoding="utf-8"))
           stable={k:v for k,v in data.items() if k not in {"approval_issue","status","outputs","published","version_sha256"}}
           encoded=json.dumps(stable, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
-          fingerprint=hashlib.sha256(encoded).hexdigest()
-          with open(os.environ["GITHUB_ENV"], "a") as env:
-              env.write(f"VERSION_SHA256={fingerprint}\n")
+          print(hashlib.sha256(encoded).hexdigest())
           PY
+          )
+          export VERSION_SHA256
           gh label create owner-approval-required --color D93F0B --description "Owner review required before approval" 2>/dev/null || true
           gh label create approved-to-publish --color 0E8A16 --description "Explicit owner approval for this exact product version" 2>/dev/null || true
-          ISSUE_URL=$(gh issue create --title "Product approval: $SLUG" --label "owner-approval-required" --body "## Product version review\n\nManifest: `$MANIFEST`\nVersion SHA-256: `$VERSION_SHA256`\n\n- [ ] Review all final deliverable files and previews\n- [ ] Review listing text, keywords, categories and price\n- [ ] Verify artwork originality, provenance and licenses\n- [ ] Confirm channel-specific quality reports pass\n- [ ] Confirm rights and AI-content disclosure\n- [ ] Explicitly approve this exact version by applying `approved-to-publish`\n\n**This issue does not publish anything.** Publishing remains a separate owner-operated step.")
+          cat > approval-issue.md <<EOF
+          ## Product version review
+
+          Manifest: `$MANIFEST`
+          Version SHA-256: `$VERSION_SHA256`
+
+          - [ ] Review all final deliverable files and previews
+          - [ ] Review listing text, keywords, categories and price
+          - [ ] Verify artwork originality, provenance and licenses
+          - [ ] Confirm channel-specific quality reports pass
+          - [ ] Confirm rights and AI-content disclosure
+          - [ ] Explicitly approve this exact version by applying `approved-to-publish`
+
+          **This issue does not publish anything.** Publishing remains a separate owner-operated step.
+          EOF
+          ISSUE_URL=$(gh issue create --title "Product approval: $SLUG" --label "owner-approval-required" --body-file approval-issue.md)
           echo "url=$ISSUE_URL" >> "$GITHUB_OUTPUT"
       - name: Save issue reference in manifest
         env:
