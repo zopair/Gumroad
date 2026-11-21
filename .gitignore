@@ -1,0 +1,6 @@
+
+# RelayMind
+__pycache__/
+*.pyc
+output/
+dry/

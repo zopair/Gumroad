@@ -1,0 +1,116 @@
+# RelayMind client workflow  (injected automatically by the RelayMind web app)
+# Path in client repo: .github/workflows/relaymind.yml
+# Zero-cost rules: manual dispatch only, 1 render at a time, 4-minute hard ceiling,
+# pip cache, engine pulled from jsDelivr CDN (never hammers github.com/zopair).
+name: RelayMind Render
+run-name: "RelayMind ${{ inputs.request_id }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Video idea (or pre-enhanced script JSON)"
+        required: true
+        type: string
+      lang:
+        description: "Narration language"
+        required: false
+        default: "en"
+        type: choice
+        options: ["en", "ar"]
+      voice:
+        description: "Optional edge-tts voice (e.g. en-US-AriaNeural, ar-EG-SalmaNeural)"
+        required: false
+        default: ""
+        type: string
+      request_id:
+        description: "Request id used by the web app to find this run"
+        required: false
+        default: "manual"
+        type: string
+
+permissions:
+  contents: write   # publish latest render to the relaymind-renders branch
+  models: read      # free GitHub Models for the silent prompt enhancer
+  actions: read
+
+concurrency:
+  group: relaymind-render
+  cancel-in-progress: true
+
+env:
+  ENGINE_REPO: zopair/Gumroad
+  ENGINE_REF: main
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Fetch RelayMind engine (jsDelivr CDN)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p rm/engine
+          files="runner.py requirements.txt engine/__init__.py engine/resolver.py engine/prompt_enhancer.py engine/media_factory.py"
+          for f in $files; do
+            ok=0
+            for base in "https://cdn.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
+                        "https://fastly.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
+                        "https://raw.githubusercontent.com/${ENGINE_REPO}/${ENGINE_REF}"; do
+              if curl -fsSL --retry 2 --max-time 20 "$base/$f" -o "rm/$f"; then ok=1; break; fi
+            done
+            [ "$ok" = 1 ] || { echo "::error::could not fetch $f"; exit 1; }
+          done
+          ls -la rm rm/engine
+
+      - name: Set up Python (pip cache)
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: rm/requirements.txt
+
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check -q -r rm/requirements.txt
+
+      - name: Render vertical video
+        env:
+          TOPIC: ${{ inputs.topic }}
+          LANG_CODE: ${{ inputs.lang }}
+          VOICE: ${{ inputs.voice }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
+        run: python rm/runner.py --out output
+
+      - name: Upload MP4 artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: relaymind-video
+          path: |
+            output/final_short.mp4
+            output/poster.jpg
+            output/script.json
+            output/report.json
+          retention-days: 3
+          if-no-files-found: warn
+
+      - name: Publish latest render for the in-app player
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUEST_ID: ${{ inputs.request_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir pub && cp output/final_short.mp4 output/poster.jpg output/report.json pub/
+          printf '{"request_id":"%s","run_id":"%s"}\n' "$REQUEST_ID" "$GITHUB_RUN_ID" > pub/render.json
+          cd pub
+          git init -q -b relaymind-renders
+          git config user.name "relaymind-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -qm "RelayMind render $REQUEST_ID"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" relaymind-renders

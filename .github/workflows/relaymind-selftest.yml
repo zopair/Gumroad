@@ -1,0 +1,55 @@
+# Owner-side self-test: renders one video from this repo's own engine code.
+# Manual only, so it never consumes minutes unless you press "Run workflow".
+name: RelayMind Self-Test
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        required: false
+        default: "3 surprising facts about the ocean"
+        type: string
+      lang:
+        required: false
+        default: "en"
+        type: choice
+        options: ["en", "ar"]
+permissions:
+  contents: read
+  models: read
+concurrency:
+  group: relaymind-selftest
+  cancel-in-progress: true
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            engine
+            runner.py
+            requirements.txt
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+      - run: pip install --disable-pip-version-check -q -r requirements.txt
+      - name: Dry run (offline)
+        run: python runner.py --dry-run --out dry
+      - name: Full render
+        env:
+          TOPIC: ${{ inputs.topic }}
+          LANG_CODE: ${{ inputs.lang }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python runner.py --out output
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: relaymind-selftest
+          path: |
+            output/final_short.mp4
+            output/report.json
+            output/script.json
+          retention-days: 2
