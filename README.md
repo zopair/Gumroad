@@ -1,63 +1,66 @@
 # RelayMind — idea → vertical video, $0/month
 
-RelayMind turns a one-line idea (English or Arabic) into a **1080×1920 MP4 short** with an AI-written script, neural voice-over, Ken Burns visuals, burned-in kinetic captions and loudness-normalised audio. Everything runs on **free infrastructure**: each client's own GitHub Actions minutes, keyless open APIs, and local fallbacks so a render never fails.
+RelayMind turns a one-line idea (English or Arabic) into a **1080×1920 MP4 short** with a script, voice-over (English), Ken Burns visuals, kinetic captions and a procedural music bed. The default engine, **RelayMind Studio**, runs **100% inside the visitor's browser**: no server, no shared API key, and no GitHub compute on the owner's account.
+
+## Studio engine (default, in-browser)
 
 | Layer | Primary (free) | Fallbacks |
 |---|---|---|
-| Script writer | Pollinations text API (keyless, OpenAI-compatible) | optional `LLM_BASE_URL` endpoint → GitHub Models (retired 2026-07-30, quick last try) → deterministic local templates |
-| Voice | `edge-tts` 7.3.1 (`en-US-AriaNeural`, `ar-EG-SalmaNeural`, …) | second Edge voice → gTTS → espeak-ng → pyttsx3 → timed silence |
-| Visuals | Pollinations image (rate-aware: 1 / 45 s / IP) | Openverse (CC, commercial + modification licences only) → Wikimedia Commons → procedural gradient art |
-| Video | FFmpeg (system or bundled `imageio-ffmpeg`) + Pillow | — |
-| Delivery | In-app player + MP4 download | Telegram `sendVideo` → `sendDocument` → text notice; WhatsApp share sheet |
+| Script | Client's **own** free Google AI Studio key (Gemini, optional) | Wikipedia facts in EN/AR (CC BY-SA, credited) → local templates |
+| Visuals | Openverse (commercial + modification licences only) | Wikimedia Commons (no NC/ND) → procedural gradient art |
+| Voice | Kokoro-82M ONNX via `kokoro-js` 1.2.1 (Apache-2.0), runs locally, ~90 MB first download then cached | captions only. **Arabic = captions + music** (no licence-safe in-browser Arabic voice yet) |
+| Music | Procedural chord pad + bass, synthesised with Web Audio, auto-ducked under the voice | — |
+| Encode | WebCodecs H.264 High (`avc1.640028`) + AAC, or Opus where AAC is unavailable, muxed by `mp4-muxer` (MIT) | VP9 → MediaRecorder real-time capture |
+| Delivery | In-app player + MP4 download, Telegram `sendVideo` sent straight from the browser | WhatsApp share sheet / `wa.me` |
+
+Every API call is made from the visitor's own IP with per-render caching and a circuit breaker (429/5xx → skip that source), so one viewer can't exhaust a shared quota and the owner pays nothing. Measured in headless Chromium: 540×960 demo ≈ 6–12 s; 1080×1920 Arabic ≈ 19 s; 1080×1920 English with voice ≈ 95 s on first run (includes the one-time model download).
+
+Demo (no licence) = 540×960, watermark, no voice. Pro (licence key) = 1080×1920 + voice + Telegram.
+
+## Hosting (Google Sites)
+
+1. Google Sites → **Insert → Embed → Embed code** → paste the contents of [`embed/google-sites.html`](embed/google-sites.html) → Insert → stretch the box to full width, ~900 px tall → Publish.
+2. The loader pulls `index.html` from jsDelivr pinned to the **v1** tag (`@1`), so a broken commit on `main` never reaches customers. Release = push to `main`, then tag `v1.x.y`.
+3. Google Sites' embed sandbox allows scripts, storage, pop-ups and downloads, which is everything the app needs.
+
+## Why not GitHub Pages / Actions for customers
+
+GitHub's [Additional Product Terms](https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features) forbid using Actions to provide a commercial stand-alone or integrated service, or as part of a serverless application, and forbid using Pages to run commercial SaaS. The owner account therefore runs only `relaymind-selftest.yml`, which tests this software project and is allowed. The GitHub render path is kept as an **optional advanced mode**: each customer connects their own account in Setup steps 1–3 and ticks "Render on my GitHub". It is off by default.
+
+## Optional GitHub mode (server-side Python engine)
+
+| Layer | Primary (free) | Fallbacks |
+|---|---|---|
+| Script | Pollinations text API (keyless server-side) | `LLM_BASE_URL` → local templates |
+| Voice | `edge-tts` 7.3.1 (`en-US-AriaNeural`, `ar-EG-SalmaNeural`) | gTTS → espeak-ng → pyttsx3 → silence |
+| Visuals | Pollinations image (1 / 45 s / IP) | Openverse → Wikimedia → procedural |
+| Video | FFmpeg + Pillow, EBU R128 loudnorm −14 LUFS | — |
+
+Client workflow: `workflow_dispatch` only (no cron), `concurrency: relaymind-render` with cancel-in-progress, `timeout-minutes: 4`, pip cache, engine fetched from jsDelivr `@1` (→ fastly → raw `main`), artifacts kept 3 days.
 
 ## Files
 
 | Path | Purpose |
 |---|---|
-| `index.html` | Single-file web app (GitHub Pages + Google Sites iframe). Chat UI, setup drawer, EN/AR, dark mode, demo mode, in-app render + player |
-| `runner.py` | Orchestrator. Env: `TOPIC`, `LANG_CODE` (or `LANG`), `VOICE`, `GITHUB_TOKEN`, `TG_TOKEN`, `TG_CHAT_ID`, `POLLINATIONS_TOKEN` (optional) |
-| `engine/prompt_enhancer.py` | Silent viral-script + 9:16 visual-prompt generator with local fallback |
-| `engine/media_factory.py` | TTS chain, visual chain, captions, Ken Burns scenes, concat, EBU R128 loudnorm → `output/final_short.mp4` |
-| `engine/resolver.py` | Retry/backoff, provider rotation, circuit breakers, health checks, GitHub repo discovery, Telegram upload |
-| `templates/client_workflow.yml` | Minute-saving workflow injected into each client repo as `.github/workflows/relaymind.yml` |
-| `.github/workflows/relaymind-selftest.yml` | Owner-side manual self-test (dry run + full render) |
-| `scripts/sync_relaymind_template.py` | Re-embeds the workflow template inside `index.html` (offline fallback copy) |
-
-## How a render works
-
-1. The client opens the web app, enters the license key, pastes their GitHub link and a classic token (`repo`, `workflow` scopes) and presses **Enter**.
-2. The app creates `relaymind-studio` (private) if needed, writes `README.md` first when the repo is empty, installs `.github/workflows/relaymind.yml`, saves `relaymind.config.json`, and checks every call for HTTP 200/201.
-3. Optional: Telegram bot token + chat ID are encrypted in the browser (libsodium sealed box) and stored as **repository secrets**.
-4. Each idea is enhanced in the browser (keyless Pollinations), the default branch is detected, the workflow is dispatched with a unique `request_id`, and the run is polled every 8 s.
-5. The MP4 is pulled from the run artifact (JSZip, in-browser) or, if the artifact download is blocked by CORS, from the `relaymind-renders` branch through the GitHub contents API. The user never leaves the chat.
-
-Client workflow guarantees: `workflow_dispatch` only (no cron), `concurrency: relaymind-render` with cancel-in-progress, `timeout-minutes: 4`, pip cache via `actions/setup-python@v7`, engine fetched from **jsDelivr** (`cdn.jsdelivr.net` → `fastly.jsdelivr.net` → raw fallback), artifacts kept 3 days. A typical 35–45 s video takes ~65 s of runner time end to end.
+| `index.html` | Single-file app: chat UI, setup drawer, EN/AR RTL, dark mode, 4-layer settings persistence, **Studio engine** (`<script type="module" id="relaymindStudio">`) |
+| `embed/google-sites.html` | Paste-in loader for Google Sites |
+| `runner.py`, `engine/*.py`, `requirements.txt` | Server-side engine for the optional GitHub mode and self-tests |
+| `templates/client_workflow.yml` | Workflow installed in a customer's own repo (GitHub mode only) |
+| `.github/workflows/relaymind-selftest.yml` | Owner-side manual test of the Python engine |
+| `scripts/sync_relaymind_template.py` | Re-embeds the workflow template inside `index.html` |
 
 ## Owner checklist
 
-1. **Make this repository public** (or move the engine files to a public repo and change `ENGINE_REPO` in `templates/client_workflow.yml` and `index.html`). jsDelivr only serves public repos, and GitHub Pages on a Free plan needs a public repo.
-2. Enable Pages: Settings → Pages → Deploy from branch → `main` / root. The app is then at `https://zopair.github.io/Gumroad/`.
-3. Google Sites: Insert → Embed → By URL → paste the Pages URL.
-4. After pushing engine changes, refresh the CDN: `https://purge.jsdelivr.net/gh/zopair/Gumroad@main/engine/media_factory.py` (one URL per changed file), or pin `ENGINE_REF` to a tag.
-5. Change the license key: put the SHA-256 of the new key in `LICENSE_SHA256` inside `index.html`.
-
-## Local test
-
-```bash
-pip install -r requirements.txt
-python runner.py --dry-run --out /tmp/dry                      # offline, 3 scenes, local voice/visuals
-TOPIC="Why octopuses are geniuses" LANG_CODE=en python runner.py
-TOPIC="فوائد المشي اليومي" LANG_CODE=ar python runner.py
-```
-
-`output/report.json` records which provider served every scene, image credits (CC licence + source URL), timings and any errors.
+- Change the licence key: put the SHA-256 of the new key in `LICENSE_SHA256` inside `index.html`, then commit and tag a new `v1.x.y`.
+- Local test: `python -m http.server` in the repo, then open `http://localhost:8000/`. Python engine: `python runner.py --dry-run --out /tmp/dry`.
 
 ## Limits to know
 
-- Free tiers change. Pollinations anonymous limits in Nov 2026: 1 image and 1 text reply per 45 s per IP. A free registered key (`POLLINATIONS_TOKEN` secret) removes the wait; without it the hook scene gets an AI image and the rest use Openverse/Wikimedia.
-- Private client repos get 2,000 free Actions minutes/month on GitHub Free (~1,500 renders); public repos are unlimited on standard runners.
-- The license check is client-side (hash compare). It deters casual use but is not tamper-proof; use a server-side check if you need real enforcement.
-- Openverse images keep their CC licence (BY / BY-SA need attribution). Credits are saved in `report.json`.
+- The licence check is client-side (hash compare), so it deters casual copying but is not tamper-proof.
+- Kokoro voice: ~90 MB on first use, so phones on mobile data should use Wi-Fi. Fastest on desktop Chrome/Edge; Safari 17+ supported.
+- Videos encoded with Opus audio (Chromium on Linux) play in browsers and on Telegram. Some older iOS players need AAC, which Windows, macOS, Android and iOS browsers produce automatically.
+- Openverse and Wikimedia images keep their CC licence. Credits are shown under every video under **Credits**.
+- Pollinations now requires a Cloudflare Turnstile token for browser calls, so the Studio engine doesn't use it.
 
 ---
 

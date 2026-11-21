@@ -142,6 +142,14 @@ li.fail .dot{background:var(--err);border-color:var(--err)}
       <div class="status" id="licStatus"></div>
     </div>
 
+    <div class="card" id="cardAI">
+      <h3><span class="num">✦</span><span data-i18n="aiTitle">AI script writer (optional, free)</span></h3>
+      <p data-i18n="aiSub">Without a key, scripts are built from Wikipedia facts. For smarter, creative scripts, create your own free Google AI Studio key and paste it here.</p>
+      <div class="row"><a class="btn" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" data-i18n="aiBtn">Get free key</a></div>
+      <input class="field" id="aiKey" type="password" placeholder="AIza…" autocomplete="off" spellcheck="false">
+      <div class="status" id="aiStatus"></div>
+    </div>
+    <p class="note" style="margin:4px 2px 0" data-i18n="advNote">Advanced (optional): steps 1–3 let you render on your own free GitHub account instead of this browser.</p>
     <div class="card" id="card1">
       <h3><span class="num">1</span><span data-i18n="s1Title">Your GitHub account</span></h3>
       <p data-i18n="s1Sub">GitHub is free. Your videos render on your own account, so you control everything.</p>
@@ -162,6 +170,7 @@ li.fail .dot{background:var(--err);border-color:var(--err)}
       <p data-i18n="s3Sub">Paste the key and press Enter. We prepare your repo automatically.</p>
       <input class="field" id="tokenInput" type="password" placeholder="ghp_…" autocomplete="off" spellcheck="false">
       <div class="row" style="margin-top:8px"><button class="btn primary" id="connectBtn" type="button" data-i18n="s3Btn">Connect</button><button class="btn" id="disconnectBtn" type="button" data-i18n="s3Off" style="display:none">Disconnect</button></div>
+      <label class="note" style="display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="useGh"><span data-i18n="useGh">Render on my GitHub instead of this browser</span></label>
       <div class="status" id="s3Status"></div>
     </div>
 
@@ -223,7 +232,7 @@ concurrency:
 
 env:
   ENGINE_REPO: zopair/Gumroad
-  ENGINE_REF: main
+  ENGINE_REF: "1"            # jsDelivr semver: newest v1.x.y tag (immutable, cached)
 
 jobs:
   render:
@@ -240,7 +249,7 @@ jobs:
             ok=0
             for base in "https://cdn.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
                         "https://fastly.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
-                        "https://raw.githubusercontent.com/${ENGINE_REPO}/${ENGINE_REF}"; do
+                        "https://raw.githubusercontent.com/${ENGINE_REPO}/main"; do
               if curl -fsSL --retry 2 --max-time 20 "$base/$f" -o "rm/$f"; then ok=1; break; fi
             done
             [ "$ok" = 1 ] || { echo "::error::could not fetch $f"; exit 1; }
@@ -299,14 +308,395 @@ jobs:
           git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" relaymind-renders
 </script>
 
+<script type="module" id="relaymindStudio">
+/* RelayMind Studio — 100% in-browser render engine (no server, no GitHub compute, no keys).
+   script (user's own free Gemini key -> Wikipedia facts -> local template) -> visuals (Openverse -> Wikimedia -> procedural)
+   -> voice (Kokoro-82M ONNX in-browser for English; Arabic = on-screen captions)
+   -> procedural music bed -> canvas Ken Burns + kinetic captions -> WebCodecs H.264/AAC (or VP9/Opus) -> MP4. */
+const LIBS = {
+  muxer: "https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/+esm",
+  kokoro: "https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js",
+};
+const KOKORO_MODEL = "onnx-community/Kokoro-82M-v1.0-ONNX";
+const FPS = 30, SR = 48000;
+const UA = { "Accept": "application/json" };
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function withTimeout(p, ms, label = "timeout") {
+  let to; const t = new Promise((_, rej) => { to = setTimeout(() => rej(new Error(label)), ms); });
+  try { return await Promise.race([p, t]); } finally { clearTimeout(to); }
+}
+async function fetchBitmap(url, ms = 20000) {
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), ms);
+  try {
+    const r = await fetch(url, { mode: "cors", signal: ctl.signal, referrerPolicy: "no-referrer" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const b = await r.blob(); if (!/^image\//.test(b.type) && b.size < 2000) throw new Error("not image");
+    const bmp = await createImageBitmap(b);
+    if (bmp.width < 320 || bmp.height < 320) throw new Error("too small");
+    return bmp;
+  } finally { clearTimeout(to); }
+}
+
+/* ---------------------------------------------------------------- capabilities */
+export async function capabilities() {
+  const out = { webcodecs: !!(window.VideoEncoder && window.AudioEncoder && window.VideoFrame), video: null, audio: null };
+  if (!out.webcodecs) return out;
+  for (const [codec, mux] of [["avc1.640028", "avc"], ["avc1.4d0028", "avc"], ["avc1.42e028", "avc"], ["vp09.00.40.08", "vp9"]]) {
+    try {
+      const s = await VideoEncoder.isConfigSupported({ codec, width: 1080, height: 1920, bitrate: 6e6, framerate: FPS });
+      if (s.supported) { out.video = { codec, mux }; break; }
+    } catch {}
+  }
+  for (const [codec, mux] of [["mp4a.40.2", "aac"], ["opus", "opus"]]) {
+    try {
+      const s = await AudioEncoder.isConfigSupported({ codec, sampleRate: SR, numberOfChannels: 2, bitrate: 128000 });
+      if (s.supported) { out.audio = { codec, mux }; break; }
+    } catch {}
+  }
+  return out;
+}
+
+/* ---------------------------------------------------------------- visuals */
+const usedImg = new Set();
+const STOP = new Set("a an the of to in on for and or but is are was were be been why how what who when where which that this these those your you my our their its it with from by about into at as do does did can will just most more very than then so not no top best ways way secret secrets things thing tips facts in seconds minutes".split(" "));
+function queries(kw) {
+  const words = kw.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w) && !/^\d+$/.test(w));
+  const q = [kw]; if (words.length) { q.push(words.slice(0, 2).join(" ")); q.push([...words].sort((x, y) => y.length - x.length)[0]); }
+  return [...new Set(q.map((x) => x.trim()).filter(Boolean))].slice(0, 3);
+}
+const down = {}, qcache = new Map();          // per-render circuit breaker + query cache (saves free API quota)
+function trip(src, status) { if (status === 429 || status >= 500 || status === 403) down[src] = true; }
+async function ovSearch(q) {
+  const key = "ov:" + q; if (qcache.has(key)) return qcache.get(key);
+  if (down.openverse) return [];
+  const u = `https://api.openverse.org/v1/images/?q=${encodeURIComponent(q)}&page_size=20&license_type=commercial,modification&mature=false`;
+  let res = [];
+  try { const r = await withTimeout(fetch(u, { headers: UA }), 12000, "openverse timeout"); if (!r.ok) trip("openverse", r.status); else res = (await r.json()).results || []; }
+  catch { down.openverse = true; }
+  res.sort((x, y) => ((y.height || 0) / (y.width || 1)) - ((x.height || 0) / (x.width || 1)));     // portrait first
+  qcache.set(key, res); return res;
+}
+async function wmSearch(q) {
+  const key = "wm:" + q; if (qcache.has(key)) return qcache.get(key);
+  if (down.wikimedia) return [];
+  const u = `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=12&gsrsearch=${encodeURIComponent(q + " filetype:bitmap")}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1080`;
+  let res = [];
+  try { const r = await withTimeout(fetch(u, { headers: { "Api-User-Agent": "RelayMind/1.0 (https://github.com/zopair/Gumroad)" } }), 12000, "wikimedia timeout");
+        if (!r.ok) trip("wikimedia", r.status); else res = Object.values(((await r.json()).query || {}).pages || {}); }
+  catch { down.wikimedia = true; }
+  qcache.set(key, res); return res;
+}
+async function pickOpenverse(list) {
+  for (const x of list.filter((x) => !usedImg.has(x.id)).slice(0, 3)) {
+    usedImg.add(x.id);
+    for (const src of [x.url, `https://api.openverse.org/v1/images/${x.id}/thumb/`]) {
+      try { const bmp = await fetchBitmap(src, 15000);
+        return { bmp, credit: `${x.title || "Image"} — ${x.creator || "unknown"} (${(x.license || "").toUpperCase()} ${x.license_version || ""}) ${x.foreign_landing_url || ""}`.trim(), source: "openverse" }; } catch {}
+    }
+  }
+  return null;
+}
+async function pickWikimedia(list) {
+  for (const p of list) {
+    const ii = (p.imageinfo || [])[0]; if (!ii || usedImg.has(p.title)) continue;
+    const lic = ((ii.extmetadata || {}).LicenseShortName || {}).value || "";
+    if (/NC|ND|fair use/i.test(lic) || !lic) continue;
+    usedImg.add(p.title);
+    try { const bmp = await fetchBitmap(ii.thumburl || ii.url, 15000);
+      const artist = (((ii.extmetadata || {}).Artist || {}).value || "").replace(/<[^>]+>/g, "").trim();
+      return { bmp, credit: `${p.title.replace(/^File:/, "")} — ${artist || "Wikimedia Commons"} (${lic}) ${ii.descriptionurl || ""}`.trim(), source: "wikimedia" }; } catch {}
+    if (usedImg.size > 60) break;
+  }
+  return null;
+}
+async function openverse(q) { const v = await pickOpenverse(await ovSearch(q)); if (!v) throw new Error("openverse empty"); return v; }
+async function wikimedia(q) { const v = await pickWikimedia(await wmSearch(q)); if (!v) throw new Error("wikimedia empty"); return v; }
+const PALETTES = [["#ff0080", "#28005a"], ["#00c8ff", "#0a1450"], ["#ff8c00", "#780028"], ["#00ffaa", "#003246"], ["#ffdc00", "#c81e5a"], ["#9650ff", "#0a0028"]];
+function procedural(i) { return { bmp: null, pal: PALETTES[i % PALETTES.length], credit: "", source: "procedural" }; }
+const latinOf = (x) => { const k = (x || "").toString().trim(); return /^[\x00-\x7F\s]+$/.test(k) && k.length > 1 ? k : ""; };
+
+async function sceneVisual(scene, i, opts, topicQ) {
+  const kw = latinOf(scene.keyword) || latinOf(scene.visual && String(scene.visual).split(/[,.]/)[0]);
+  const chain = [];
+  if (opts.stock && kw) chain.push(() => openverse(queries(kw)[1] || kw));
+  if (opts.stock && topicQ) chain.push(() => openverse(topicQ), () => wikimedia(topicQ));
+  if (opts.stock && kw) chain.push(() => wikimedia(queries(kw)[1] || kw));
+  for (const f of chain) { try { return await f(); } catch (e) { console.info("[visual]", e.message); } }
+  return procedural(i);
+}
+
+/* ---------------------------------------------------------------- voice */
+let kokoroP = null;
+async function kokoro(onProgress) {
+  if (!kokoroP) kokoroP = (async () => {
+    const { KokoroTTS } = await import(LIBS.kokoro);
+    const files = {};
+    return KokoroTTS.from_pretrained(KOKORO_MODEL, {
+      dtype: "q8", device: "wasm",
+      progress_callback: (p) => {
+        if (p && p.file && p.total) { files[p.file] = [p.loaded || 0, p.total];
+          const [a, b] = Object.values(files).reduce((s, [l, t]) => [s[0] + l, s[1] + t], [0, 0]);
+          onProgress && onProgress(Math.round((a / b) * 100)); }
+      },
+    });
+  })().catch((e) => { kokoroP = null; throw e; });
+  return kokoroP;
+}
+async function speak(text, lang, voice, onProgress) {
+  if (lang !== "en") return null;                       // Arabic: captions only (no license-safe in-browser Arabic voice)
+  const tts = await withTimeout(kokoro(onProgress), 240000, "voice model download timed out");
+  const out = await withTimeout(tts.generate(text, { voice: voice || "af_heart", speed: 1.05 }), 120000, "voice timed out");
+  return { pcm: out.audio, sr: out.sampling_rate || 24000 };
+}
+
+/* ---------------------------------------------------------------- audio mix */
+function musicBed(ctx, total, seed) {
+  const prog = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]];   // Am F C G
+  const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const master = ctx.createGain(); master.gain.value = 0.11;
+  const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1400; lp.connect(master);
+  const bar = 2.4; const off = seed % prog.length;
+  for (let t0 = 0, k = 0; t0 < total; t0 += bar, k++) {
+    const chord = prog[(k + off) % prog.length];
+    chord.forEach((m, j) => {
+      const o = ctx.createOscillator(); o.type = j === 0 ? "triangle" : "sine"; o.frequency.value = hz(m);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(0.22, t0 + 0.35); g.gain.setValueAtTime(0.22, t0 + bar - 0.4); g.gain.linearRampToValueAtTime(0, t0 + bar + 0.1);
+      o.connect(g).connect(lp); o.start(t0); o.stop(Math.min(total, t0 + bar + 0.15));
+    });
+    const b = ctx.createOscillator(); b.type = "sine"; b.frequency.value = hz(chord[0] - 24);
+    const bg = ctx.createGain(); for (let q = 0; q < 2; q++) { const s = t0 + q * bar / 2; bg.gain.setValueAtTime(0.0001, s); bg.gain.exponentialRampToValueAtTime(0.5, s + 0.02); bg.gain.exponentialRampToValueAtTime(0.0001, s + 0.5); }
+    b.connect(bg).connect(master); b.start(t0); b.stop(Math.min(total, t0 + bar));
+  }
+  return master;
+}
+async function mixAudio(scenes, total, seed) {
+  const ctx = new OfflineAudioContext(2, Math.ceil(total * SR), SR);
+  const bed = musicBed(ctx, total, seed);
+  const duck = ctx.createGain(); bed.connect(duck).connect(ctx.destination);
+  const voiceBus = ctx.createGain(); voiceBus.connect(ctx.destination);
+  const STEP = 0.02, n = Math.ceil(total / STEP) + 1, curve = new Float32Array(n).fill(1);
+  for (const s of scenes) {
+    if (!s.voice) continue;
+    const buf = ctx.createBuffer(1, s.voice.pcm.length, s.voice.sr); buf.copyToChannel(s.voice.pcm, 0);
+    const src = ctx.createBufferSource(); src.buffer = buf; src.connect(voiceBus); src.start(s.t0 + 0.12);
+    for (let k = Math.floor(s.t0 / STEP); k < Math.min(n, Math.ceil((s.t0 + 0.12 + buf.duration) / STEP)); k++) curve[k] = 0.4;
+  }
+  for (let k = 1; k < n; k++) curve[k] = curve[k] < curve[k - 1] ? curve[k - 1] * 0.7 + curve[k] * 0.3 : curve[k - 1] * 0.9 + curve[k] * 0.1;
+  for (let k = 0; k < n; k++) { const tt = k * STEP; if (tt > total - 1.2) curve[k] *= Math.max(0, (total - tt) / 1.2); if (tt < 0.3) curve[k] *= tt / 0.3; }
+  duck.gain.setValueCurveAtTime(curve, 0, total);
+  const out = await ctx.startRendering();
+  // loudness: RMS-based normalisation to ~-15 dBFS, peak-limited to -1 dBFS (≈ -14 LUFS for speech)
+  const L = out.getChannelData(0), R = out.getChannelData(1);
+  let sum = 0, peak = 0; for (let i = 0; i < L.length; i++) { const v = (L[i] + R[i]) / 2; sum += v * v; peak = Math.max(peak, Math.abs(L[i]), Math.abs(R[i])); }
+  const rms = Math.sqrt(sum / Math.max(1, L.length)) || 1e-4;
+  const voiced = scenes.some((x) => x.voice);
+  const gain = Math.min(Math.pow(10, (voiced ? -10.5 : -19) / 20) / rms, Math.pow(10, 2 / 20) / (peak || 1));   // soft-clipped by tanh below
+  for (let i = 0; i < L.length; i++) { L[i] = Math.tanh(L[i] * gain * 1.05) / 1.05; R[i] = Math.tanh(R[i] * gain * 1.05) / 1.05; }
+  return out;
+}
+
+/* ---------------------------------------------------------------- drawing */
+function coverDraw(g, bmp, W, H, p, i) {
+  const z0 = 1.04, z1 = 1.18; const zoomIn = i % 2 === 0;
+  const z = zoomIn ? z0 + (z1 - z0) * p : z1 - (z1 - z0) * p;
+  const s = Math.max(W / bmp.width, H / bmp.height) * z;
+  const dw = bmp.width * s, dh = bmp.height * s;
+  const pan = (i % 3 - 1) * 0.5;
+  const x = (W - dw) / 2 + pan * (dw - W) * (p - 0.5) * 0.6, y = (H - dh) / 2 + (dh - H) * (0.5 - p) * 0.25;
+  g.drawImage(bmp, x, y, dw, dh);
+}
+function proceduralDraw(g, pal, W, H, t) {
+  const ang = t * 0.6; const gr = g.createLinearGradient(W / 2 + Math.cos(ang) * W, 0, W / 2 - Math.cos(ang) * W, H);
+  gr.addColorStop(0, pal[0]); gr.addColorStop(1, pal[1]); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  const u = W / 540;
+  for (let k = 0; k < 7; k++) { const x = (((k * 97 + t * 40 * (k % 2 ? 1 : -1)) * u) % W + W) % W, y = ((k * 173 + t * 25) * u) % H;
+    g.beginPath(); g.fillStyle = "rgba(255,255,255,.07)"; g.arc(x, y, (60 + k * 18) * u, 0, 7); g.fill(); }
+}
+function chunkWords(text, rtl) {
+  const words = text.split(/\s+/).filter(Boolean); const out = []; const n = rtl ? 4 : 3;
+  for (let i = 0; i < words.length; i += n) out.push(words.slice(i, i + n));
+  return out;
+}
+function wrapLines(g, words, maxW) {
+  const lines = []; let cur = [];
+  for (const w of words) { const cand = [...cur, w].join(" "); if (g.measureText(cand).width > maxW && cur.length) { lines.push(cur); cur = [w]; } else cur.push(w); }
+  if (cur.length) lines.push(cur); return lines;
+}
+function drawCaption(g, scene, local, W, H, rtl) {
+  const chunks = scene.chunks; if (!chunks.length) return;
+  const weights = chunks.map((c) => c.join(" ").length + 4); const tot = weights.reduce((a, b) => a + b, 0);
+  let acc = 0, ci = 0; for (; ci < chunks.length; ci++) { acc += weights[ci] / tot; if (local <= acc) break; }
+  ci = Math.min(ci, chunks.length - 1);
+  const start = acc - weights[ci] / tot; const within = Math.min(1, Math.max(0, (local - start) / (weights[ci] / tot)));
+  const words = rtl ? chunks[ci] : chunks[ci].map((w) => w.toUpperCase());
+  const size = Math.round(W * 0.083); g.font = `900 ${size}px Inter, "Noto Sans Arabic", "Segoe UI", system-ui, sans-serif`;
+  g.direction = rtl ? "rtl" : "ltr"; g.textAlign = "center"; g.textBaseline = "middle";
+  const lines = wrapLines(g, words, W * 0.84); const lh = size * 1.22;
+  const pop = 0.86 + 0.14 * Math.min(1, within * 6);
+  const activeWord = Math.min(words.length - 1, Math.floor(within * words.length));
+  g.save(); g.translate(W / 2, H * 0.68); g.scale(pop, pop);
+  let wi = 0;
+  lines.forEach((ln, j) => {
+    const y = (j - (lines.length - 1) / 2) * lh;
+    const full = ln.join(" "); const fw = g.measureText(full).width;
+    g.fillStyle = "rgba(0,0,0,.42)"; const pad = size * 0.28;
+    g.beginPath(); g.roundRect(-fw / 2 - pad, y - lh / 2, fw + pad * 2, lh, size * 0.25); g.fill();
+    let x = rtl ? fw / 2 : -fw / 2;
+    for (const w of ln) {
+      const ww = g.measureText(w).width; const cx = rtl ? x - ww / 2 : x + ww / 2;
+      g.lineWidth = size * 0.16; g.strokeStyle = "rgba(0,0,0,.9)"; g.lineJoin = "round"; g.strokeText(w, cx, y);
+      g.fillStyle = wi === activeWord ? "#FFD600" : "#FFFFFF"; g.fillText(w, cx, y);
+      const sp = g.measureText(" ").width; x = rtl ? x - ww - sp : x + ww + sp; wi++;
+    }
+  });
+  g.restore();
+}
+function drawFrame(g, W, H, scenes, total, t, opts) {
+  let i = scenes.findIndex((s) => t < s.t0 + s.dur); if (i < 0) i = scenes.length - 1;
+  const s = scenes[i]; const local = Math.min(1, Math.max(0, (t - s.t0) / s.dur));
+  g.globalAlpha = 1;
+  if (s.vis.bmp) coverDraw(g, s.vis.bmp, W, H, local, i); else proceduralDraw(g, s.vis.pal, W, H, t);
+  // crossfade from previous scene during first 0.35 s
+  const fade = 0.35; if (i > 0 && t - s.t0 < fade) {
+    const p = scenes[i - 1]; g.globalAlpha = 1 - (t - s.t0) / fade;
+    if (p.vis.bmp) coverDraw(g, p.vis.bmp, W, H, 1, i - 1); else proceduralDraw(g, p.vis.pal, W, H, t);
+    g.globalAlpha = 1;
+  }
+  const vg = g.createLinearGradient(0, H * 0.45, 0, H); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,.55)");
+  g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  drawCaption(g, s, local, W, H, opts.rtl);
+  g.fillStyle = "rgba(255,255,255,.25)"; g.fillRect(0, 0, W, Math.max(4, H * 0.004));
+  g.fillStyle = "#FFD600"; g.fillRect(0, 0, W * Math.min(1, t / total), Math.max(4, H * 0.004));
+  if (opts.watermark) { g.font = `700 ${Math.round(W * 0.034)}px Inter, system-ui`; g.fillStyle = "rgba(255,255,255,.8)"; g.textAlign = "center"; g.direction = "ltr"; g.fillText(opts.watermark, W / 2, H * 0.955); }
+}
+
+/* ---------------------------------------------------------------- encode */
+async function encodeWebCodecs(W, H, total, audio, draw, caps, onProgress) {
+  const { Muxer, ArrayBufferTarget } = await import(LIBS.muxer);
+  const muxer = new Muxer({
+    target: new ArrayBufferTarget(), fastStart: "in-memory", firstTimestampBehavior: "offset",
+    video: { codec: caps.video.mux, width: W, height: H, frameRate: FPS },
+    audio: audio && caps.audio ? { codec: caps.audio.mux, sampleRate: SR, numberOfChannels: 2 } : undefined,
+  });
+  let err = null;
+  const ve = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: (e) => { err = e; } });
+  ve.configure({ codec: caps.video.codec, width: W, height: H, bitrate: W >= 1000 ? 6_000_000 : 2_500_000, framerate: FPS, latencyMode: "quality", ...(caps.video.mux === "avc" ? { avc: { format: "avc" } } : {}) });
+  const canvas = draw.canvas; const N = Math.ceil(total * FPS);
+  for (let f = 0; f < N; f++) {
+    if (err) throw err;
+    draw.frame(f / FPS);
+    const vf = new VideoFrame(canvas, { timestamp: Math.round(f * 1e6 / FPS), duration: Math.round(1e6 / FPS) });
+    ve.encode(vf, { keyFrame: f % (FPS * 2) === 0 }); vf.close();
+    if (ve.encodeQueueSize > 8) await new Promise((r) => { const tick = () => (ve.encodeQueueSize > 4 ? setTimeout(tick, 4) : r()); tick(); });
+    if (f % 15 === 0) { onProgress && onProgress(f / N); await sleep(0); }
+  }
+  await ve.flush(); ve.close();
+  if (audio && caps.audio) {
+    const ae = new AudioEncoder({ output: (c, m) => muxer.addAudioChunk(c, m), error: (e) => { err = e; } });
+    ae.configure({ codec: caps.audio.codec, sampleRate: SR, numberOfChannels: 2, bitrate: 160000 });
+    const L = audio.getChannelData(0), R = audio.getChannelData(1); const step = 4800;
+    for (let i = 0; i < L.length; i += step) {
+      const n = Math.min(step, L.length - i); const buf = new Float32Array(n * 2); buf.set(L.subarray(i, i + n), 0); buf.set(R.subarray(i, i + n), n);
+      const ad = new AudioData({ format: "f32-planar", sampleRate: SR, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round(i * 1e6 / SR), data: buf });
+      ae.encode(ad); ad.close();
+    }
+    await ae.flush(); ae.close();
+  }
+  if (err) throw err;
+  muxer.finalize();
+  return new Blob([muxer.target.buffer], { type: "video/mp4" });
+}
+async function encodeRealtime(W, H, total, audio, draw, onProgress) {   // fallback for browsers without WebCodecs
+  const stream = draw.canvas.captureStream(FPS);
+  let actx = null;
+  if (audio) { actx = new AudioContext({ sampleRate: SR }); const dest = actx.createMediaStreamDestination(); const src = actx.createBufferSource(); src.buffer = audio; src.connect(dest); dest.stream.getAudioTracks().forEach((tr) => stream.addTrack(tr)); draw.audioSrc = src; }
+  const types = ["video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm"];
+  const mime = types.find((m) => MediaRecorder.isTypeSupported(m)) || "";
+  const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 5_000_000 } : {});
+  const chunks = []; rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  const done = new Promise((r) => (rec.onstop = r));
+  rec.start(500); if (draw.audioSrc) draw.audioSrc.start();
+  const t0 = performance.now();
+  await new Promise((res) => { (function loop() { const t = (performance.now() - t0) / 1000; if (t >= total) return res(); draw.frame(t); onProgress && onProgress(t / total); requestAnimationFrame(loop); })(); });
+  rec.stop(); await done; actx && actx.close();
+  return new Blob(chunks, { type: (mime || "video/webm").split(";")[0] });
+}
+
+/* ---------------------------------------------------------------- public API */
+export async function render(script, opts = {}) {
+  const o = { width: 1080, height: 1920, voice: true, stock: true, watermark: "", onStep: () => {}, onProgress: () => {}, ...opts };
+  const lang = script.lang || "en"; const rtl = lang === "ar";
+  const scenes = (script.scenes || []).filter((s) => s && s.text).slice(0, 8).map((s) => ({ ...s, text: String(s.text).trim() }));
+  if (!scenes.length) throw new Error("empty script");
+  const credits = []; const sources = {};
+
+  o.onStep("visuals");
+  usedImg.clear(); qcache.clear(); Object.keys(down).forEach((k) => delete down[k]);
+  const topicQ = (queries(latinOf(script.topic_en) || latinOf(script.title) || latinOf(scenes[0].keyword) || "")[1]) || latinOf(scenes[0].keyword);
+  const vis = [];
+  for (let i = 0; i < scenes.length; i++) { vis.push(await sceneVisual(scenes[i], i, o, topicQ)); o.onProgress((i + 1) / scenes.length); }
+  vis.forEach((v, i) => { scenes[i].vis = v; sources[v.source] = (sources[v.source] || 0) + 1; if (v.credit) credits.push(v.credit); });
+
+  let voiced = false;
+  if (o.voice && lang === "en") {
+    o.onStep("voice");
+    try {
+      for (let i = 0; i < scenes.length; i++) {
+        scenes[i].voice = await speak(scenes[i].text, lang, o.voiceName, (pct) => o.onStep("voiceLoad", pct));
+        o.onStep("voice", -1); o.onProgress((i + 1) / scenes.length);
+      }
+      voiced = true;
+    } catch (e) { console.warn("[voice] fallback to captions only:", e); scenes.forEach((s) => (s.voice = null)); }
+  }
+  let t = 0;
+  for (const s of scenes) {
+    const words = s.text.split(/\s+/).length;
+    s.dur = s.voice ? s.voice.pcm.length / s.voice.sr + 0.35 : Math.max(2.4, Math.min(6, words * (rtl ? 0.42 : 0.38) + 0.6));
+    s.t0 = t; t += s.dur; s.chunks = chunkWords(s.text, rtl);
+  }
+  const total = t + 0.4;
+
+  o.onStep("mix");
+  const audio = await mixAudio(scenes, total, (script.title || "").length + scenes.length);
+
+  o.onStep("encode");
+  const caps = await capabilities();
+  const W = o.width, H = o.height;
+  const canvas = document.createElement("canvas"); canvas.width = W; canvas.height = H;
+  const g = canvas.getContext("2d", { alpha: false });
+  try { await document.fonts.load(`900 40px "Noto Sans Arabic"`); } catch {}
+  const draw = { canvas, frame: (tt) => drawFrame(g, W, H, scenes, total, tt, { rtl, watermark: o.watermark }) };
+  const blob = caps.webcodecs && caps.video
+    ? await encodeWebCodecs(W, H, total, audio, draw, caps, o.onProgress)
+    : await encodeRealtime(W, H, total, audio, draw, o.onProgress);
+  vis.forEach((v) => v.bmp && v.bmp.close && v.bmp.close());
+  return { blob, report: { engine: "browser", duration: +total.toFixed(2), width: W, height: H, voice: voiced ? "kokoro:" + (o.voiceName || "af_heart") : "none", visuals: sources, credits,
+                           codec: caps.webcodecs && caps.video ? `${caps.video.codec}${caps.audio ? "+" + caps.audio.codec : ""}` : "mediarecorder" } };
+}
+
+export async function sendTelegram(token, chat, blob, caption) {
+  const fd = new FormData(); fd.append("chat_id", chat); fd.append("caption", (caption || "").slice(0, 1000)); fd.append("supports_streaming", "true");
+  fd.append("video", blob, "relaymind-short.mp4");
+  const r = await fetch(`https://api.telegram.org/bot${token}/sendVideo`, { method: "POST", body: fd });
+  const j = await r.json().catch(() => ({})); if (!j.ok) throw new Error(j.description || "telegram " + r.status); return true;
+}
+
+window.RelayStudio = { render, capabilities, sendTelegram, preloadVoice: (cb) => kokoro(cb) };
+window.dispatchEvent(new Event("relaystudio-ready"));
+</script>
+
 <script>
 (() => {
 "use strict";
 /* ------------------------------------------------------------------ constants */
 const ENGINE_REPO = "zopair/Gumroad";
-const CDN = `https://cdn.jsdelivr.net/gh/${ENGINE_REPO}@main`;
+const CDN = `https://cdn.jsdelivr.net/gh/${ENGINE_REPO}@1`;   // pinned to v1.x tags
 const API = "https://api.github.com";
-const LLM_URL = "https://text.pollinations.ai/openai";   // keyless, CORS-enabled (GitHub Models retired 2026-07-30)
+const LLM_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"; // client's OWN free Google AI Studio key (optional)
+const LLM_MODEL = "gemini-2.5-flash";
+const LLM_KEY = "relaymind.llm";
 const WF_FILE = "relaymind.yml";
 const WF_PATH = `.github/workflows/${WF_FILE}`;
 const DEFAULT_REPO = "relaymind-studio";
@@ -314,23 +704,31 @@ const LICENSE_SHA256 = "da77a00a5106a9d5c0841bd79706275217fd3433701407dea13e922e
 const POLL_MS = 8000;
 const STORE_KEY = "relaymind.cfg";
 const TOKEN_KEY = "relaymind.tok";
+const TG_KEY = "relaymind.tg";
 
 /* ------------------------------------------------------------------ i18n */
 const T = {
   en: {
     setup:"Setup", setupTitle:"Setup", heroTitle:"What video should we make?",
     heroSub:"Type any idea. RelayMind writes the script, adds a voice, picks visuals and renders a vertical 1080×1920 video.",
-    placeholder:"Describe your video idea…", footDemo:"Demo mode · open Setup to render full HD videos on your free GitHub account",
+    placeholder:"Describe your video idea…", footDemo:"Demo mode · enter your license in Setup for full HD videos with AI voice",
+    footPro:"Pro · videos render privately in this browser, free", advNote:"Advanced (optional): steps 1–3 let you render on your own free GitHub account instead of this browser.",
+    useGh:"Render on my GitHub instead of this browser",
+    stVisuals:"Finding free visuals", stVoice:"Recording the AI voice", stVoiceLoad:"Downloading the voice model, first time only ({p}%)",
+    stMix:"Mixing music and audio", stEncode:"Rendering the 1080×1920 MP4 ({p}%)", stEncodeDemo:"Rendering the preview ({p}%)",
+    credits:"Credits", aiTitle:"AI script writer (optional, free)",
+    aiSub:"Without a key, scripts are built from Wikipedia facts. For smarter, creative scripts, create your own free Google AI Studio key and paste it here.",
+    aiBtn:"Get free key", aiOk:"Saved ✓ AI scripts are on.", aiBad:"Google didn't accept this key.", aiOff:"Key removed. Using Wikipedia scripts.", noWebCodecs:"Tip: Chrome, Edge or Safari 17+ render fastest.",
     footLive:"Connected to {repo} · videos render on your free GitHub minutes",
-    licTitle:"Activation", licSub:"Demo mode works right away. Enter your license key to unlock full rendering on your GitHub account.",
-    licOk:"License active. Full rendering unlocked.", licBad:"That key isn't valid. Check for typos.",
+    licTitle:"Activation", licSub:"Demo mode works right away. Enter your license key to unlock full HD 1080×1920 videos with AI voice, rendered right here in your browser.",
+    licOk:"License active. Full HD rendering unlocked.", licBad:"That key isn't valid. Check for typos.",
     s1Title:"Your GitHub account", s1Sub:"GitHub is free. Your videos render on your own account, so you control everything.",
     s1Btn:"Create free GitHub account", s1Hint:"Paste your profile link (we create a private “relaymind-studio” repo) or an existing repo link.",
     s1Ok:"Will use {repo}", s1Bad:"Paste a link like https://github.com/your-name",
     s2Title:"Create your access key", s2Sub:"Opens GitHub with the right boxes already ticked. Choose an expiry, scroll down and press “Generate token”, then copy it.",
     s2Btn:"Open GitHub key page", s3Title:"Paste key & connect", s3Sub:"Paste the key and press Enter. We prepare your repo automatically.",
     s3Btn:"Connect", s3Off:"Disconnect", s4Title:"Delivery (optional)",
-    s4Sub:"Get every finished video sent to Telegram automatically. Create a bot with @BotFather and get your numeric chat ID from @userinfobot.",
+    s4Sub:"Get every finished video sent to your Telegram automatically, straight from this browser. Create a bot with @BotFather and get your numeric chat ID from @userinfobot.",
     tgTokPh:"Telegram bot token", tgChatPh:"Telegram chat ID (numbers)", waPh:"WhatsApp number (e.g. 201001234567)", save:"Save",
     privacy:"Your key stays in this browser only. It is never saved in links or in your repository.",
     needLicense:"Enter your license key first (Activation).", needRepo:"Add your GitHub link in step 1 first.",
@@ -338,12 +736,12 @@ const T = {
     installing:"Installing the video engine…", savingCfg:"Saving settings…", connected:"Connected ✓ {repo} is ready. Close this panel and type an idea.",
     badToken:"GitHub didn't accept this key. Create a new one in step 2.", scopeMiss:"The key needs the “repo” and “workflow” boxes ticked. Create a new one in step 2.",
     notOwner:"This key can't write to {repo}. Use a key from the account that owns it.",
-    tgSaved:"Saved ✓ Telegram delivery is on.", savedLocal:"Saved ✓", tgNeedConn:"Connect GitHub (step 3) to turn on Telegram delivery.",
+    tgSaved:"Saved ✓ Telegram delivery is on.", savedLocal:"Saved ✓", tgNeedConn:"Add both the bot token and the chat ID.",
     stEnhance:"Writing a viral script", stDispatch:"Starting your render", stQueue:"Waiting for a free GitHub computer",
     stRender:"Rendering video ({s}s)", stFetch:"Downloading your video", stDone:"Ready",
     demoStRender:"Building demo preview",
     download:"Download MP4", downloadWebm:"Download preview", shareWa:"Send to WhatsApp", share:"Share", again:"Make another",
-    demoNote:"Demo preview (silent, low resolution). Activate & connect in Setup for full HD MP4 with AI voice.",
+    demoNote:"Demo preview (540×960, watermark, no voice). Enter your license in Setup for full HD with AI voice.", arNoVoice:"Arabic videos use bold on-screen captions with background music.",
     tgSent:"Also sent to your Telegram.", failed:"Something went wrong: {e}", runFailed:"The render didn't finish. Details: {e}",
     timeout:"This is taking longer than usual. Your video will still appear in your GitHub repo when it finishes.",
     chips:["5 habits of successful people","Why octopuses are geniuses","How to save money fast","The history of coffee in 30 seconds"],
@@ -352,9 +750,16 @@ const T = {
   ar: {
     setup:"الإعداد", setupTitle:"الإعداد", heroTitle:"عايز تعمل فيديو عن إيه؟",
     heroSub:"اكتب أي فكرة. RelayMind يكتب السكريبت، ويضيف صوت، ويختار الصور، ويطلع فيديو طولي 1080×1920.",
-    placeholder:"اكتب فكرة الفيديو…", footDemo:"وضع التجربة · افتح الإعداد لإنتاج فيديوهات كاملة الجودة على حساب GitHub المجاني",
+    placeholder:"اكتب فكرة الفيديو…", footDemo:"وضع التجربة · اكتب الترخيص في الإعداد لفيديوهات كاملة الجودة بصوت ذكي",
+    footPro:"Pro · الفيديوهات بتتعمل في المتصفح ده، مجانًا وبخصوصية", advNote:"متقدم (اختياري): الخطوات 1–3 تخليك تعمل الفيديو على حساب GitHub المجاني بتاعك بدل المتصفح.",
+    useGh:"اعمل الفيديو على GitHub بتاعي بدل المتصفح",
+    stVisuals:"بندور على صور مجانية", stVoice:"بنسجل الصوت الذكي", stVoiceLoad:"بننزل نموذج الصوت، أول مرة بس ({p}%)",
+    stMix:"بنركب الموسيقى والصوت", stEncode:"بنعمل فيديو MP4 بمقاس 1080×1920 ({p}%)", stEncodeDemo:"بنعمل المعاينة ({p}%)",
+    credits:"الحقوق", aiTitle:"كاتب السكريبت الذكي (اختياري ومجاني)",
+    aiSub:"من غير مفتاح، السكريبت بيتعمل من معلومات ويكيبيديا. عشان سكريبتات أذكى وأكثر إبداعًا، اعمل مفتاح Google AI Studio مجاني والصقه هنا.",
+    aiBtn:"خد مفتاح مجاني", aiOk:"تم الحفظ ✓ السكريبت الذكي شغال.", aiBad:"Google مقبلش المفتاح ده.", aiOff:"تم مسح المفتاح. هنستخدم ويكيبيديا.", noWebCodecs:"نصيحة: Chrome أو Edge أو Safari 17+ أسرع.",
     footLive:"متصل بـ {repo} · الفيديوهات بتتعمل على دقائق GitHub المجانية بتاعتك",
-    licTitle:"التفعيل", licSub:"وضع التجربة شغال فورًا. اكتب مفتاح الترخيص لفتح الإنتاج الكامل على حسابك.",
+    licTitle:"التفعيل", licSub:"وضع التجربة شغال فورًا. اكتب مفتاح الترخيص لفتح فيديوهات 1080×1920 كاملة الجودة بصوت ذكي، بتتعمل هنا في المتصفح.",
     licOk:"الترخيص مفعل. الإنتاج الكامل مفتوح.", licBad:"المفتاح ده مش صحيح. راجع الكتابة.",
     s1Title:"حساب GitHub بتاعك", s1Sub:"GitHub مجاني. الفيديوهات بتتعمل على حسابك أنت، وأنت المتحكم في كل حاجة.",
     s1Btn:"أنشئ حساب GitHub مجاني", s1Hint:"الصق رابط حسابك (هننشئ مستودع خاص اسمه relaymind-studio) أو رابط مستودع موجود.",
@@ -362,7 +767,7 @@ const T = {
     s2Title:"أنشئ مفتاح الدخول", s2Sub:"هيفتح GitHub والاختيارات المطلوبة متعلمة. اختار مدة، انزل تحت ودوس “Generate token”، وبعدين انسخه.",
     s2Btn:"افتح صفحة المفتاح", s3Title:"الصق المفتاح واربط", s3Sub:"الصق المفتاح ودوس Enter. هنجهز المستودع تلقائيًا.",
     s3Btn:"اربط", s3Off:"افصل", s4Title:"التسليم (اختياري)",
-    s4Sub:"استلم كل فيديو جاهز على تيليجرام تلقائيًا. أنشئ بوت من @BotFather وخد رقم الشات من @userinfobot.",
+    s4Sub:"استلم كل فيديو جاهز على تيليجرام تلقائيًا من المتصفح مباشرة. أنشئ بوت من @BotFather وخد رقم الشات من @userinfobot.",
     tgTokPh:"توكن بوت تيليجرام", tgChatPh:"رقم شات تيليجرام", waPh:"رقم واتساب (مثال 201001234567)", save:"حفظ",
     privacy:"المفتاح بتاعك بيفضل في المتصفح ده بس، ومش بيتحفظ في أي رابط أو في المستودع.",
     needLicense:"اكتب مفتاح الترخيص الأول (التفعيل).", needRepo:"ضيف رابط GitHub في الخطوة 1 الأول.",
@@ -370,12 +775,12 @@ const T = {
     installing:"بنركب محرك الفيديو…", savingCfg:"بنحفظ الإعدادات…", connected:"تم الربط ✓ {repo} جاهز. اقفل اللوحة واكتب فكرتك.",
     badToken:"GitHub مقبلش المفتاح ده. أنشئ واحد جديد من الخطوة 2.", scopeMiss:"المفتاح محتاج اختيار “repo” و“workflow”. أنشئ واحد جديد من الخطوة 2.",
     notOwner:"المفتاح ده مش بيقدر يكتب في {repo}. استخدم مفتاح من الحساب صاحب المستودع.",
-    tgSaved:"تم الحفظ ✓ التسليم على تيليجرام شغال.", savedLocal:"تم الحفظ ✓", tgNeedConn:"اربط GitHub (الخطوة 3) عشان تشغل تيليجرام.",
+    tgSaved:"تم الحفظ ✓ التسليم على تيليجرام شغال.", savedLocal:"تم الحفظ ✓", tgNeedConn:"اكتب توكن البوت ورقم الشات الاتنين.",
     stEnhance:"بنكتب سكريبت جذاب", stDispatch:"بنبدأ الإنتاج", stQueue:"مستنيين جهاز GitHub مجاني",
     stRender:"بنعمل الفيديو ({s} ث)", stFetch:"بننزل الفيديو", stDone:"جاهز",
     demoStRender:"بنجهز معاينة تجريبية",
     download:"تحميل MP4", downloadWebm:"تحميل المعاينة", shareWa:"ابعت على واتساب", share:"مشاركة", again:"فيديو جديد",
-    demoNote:"معاينة تجريبية (بدون صوت وجودة أقل). فعّل واربط من الإعداد عشان MP4 كامل الجودة بصوت ذكي.",
+    demoNote:"معاينة تجريبية (540×960، بعلامة مائية، بدون صوت). اكتب الترخيص في الإعداد للجودة الكاملة بصوت ذكي.", arNoVoice:"الفيديوهات العربي بتطلع بترجمة كبيرة على الشاشة مع موسيقى خلفية.",
     tgSent:"واتبعت كمان على تيليجرام.", failed:"حصلت مشكلة: {e}", runFailed:"الإنتاج ماكملش. التفاصيل: {e}",
     timeout:"الموضوع واخد وقت أطول من العادي. الفيديو هيظهر في مستودعك على GitHub لما يخلص.",
     chips:["5 عادات للناجحين","ليه الأخطبوط عبقري","إزاي توفر فلوس بسرعة","تاريخ القهوة في 30 ثانية"],
@@ -389,7 +794,7 @@ const safe = (fn, fb) => { try { return fn(); } catch { return fb; } };
 const b64e = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const b64d = (s) => decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
 const defaults = { lang:"en", theme:"light", vlang:"en", license:"", owner:"", repo:"", connected:false,
-                   tgChat:"", tgOn:false, wa:"", updated:0 };
+                   tgChat:"", tgOn:false, wa:"", useGh:false, updated:0 };
 let cfg = { ...defaults };
 let token = "";
 
@@ -421,6 +826,8 @@ function save() {
 const t = (k, vars = {}) => (T[cfg.lang][k] ?? T.en[k] ?? k).toString().replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? "");
 const licensed = () => !!cfg.license;
 const live = () => licensed() && cfg.connected && token && cfg.owner && cfg.repo;
+const useGitHub = () => !!(live() && cfg.useGh);
+const tgToken = () => safe(() => localStorage.getItem(TG_KEY)) || "";
 const repoFull = () => `${cfg.owner}/${cfg.repo}`;
 
 function applyI18n() {
@@ -444,13 +851,15 @@ function applyTheme() {
 }
 function refreshMode() {
   const b = $("modeBadge");
-  b.textContent = live() ? "Pro" : "Demo";
-  b.classList.toggle("pro", !!live());
-  $("footNote").textContent = live() ? t("footLive", { repo: repoFull() }) : t("footDemo");
+  b.textContent = licensed() ? "Pro" : "Demo";
+  b.classList.toggle("pro", licensed());
+  $("footNote").textContent = useGitHub() ? t("footLive", { repo: repoFull() }) : licensed() ? t("footPro") : t("footDemo");
+  $("useGh").checked = !!cfg.useGh; $("useGh").disabled = !live();
   $("card3").classList.toggle("ok", !!(cfg.connected && token));
   $("card1").classList.toggle("ok", !!cfg.owner);
   $("cardLicense").classList.toggle("ok", licensed());
   $("card4").classList.toggle("ok", !!cfg.tgOn);
+  $("cardAI").classList.toggle("ok", !!safe(() => localStorage.getItem(LLM_KEY)));
   $("disconnectBtn").style.display = cfg.connected ? "" : "none";
 }
 function status(id, kind, text) {
@@ -594,17 +1003,17 @@ async function setSecret(name, value) {
 }
 async function saveDelivery() {
   const tok = $("tgToken").value.trim(), chat = $("tgChat").value.trim(), wa = $("waNum").value.replace(/[^\d]/g, "");
-  cfg.wa = wa;
-  if (chat) cfg.tgChat = chat;
+  cfg.wa = wa; if (chat) cfg.tgChat = chat;
+  if (tok) safe(() => localStorage.setItem(TG_KEY, tok));
   try {
     if (tok || chat) {
-      if (!(cfg.connected && token)) { save(); status("s4Status", "warn", t("tgNeedConn")); return; }
-      if (tok) await setSecret("TG_TOKEN", tok);
-      if (chat) await setSecret("TG_CHAT_ID", chat);
-      cfg.tgOn = true; $("tgToken").value = "";
-      save(); await saveRepoConfig();
+      if (!(tgToken() && cfg.tgChat)) { save(); status("s4Status", "warn", t("tgNeedConn")); return; }
+      cfg.tgOn = true; $("tgToken").value = ""; save();
+      if (cfg.connected && token) {                       // optional: also enable delivery for GitHub renders
+        try { if (tok) await setSecret("TG_TOKEN", tok); await setSecret("TG_CHAT_ID", cfg.tgChat); await saveRepoConfig(); } catch (e) { console.warn(e); }
+      }
       status("s4Status", "ok", t("tgSaved"));
-    } else { save(); if (cfg.connected && token) await saveRepoConfig(); status("s4Status", "ok", t("savedLocal")); }
+    } else { save(); if (cfg.connected && token) await saveRepoConfig().catch(() => {}); status("s4Status", "ok", t("savedLocal")); }
   } catch (e) { status("s4Status", "err", String(e.message || e)); }
   refreshMode();
 }
@@ -623,7 +1032,7 @@ function addMsg(role, text) {
 }
 function stepper(bubble, keys) {
   const ul = document.createElement("ul"); ul.className = "steps";
-  const items = keys.map((k) => { const li = document.createElement("li"); li.innerHTML = '<span class="dot"></span><span></span>'; li.lastChild.textContent = t(k); ul.appendChild(li); return li; });
+  const items = keys.map((k) => { const li = document.createElement("li"); li.innerHTML = '<span class="dot"></span><span></span>'; li.lastChild.textContent = t(k).replace(/\s*\(\s*%?\s*\)/, ""); ul.appendChild(li); return li; });
   bubble.appendChild(ul);
   return {
     set(i, label) { items.forEach((li, j) => { li.className = j < i ? "done" : j === i ? "active" : ""; if (j < i) li.firstChild.textContent = "✓"; }); if (label && items[i]) items[i].lastChild.textContent = label; },
@@ -663,6 +1072,12 @@ function showResult(bubble, blob, { demo = false, script = null, report = null }
     script.scenes.forEach((s, i) => { const p = document.createElement("p"); p.textContent = `${i + 1}. ${s.text}`; sb.appendChild(p); });
     bubble.appendChild(sb);
   }
+  if (report && report.credits && report.credits.length) {
+    const cb = document.createElement("details"); cb.className = "script-box";
+    const sm = document.createElement("summary"); sm.textContent = t("credits"); cb.appendChild(sm);
+    report.credits.forEach((c) => { const p = document.createElement("p"); p.textContent = c; cb.appendChild(p); });
+    bubble.appendChild(cb);
+  }
   $("main").scrollTop = $("main").scrollHeight;
 }
 
@@ -680,18 +1095,65 @@ function localScript(topic, lang) {
 }
 
 /* ------------------------------------------------------------------ silent prompt enhancer (browser) */
+const llmKey = () => safe(() => localStorage.getItem(LLM_KEY)) || "";
 async function enhanceInBrowser(idea, lang) {
-  const sys = `You are a short-form video scriptwriter. Return ONLY JSON {"title":str,"hook":str,"scenes":[{"text":str,"visual":str,"keyword":str}],"hashtags":[str],"caption":str}. 5-7 scenes, scene 1 is a scroll-stopping hook (max 12 words), each scene max 25 spoken words in ${lang === "ar" ? "Arabic" : "English"}, end with a call to action. "visual" is a vivid English 9:16 photo prompt without text; "keyword" is 1-2 English words.`;
+  const key = llmKey(); if (!key) return null;        // no shared/owner key ever: each client uses their own free key
+  const sys = `You are a short-form video scriptwriter. Return ONLY JSON {"title":str,"topic_en":str,"hook":str,"scenes":[{"text":str,"visual":str,"keyword":str}],"hashtags":[str],"caption":str}. 5-7 scenes, scene 1 is a scroll-stopping hook (max 12 words), each scene max 25 spoken words in ${lang === "ar" ? "Egyptian-friendly Modern Standard Arabic" : "English"}, end with a call to action. "visual" is a vivid English 9:16 photo prompt without text; "keyword" is 1-2 concrete English nouns for a stock-photo search; "topic_en" is the main subject in 1-2 English words.`;
   const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 30000);
   try {
     const r = await fetch(LLM_URL, { method: "POST", signal: ctl.signal,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "openai", temperature: 0.8, max_tokens: 900, response_format: { type: "json_object" },
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
+      body: JSON.stringify({ model: LLM_MODEL, temperature: 0.8, max_tokens: 1200, response_format: { type: "json_object" },
         messages: [{ role: "system", content: sys }, { role: "user", content: "Idea: " + idea }] }) });
     if (!r.ok) return null;
     const j = await r.json(); const raw = j.choices[0].message.content; const s = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1));
-    return Array.isArray(s.scenes) && s.scenes.length >= 4 ? s : null;
+    if (!(Array.isArray(s.scenes) && s.scenes.length >= 4)) return null;
+    s.source = "gemini"; return s;
   } catch { return null; } finally { clearTimeout(timer); }
+}
+/* keyless fallback: real facts from Wikipedia (CC BY-SA), one API call, user's own IP */
+const Q_STOP = { en: /\b(why|how|what|who|when|where|is|are|the|a|an|of|to|in|on|for|and|about|in \d+ seconds|seconds|facts?|secrets?|top|best|\d+)\b/gi,
+                 ar: /(^|\s)(ليه|ليش|لماذا|إزاي|ازاي|كيف|ايه|إيه|ما|هو|هي|هل|في|عن|من|على|إلى|الى|ثانية|ثواني|أسرار|اسرار|حقائق|\d+)(?=\s|$)/g };
+async function wikiPage(lang, params, order) {
+  const u = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=extracts|langlinks|info|pageprops&ppprop=disambiguation&exintro=1&explaintext=1&exsentences=10&lllang=en&inprop=url&` + params;
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 12000);
+  try {
+    const r = await fetch(u, { signal: ctl.signal, headers: { "Api-User-Agent": "RelayMind/1.0 (https://github.com/zopair/Gumroad)" } }); if (!r.ok) return null;
+    const qy = (await r.json()).query || {};
+    const ok = Object.values(qy.pages || {}).filter((p) => p.extract && !(p.pageprops && "disambiguation" in p.pageprops) && p.extract.length > 200);
+    if (!order) return ok[0] || null;
+    const hop = (t) => { for (const k of ["normalized", "redirects"]) { const m = (qy[k] || []).find((x) => x.from === t); if (m) t = m.to; } return t; };
+    for (const c of order) { const p = ok.find((x) => x.title === hop(c)); if (p) return p; }
+    return null;
+  } catch { return null; } finally { clearTimeout(timer); }
+}
+async function wikiScript(idea, lang) {
+  const q = idea.replace(Q_STOP[lang] || Q_STOP.en, " ").replace(/[؟?!.,،:]/g, " ").replace(/\s+/g, " ").trim() || idea;
+  const words = q.split(" ").filter((w) => w.length > 2);
+  const titleCase = (x) => lang === "en" ? x.replace(/\b\w/g, (c) => c.toUpperCase()) : x;
+  // 1 exact title (full phrase + each word, one batched call) -> 2 full-text search
+  const alt = lang === "ar" ? words.flatMap((w) => /^(ال|بال|وال)/.test(w) ? [w, w.replace(/^(ال|بال|وال)/, "")] : [w]) : words;
+  const cands = [...new Set([q, ...alt].map(titleCase))].slice(0, 8);
+  let page = await wikiPage(lang, "titles=" + encodeURIComponent(cands.join("|")), cands);   // full phrase first, then words in reading order
+  if (!page) page = await wikiPage(lang, `generator=search&gsrlimit=1&gsrsearch=${encodeURIComponent(q)}`);
+  if (!page) return null;
+  const title = page.title.replace(/\s*\(.*?\)\s*/g, "").trim();
+  const en = lang === "en" ? title : ((page.langlinks || [])[0] || {})["*"] || "";
+  const wc = (x) => x.split(/\s+/).length;
+  const facts = page.extract.replace(/\s*[(（][^)）]*[)）]/g, "").replace(/\s+/g, " ").split(/(?<=[.!?؟])\s+/)
+    .map((x) => x.trim()).filter((x) => wc(x) >= 5 && wc(x) <= 30).slice(0, 4);
+  if (facts.length < 2) return null;
+  const hook = lang === "ar" ? `استنى! ${title} أغرب بكتير مما تتخيل.` : `Stop scrolling: ${title} is wilder than you think.`;
+  const cta = lang === "ar" ? "تابعنا عشان تعرف أكتر كل يوم!" : "Follow for more mind-blowing facts!";
+  const kw = en.replace(/\s*\(.*?\)/g, "");
+  return { title, topic_en: kw, lang, source: "wikipedia", hook,
+    scenes: [hook, ...facts, cta].map((text) => ({ text, keyword: kw, visual: kw })),
+    hashtags: ["#" + (kw || title).replace(/\s+/g, ""), lang === "ar" ? "#معلومات" : "#facts", "#shorts"],
+    caption: title, credit: `Text adapted from Wikipedia — ${page.fullurl || ""} (CC BY-SA 4.0)` };
+}
+window.__rmWiki = wikiScript;
+async function writeScript(idea, lang) {
+  return (await enhanceInBrowser(idea, lang)) || (await wikiScript(idea, lang)) || localScript(idea, lang);
 }
 
 /* ------------------------------------------------------------------ live generation */
@@ -773,11 +1235,47 @@ function loadJSZip() {
 }
 
 /* ------------------------------------------------------------------ demo generation (in-browser canvas) */
+function studioReady() {
+  if (window.RelayStudio) return Promise.resolve(window.RelayStudio);
+  return new Promise((res, rej) => { const to = setTimeout(() => rej(new Error("engine not loaded")), 15000);
+    window.addEventListener("relaystudio-ready", () => { clearTimeout(to); res(window.RelayStudio); }, { once: true }); });
+}
+function studioSteps(bubble, demo, vlang) {
+  const keys = demo ? ["stEnhance", "stVisuals", "stMix", "stEncodeDemo"] : vlang === "en" ? ["stEnhance", "stVisuals", "stVoice", "stMix", "stEncode"] : ["stEnhance", "stVisuals", "stMix", "stEncode"];
+  const st = stepper(bubble, keys); let cur = 0; const enc = demo ? "stEncodeDemo" : "stEncode";
+  return { st, onStep: (name, pct) => {
+      const map = { visuals: "stVisuals", voice: "stVoice", voiceLoad: "stVoice", mix: "stMix", encode: enc };
+      const i = keys.indexOf(map[name]); if (i < 0) return; cur = i;
+      st.set(i, name === "voiceLoad" ? t("stVoiceLoad", { p: pct || 0 }) : name === "encode" ? t(enc, { p: 0 }) : name === "voice" ? t("stVoice") : undefined);
+    }, onProgress: (p) => { if (keys[cur] === enc) st.set(cur, t(enc, { p: Math.round(p * 100) })); } };
+}
+async function generateStudio(idea, vlang, bubble) {
+  const S = await studioReady();
+  const ui = studioSteps(bubble, false, vlang);
+  ui.st.set(0);
+  const script = { ...(await writeScript(idea, vlang)), lang: vlang };
+  if (script.hook && script.scenes[0] && script.scenes[0].text !== script.hook) script.scenes.unshift({ text: script.hook, visual: script.scenes[0].visual, keyword: script.scenes[0].keyword });
+  const { blob, report } = await S.render(script, { width: 1080, height: 1920, voice: true, stock: true, onStep: ui.onStep, onProgress: ui.onProgress });
+  if (script.credit) report.credits.unshift(script.credit);
+  ui.st.done();
+  if (cfg.tgOn && cfg.tgChat && tgToken()) {
+    try { await S.sendTelegram(tgToken(), cfg.tgChat, blob, [script.title, script.caption, (script.hashtags || []).join(" ")].filter(Boolean).join("\n")); report.telegram = true; }
+    catch (e) { console.warn("telegram", e); }
+  }
+  showResult(bubble, blob, { script, report });
+  if (vlang !== "en") bubble.appendChild(Object.assign(document.createElement("p"), { className: "note", textContent: t("arNoVoice") }));
+}
 async function generateDemo(idea, vlang, bubble) {
-  const st = stepper(bubble, ["stEnhance", "demoStRender"]);
-  st.set(0); await sleep(500);
-  const script = localScript(idea, vlang);
-  st.set(1);
+  let script = localScript(idea, vlang);
+  try {
+    const S = await studioReady();
+    const ui = studioSteps(bubble, true, vlang); ui.st.set(0);
+    script = { ...((await wikiScript(idea, vlang)) || script), lang: vlang };
+    const { blob, report } = await S.render(script, { width: 540, height: 960, voice: false, stock: true, watermark: "RelayMind · demo", onStep: ui.onStep, onProgress: ui.onProgress });
+    if (script.credit) report.credits.unshift(script.credit);
+    ui.st.done(); showResult(bubble, blob, { demo: true, script, report }); return;
+  } catch (e) { console.warn("studio demo failed, using MediaRecorder preview", e); }
+  const st = stepper(bubble, ["demoStRender"]); st.set(0);
   const blob = await renderCanvasVideo(script);
   st.done();
   showResult(bubble, blob, { demo: true, script });
@@ -834,7 +1332,7 @@ async function submit(e) {
   busy = true; $("idea").value = ""; onInput();
   addMsg("user", idea);
   const bubble = addMsg("bot", "");
-  try { live() ? await generateLive(idea, vlang, bubble) : await generateDemo(idea, vlang, bubble); }
+  try { useGitHub() ? await generateLive(idea, vlang, bubble) : licensed() ? await generateStudio(idea, vlang, bubble) : await generateDemo(idea, vlang, bubble); }
   catch (err) { const p = document.createElement("p"); p.className = "status show err"; p.textContent = t("failed", { e: err.message || err }); bubble.appendChild(p); }
   finally { busy = false; onInput(); }
 }
@@ -861,6 +1359,18 @@ function init() {
   $("tokenInput").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); connect(); } });
   $("connectBtn").onclick = connect; $("disconnectBtn").onclick = disconnect;
   $("saveDelivery").onclick = saveDelivery;
+  const saveAI = async () => {
+    const k = $("aiKey").value.trim();
+    if (!k) { safe(() => localStorage.removeItem(LLM_KEY)); status("aiStatus", "info", t("aiOff")); refreshMode(); return; }
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/models", { headers: { Authorization: "Bearer " + k } }).catch(() => null);
+    if (r && r.ok) { safe(() => localStorage.setItem(LLM_KEY, k)); $("aiKey").value = ""; status("aiStatus", "ok", t("aiOk")); }
+    else status("aiStatus", "err", t("aiBad"));
+    refreshMode();
+  };
+  $("aiKey").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); saveAI(); } });
+  $("aiKey").addEventListener("change", saveAI);
+  if (llmKey()) status("aiStatus", "ok", t("aiOk"));
+  $("useGh").onchange = () => { cfg.useGh = $("useGh").checked && !!live(); save(); refreshMode(); };
   $("idea").addEventListener("input", onInput);
   $("idea").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) submit(e); });
   $("composer").addEventListener("submit", submit);

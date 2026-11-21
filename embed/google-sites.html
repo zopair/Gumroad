@@ -1,0 +1,36 @@
+<!-- RelayMind for Google Sites
+     Google Sites → Insert → Embed → "Embed code" → paste this whole file → Next → Insert,
+     then drag the box to full width and about 900px tall.
+     The app itself is loaded from jsDelivr (pinned v1 tag) and runs 100% inside the visitor's browser. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RelayMind</title>
+<style>html,body{margin:0;height:100%;font:15px system-ui,sans-serif;display:grid;place-items:center;color:#666}</style>
+</head>
+<body>
+<div id="rm-boot">Loading RelayMind…</div>
+<script>
+(async function () {
+  var urls = [
+    "https://cdn.jsdelivr.net/gh/zopair/Gumroad@1/index.html",
+    "https://fastly.jsdelivr.net/gh/zopair/Gumroad@1/index.html",
+    "https://cdn.jsdelivr.net/gh/zopair/Gumroad@main/index.html"
+  ];
+  for (var i = 0; i < urls.length; i++) {
+    try {
+      var r = await fetch(urls[i], { cache: "no-cache" });
+      if (!r.ok) continue;
+      var html = await r.text();
+      if (html.indexOf("RelayMind") < 0) continue;
+      document.open(); document.write(html); document.close();
+      return;
+    } catch (e) {}
+  }
+  document.getElementById("rm-boot").textContent = "RelayMind couldn't load. Check your internet connection and refresh.";
+})();
+</script>
+</body>
+</html>

@@ -40,7 +40,7 @@ concurrency:
 
 env:
   ENGINE_REPO: zopair/Gumroad
-  ENGINE_REF: main
+  ENGINE_REF: "1"            # jsDelivr semver: newest v1.x.y tag (immutable, cached)
 
 jobs:
   render:
@@ -57,7 +57,7 @@ jobs:
             ok=0
             for base in "https://cdn.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
                         "https://fastly.jsdelivr.net/gh/${ENGINE_REPO}@${ENGINE_REF}" \
-                        "https://raw.githubusercontent.com/${ENGINE_REPO}/${ENGINE_REF}"; do
+                        "https://raw.githubusercontent.com/${ENGINE_REPO}/main"; do
               if curl -fsSL --retry 2 --max-time 20 "$base/$f" -o "rm/$f"; then ok=1; break; fi
             done
             [ "$ok" = 1 ] || { echo "::error::could not fetch $f"; exit 1; }
