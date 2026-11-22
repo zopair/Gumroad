@@ -4,9 +4,9 @@ Storefront: https://zopair.gumroad.com
 
 ## Operating rule
 
-Gumroad currently allows ten published product slots for this store. All ten are occupied. The ten published products below are the complete live catalog. Any additional ideas remain internal backlog only and must not be published unless a slot becomes available or the account limit changes.
+This file is a repository catalog snapshot, not authoritative live-state data. On 2026-11-22, the connected Gumroad account returned 24 product records, all with `published: false`. It also contains an existing draft named `Street Crew Color & Print Art Pack (DRAFT - not for publishing)` at $19 with one 7,185,846-byte ZIP. Do not create a duplicate, alter that draft, or publish it until its existing file is reconciled with the verified delivery build.
 
-## Live products
+## Existing catalog entries (live state not confirmed)
 
 | # | Gumroad title | Price | Buyer problem |
 |---:|---|---:|---|
@@ -20,6 +20,14 @@ Gumroad currently allows ten published product slots for this store. All ten are
 | 8 | Client Onboarding Pack for Freelancers | $9 | Start client projects consistently |
 | 9 | Proposal & Statement of Work (SOW) Template | $12 | Define deliverables and project scope |
 | 10 | Service Pricing Calculator for Freelancers | $9 | Estimate service pricing and project quotes |
+
+## Internal product under preparation — not live
+
+| # | Working title | Target price | Status |
+|---:|---|---:|---|
+| 11 | Sticker & Colouring Pack — Original Characters Edition | $39 single-user target | Source assets transferred; automated QA passed; listing and license remain under review |
+
+The product is intentionally excluded from the live-product count and must not be represented as published. Review assets: [preview center](products/11-sticker-colouring-pack/preview.html), [quality report](products/11-sticker-colouring-pack/quality-report.md), [delivery ZIP](products/11-sticker-colouring-pack/delivery/sticker-colouring-pack.zip), and [13-page colouring PDF](products/11-sticker-colouring-pack/delivery/colouring-pages.pdf).
 
 ## Source files and included downloads
 

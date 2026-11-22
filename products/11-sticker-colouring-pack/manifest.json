@@ -1,0 +1,426 @@
+{
+  "product": "Sticker & Colouring Pack – Original Characters Edition",
+  "source_repository": "https://github.com/zopair/sticker-colouring-pack",
+  "source_ref": "main",
+  "destination_branch": "feat/sticker-colouring-pack",
+  "generated_at": "2026-11-22",
+  "counts": {
+    "stickers_png": 18,
+    "colouring_pages_jpg": 13,
+    "original_renders_jpg": 31,
+    "cover": 1,
+    "documentation": 4
+  },
+  "total_files": 67,
+  "total_bytes": 19860799,
+  "excluded": [
+    {
+      "path": "pack-full.zip",
+      "reason": "2-byte placeholder; not a valid delivery archive"
+    }
+  ],
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "destination": "products/11-sticker-colouring-pack/source/LICENSE.txt",
+      "size_bytes": 1527,
+      "git_blob_sha1": "28f4cc48a7691d47b099b18653c3d32a9b3af990"
+    },
+    {
+      "path": "LISTING.txt",
+      "destination": "products/11-sticker-colouring-pack/source/LISTING.txt",
+      "size_bytes": 1840,
+      "git_blob_sha1": "fc378b616a3b2aee6502062bb34cc693a249e989"
+    },
+    {
+      "path": "README.txt",
+      "destination": "products/11-sticker-colouring-pack/source/README.txt",
+      "size_bytes": 2191,
+      "git_blob_sha1": "af781e372c86b3667b4defc091ed46f326c686d8"
+    },
+    {
+      "path": "colouring-pages/colouring-gamer-boy.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-gamer-boy.jpg",
+      "size_bytes": 203800,
+      "git_blob_sha1": "ce9a6bedf5d5c4d78f7c74c18b0f8ba907b9b98c"
+    },
+    {
+      "path": "colouring-pages/colouring-girl-headphones.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-girl-headphones.jpg",
+      "size_bytes": 224965,
+      "git_blob_sha1": "7189358a4ed8bfc064a06dd98a993bbb9daedad6"
+    },
+    {
+      "path": "colouring-pages/colouring-girl-tracksuit.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-girl-tracksuit.jpg",
+      "size_bytes": 235391,
+      "git_blob_sha1": "5bebe5387c71f9ddff111517854f0906ab86c911"
+    },
+    {
+      "path": "colouring-pages/colouring-hawaiian-shirt-man.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-hawaiian-shirt-man.jpg",
+      "size_bytes": 181438,
+      "git_blob_sha1": "f913156a216255ae2e4adb45b070d0454e89c8ee"
+    },
+    {
+      "path": "colouring-pages/colouring-main-character.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-main-character.jpg",
+      "size_bytes": 228763,
+      "git_blob_sha1": "b4c1fd9de7efa5f071714c1792b32ebe326ff2f3"
+    },
+    {
+      "path": "colouring-pages/colouring-mechanic-man.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-mechanic-man.jpg",
+      "size_bytes": 264061,
+      "git_blob_sha1": "3ce8bc67010b98cd0afe1109251b110c3e897f33"
+    },
+    {
+      "path": "colouring-pages/colouring-mechanic-woman.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-mechanic-woman.jpg",
+      "size_bytes": 267594,
+      "git_blob_sha1": "4a4de72a415fadc1d0017109257ef3791cc12bc0"
+    },
+    {
+      "path": "colouring-pages/colouring-pink-suit-man.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-pink-suit-man.jpg",
+      "size_bytes": 175718,
+      "git_blob_sha1": "8def34be3eb29b8dfec5f19db082ab422055d797"
+    },
+    {
+      "path": "colouring-pages/colouring-skater-boy.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-skater-boy.jpg",
+      "size_bytes": 229797,
+      "git_blob_sha1": "495da5f46548aa171c1677c6c846b75505c4f47b"
+    },
+    {
+      "path": "colouring-pages/colouring-skater-girl.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-skater-girl.jpg",
+      "size_bytes": 262407,
+      "git_blob_sha1": "bd4802e453410b2aef77947b93e4a011568b256b"
+    },
+    {
+      "path": "colouring-pages/colouring-street-racer-girl.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-street-racer-girl.jpg",
+      "size_bytes": 231385,
+      "git_blob_sha1": "c61539e147e9700107a9f78339879b0bc8478054"
+    },
+    {
+      "path": "colouring-pages/colouring-teen-boy.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-teen-boy.jpg",
+      "size_bytes": 186872,
+      "git_blob_sha1": "653179a7affd6628cc106dfd687723122edd20e7"
+    },
+    {
+      "path": "colouring-pages/colouring-teen-girl.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/colouring-pages/colouring-teen-girl.jpg",
+      "size_bytes": 218423,
+      "git_blob_sha1": "926f6707aa6f63643c48f5fbb8f6cddd44b85b41"
+    },
+    {
+      "path": "cover.png",
+      "destination": "products/11-sticker-colouring-pack/source/cover.png",
+      "size_bytes": 670122,
+      "git_blob_sha1": "57b32ac5db3bf74924169eda250832252067cee5"
+    },
+    {
+      "path": "original-renders-400px/00.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/00.jpg",
+      "size_bytes": 21752,
+      "git_blob_sha1": "6b8445c51124a3bbde167ad93058d26799296a67"
+    },
+    {
+      "path": "original-renders-400px/01.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/01.jpg",
+      "size_bytes": 24003,
+      "git_blob_sha1": "7f58eb8ad2e33e29e762cbe1c973335fd8dd234d"
+    },
+    {
+      "path": "original-renders-400px/02.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/02.jpg",
+      "size_bytes": 22042,
+      "git_blob_sha1": "30e107a93829a9e15b957978ecdc87db4de53fa4"
+    },
+    {
+      "path": "original-renders-400px/03.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/03.jpg",
+      "size_bytes": 21186,
+      "git_blob_sha1": "54465203e73cd9e43e3aa78110dd4496be6cf4fc"
+    },
+    {
+      "path": "original-renders-400px/04.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/04.jpg",
+      "size_bytes": 27237,
+      "git_blob_sha1": "790f0569650da6a559518304a5ca22967e8048fb"
+    },
+    {
+      "path": "original-renders-400px/05.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/05.jpg",
+      "size_bytes": 28113,
+      "git_blob_sha1": "db90bc66016592e4b6983a6b96da3ca2eeb23a6a"
+    },
+    {
+      "path": "original-renders-400px/06.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/06.jpg",
+      "size_bytes": 28778,
+      "git_blob_sha1": "9174d544708d4001a74f8b3e5dbc829a835cb81a"
+    },
+    {
+      "path": "original-renders-400px/07.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/07.jpg",
+      "size_bytes": 22650,
+      "git_blob_sha1": "97271f7a5d8a723ba8d9720afdfb875dd87afdf5"
+    },
+    {
+      "path": "original-renders-400px/08.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/08.jpg",
+      "size_bytes": 26135,
+      "git_blob_sha1": "bc12f3bf3378004da5465dfbe7d83d8d38c64e99"
+    },
+    {
+      "path": "original-renders-400px/09.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/09.jpg",
+      "size_bytes": 21543,
+      "git_blob_sha1": "fc757f73943c4e0bc56a50f28de40ad976549a04"
+    },
+    {
+      "path": "original-renders-400px/10.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/10.jpg",
+      "size_bytes": 25965,
+      "git_blob_sha1": "ca1285a5d4085cf9aabec8c6100681ea9817cb71"
+    },
+    {
+      "path": "original-renders-400px/11.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/11.jpg",
+      "size_bytes": 24337,
+      "git_blob_sha1": "c9afae89d582fdfb3165212df90b03c681b82d68"
+    },
+    {
+      "path": "original-renders-400px/12.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/12.jpg",
+      "size_bytes": 27802,
+      "git_blob_sha1": "0a0f8c8a07e14ad740c4f990e4fd396984f4082b"
+    },
+    {
+      "path": "original-renders-400px/13.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/13.jpg",
+      "size_bytes": 25365,
+      "git_blob_sha1": "f5f823d535456424584a15c51430714154d03066"
+    },
+    {
+      "path": "original-renders-400px/14.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/14.jpg",
+      "size_bytes": 24413,
+      "git_blob_sha1": "6ff5e7df26fc20ac3d69420e556b559a18f5e5b1"
+    },
+    {
+      "path": "original-renders-400px/15.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/15.jpg",
+      "size_bytes": 18999,
+      "git_blob_sha1": "d2af7e1e15bb92502c3cdd8e1deaef3c730284cb"
+    },
+    {
+      "path": "original-renders-400px/16.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/16.jpg",
+      "size_bytes": 18702,
+      "git_blob_sha1": "140e12b932bf46324b60b1b05a66d23a85f95691"
+    },
+    {
+      "path": "original-renders-400px/17.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/17.jpg",
+      "size_bytes": 25395,
+      "git_blob_sha1": "7dd6d496c0b9a2f21cc1fa51f18f593c7428b701"
+    },
+    {
+      "path": "original-renders-400px/18.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/18.jpg",
+      "size_bytes": 26585,
+      "git_blob_sha1": "a9f3e52655bd3a2319a3aec1dd1881afda980a9f"
+    },
+    {
+      "path": "original-renders-400px/19.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/19.jpg",
+      "size_bytes": 27632,
+      "git_blob_sha1": "5fddfa1dc44cbe8fd4883b5aef673df76023c3fa"
+    },
+    {
+      "path": "original-renders-400px/20.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/20.jpg",
+      "size_bytes": 19931,
+      "git_blob_sha1": "f4d26e67c2a8cb61d24ae60c2f12cfd5d1a3df33"
+    },
+    {
+      "path": "original-renders-400px/21.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/21.jpg",
+      "size_bytes": 23473,
+      "git_blob_sha1": "8f66ecf68a1c06d62e49852a3371557d806ea6ac"
+    },
+    {
+      "path": "original-renders-400px/22.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/22.jpg",
+      "size_bytes": 21949,
+      "git_blob_sha1": "562e21be82f96f5fd4fcd8d67e60d0d3eb5fe414"
+    },
+    {
+      "path": "original-renders-400px/23.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/23.jpg",
+      "size_bytes": 23285,
+      "git_blob_sha1": "1ea74934cf0b395a5c7a5047661da95e71f6b5a1"
+    },
+    {
+      "path": "original-renders-400px/24.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/24.jpg",
+      "size_bytes": 22063,
+      "git_blob_sha1": "07c720cbca27e72b0e9c96a54d662a67cd47247f"
+    },
+    {
+      "path": "original-renders-400px/25.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/25.jpg",
+      "size_bytes": 24300,
+      "git_blob_sha1": "04dcaafd6a3696288a4737310c1979fe624c0526"
+    },
+    {
+      "path": "original-renders-400px/26.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/26.jpg",
+      "size_bytes": 21843,
+      "git_blob_sha1": "6f4afab387beb3bd751f6f8356f362857c6e4432"
+    },
+    {
+      "path": "original-renders-400px/27.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/27.jpg",
+      "size_bytes": 21700,
+      "git_blob_sha1": "5045eb3eb3bebfe27b15178c74a06f8f34ca6b70"
+    },
+    {
+      "path": "original-renders-400px/28.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/28.jpg",
+      "size_bytes": 21959,
+      "git_blob_sha1": "67d90d4817f88a5c147d06916f94426e043d3826"
+    },
+    {
+      "path": "original-renders-400px/29.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/29.jpg",
+      "size_bytes": 34990,
+      "git_blob_sha1": "13bd93567a2f36284f7b4e169109869a76cbf2dd"
+    },
+    {
+      "path": "original-renders-400px/30.jpg",
+      "destination": "products/11-sticker-colouring-pack/source/original-renders-400px/30.jpg",
+      "size_bytes": 25920,
+      "git_blob_sha1": "4224583f18c2ef41f3baf0f46a120e97078f1b02"
+    },
+    {
+      "path": "spec.json",
+      "destination": "products/11-sticker-colouring-pack/source/spec.json",
+      "size_bytes": 3218,
+      "git_blob_sha1": "57da7accc949ce885e219380a9b3e591fb879e12"
+    },
+    {
+      "path": "stickers-transparent/expression-sarcastic-smirk.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/expression-sarcastic-smirk.png",
+      "size_bytes": 930149,
+      "git_blob_sha1": "5e8bf11e4fd4469268ccde810ea97db6170203ac"
+    },
+    {
+      "path": "stickers-transparent/expression-side-glance.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/expression-side-glance.png",
+      "size_bytes": 930587,
+      "git_blob_sha1": "458be97f47ae90fe81a5bed3d92d834e45327af1"
+    },
+    {
+      "path": "stickers-transparent/gamer-boy-controller.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/gamer-boy-controller.png",
+      "size_bytes": 611748,
+      "git_blob_sha1": "c83914c2f43fdefc9d0261b334be01d351d9840d"
+    },
+    {
+      "path": "stickers-transparent/girl-big-headphones.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/girl-big-headphones.png",
+      "size_bytes": 917436,
+      "git_blob_sha1": "169a53651177f045f8a36355279aa036ad3ef50a"
+    },
+    {
+      "path": "stickers-transparent/girl-sporty-tracksuit.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/girl-sporty-tracksuit.png",
+      "size_bytes": 919498,
+      "git_blob_sha1": "fc2b9561b25d3325cbdc9dd7985d30cb172ce46c"
+    },
+    {
+      "path": "stickers-transparent/hawaiian-shirt-man.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/hawaiian-shirt-man.png",
+      "size_bytes": 662565,
+      "git_blob_sha1": "2709fdb9a002dc97d5839253d793b8e03399a0a3"
+    },
+    {
+      "path": "stickers-transparent/lettering-habibi.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/lettering-habibi.png",
+      "size_bytes": 1252072,
+      "git_blob_sha1": "bc1a13aaba9e90d8b35c97cdd3ac49b1603dcc27"
+    },
+    {
+      "path": "stickers-transparent/lettering-satirical-quote.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/lettering-satirical-quote.png",
+      "size_bytes": 958327,
+      "git_blob_sha1": "63ed4621b257f7e5f9b8ee3085d638da4a9bbfae"
+    },
+    {
+      "path": "stickers-transparent/mechanic-man.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/mechanic-man.png",
+      "size_bytes": 904539,
+      "git_blob_sha1": "ff84e638bbf438a43f992b91edfb53ea9cf35da4"
+    },
+    {
+      "path": "stickers-transparent/mechanic-woman.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/mechanic-woman.png",
+      "size_bytes": 898487,
+      "git_blob_sha1": "9d6d5ecdb2342af7dfcc2415f75e1b03a68a83f5"
+    },
+    {
+      "path": "stickers-transparent/pink-suit-parrot-man.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/pink-suit-parrot-man.png",
+      "size_bytes": 662742,
+      "git_blob_sha1": "3ea094aa41d2df520bbf79b42bfd168df7e0d88f"
+    },
+    {
+      "path": "stickers-transparent/portrait-bust-3d.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/portrait-bust-3d.png",
+      "size_bytes": 929184,
+      "git_blob_sha1": "71c5f0cf6d91f268d840421149e439985f3d99e2"
+    },
+    {
+      "path": "stickers-transparent/skater-boy-cap.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/skater-boy-cap.png",
+      "size_bytes": 805039,
+      "git_blob_sha1": "52514f40cee0645baa7bb3d4b11f58f7996d7029"
+    },
+    {
+      "path": "stickers-transparent/skater-girl-baggy-jeans.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/skater-girl-baggy-jeans.png",
+      "size_bytes": 963143,
+      "git_blob_sha1": "e3ce4c15cdf258a21107411fa5f160d029faee21"
+    },
+    {
+      "path": "stickers-transparent/stickers-transparent/expression-confident-wink.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/stickers-transparent/expression-confident-wink.png",
+      "size_bytes": 931313,
+      "git_blob_sha1": "756fb886f873a12e3cca23488a82a388d20deafc"
+    },
+    {
+      "path": "stickers-transparent/street-racer-girl.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/street-racer-girl.png",
+      "size_bytes": 679265,
+      "git_blob_sha1": "f799668a29c24d1bf6f87fce6b61b72362fa4f23"
+    },
+    {
+      "path": "stickers-transparent/teen-boy-hoodie.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/teen-boy-hoodie.png",
+      "size_bytes": 691984,
+      "git_blob_sha1": "e2500458729d9a944f7e675ffd76c2cdede43113"
+    },
+    {
+      "path": "stickers-transparent/teen-girl-skateboard.png",
+      "destination": "products/11-sticker-colouring-pack/source/stickers-transparent/teen-girl-skateboard.png",
+      "size_bytes": 873162,
+      "git_blob_sha1": "1bb81cd8f5c0e0bc47c04e4029e018bf4e4e87e1"
+    }
+  ]
+}
