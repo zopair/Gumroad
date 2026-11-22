@@ -1,0 +1,13 @@
+{
+  "industry": "commercial interior design",
+  "region": "London",
+  "prospects": [
+    {
+      "company": "Northstar Studio",
+      "website": "https://example.com",
+      "source_url": "https://example.com/about",
+      "description": "Commercial workspace design",
+      "location": "London"
+    }
+  ]
+}

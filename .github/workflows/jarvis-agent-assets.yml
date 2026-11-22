@@ -1,0 +1,56 @@
+name: JARVIS product artwork and listing build
+on:
+  push:
+    branches:
+      - "feat/jarvis-ai-agents-foundation"
+    paths:
+      - "ai-agents/runtime/seo-listings.json"
+      - "scripts/build_agent_assets.py"
+      - "ai-agents/runtime/tests/test_agent_assets.py"
+      - ".github/workflows/jarvis-agent-assets.yml"
+permissions:
+  contents: write
+jobs:
+  build-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install SVG renderer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin
+      - name: Validate SEO briefs and SVG generation
+        run: python -m unittest discover -s ai-agents/runtime/tests -p "test_agent_assets.py" -v
+      - name: Generate product listings and vector artwork
+        run: |
+          set -euo pipefail
+          python scripts/build_agent_assets.py
+          while IFS= read -r -d '' svg; do
+            png="${svg%.svg}.png"
+            if [[ "$svg" == */thumbnail.svg ]]; then
+              rsvg-convert --format=png --width=800 --height=800 "$svg" > "$png"
+            else
+              rsvg-convert --format=png --width=1600 --height=1000 "$svg" > "$png"
+            fi
+            file "$png"
+          done < <(find ai-agents/products -type f -name '*.svg' -print0)
+          test "$(find ai-agents/products -type f -name '*.png' | wc -l)" -eq 20
+          test "$(find ai-agents/products -name listing.md | wc -l)" -eq 10
+      - name: Commit generated listing and artwork sources
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ai-agents/products
+          if git diff --cached --quiet; then
+            echo "No generated product assets changed."
+            exit 0
+          fi
+          git commit -m "build: generate JARVIS product listings and artwork"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

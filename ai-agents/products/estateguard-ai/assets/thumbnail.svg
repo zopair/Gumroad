@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" role="img" aria-labelledby="title desc">
+<title id="title">EstateGuard AI — JARVIS AI Agent</title><desc id="desc">Spot clauses that deserve a closer human review.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#101A2B"/><stop offset="1" stop-color="#202C40"/></linearGradient>
+<linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A6D48A" stop-opacity=".34"/><stop offset="1" stop-color="#A6D48A" stop-opacity="0"/></linearGradient>
+<filter id="soft"><feGaussianBlur stdDeviation="36"/></filter>
+</defs>
+<rect width="100%" height="100%" fill="url(#bg)"/>
+<circle cx="400" cy="300" r="290" fill="url(#glow)" filter="url(#soft)"/>
+<path d="M0 820 C360 720 560 1060 980 880 S1420 780 1600 860" fill="none" stroke="#A6D48A" stroke-opacity=".13" stroke-width="2"/>
+<path d="M0 870 C360 770 560 1110 980 930 S1420 830 1600 910" fill="none" stroke="#FFFFFF" stroke-opacity=".06" stroke-width="2"/>
+<g transform="translate(400 300) scale(1.45)" fill="none" stroke="#A6D48A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -112 L88 -78 V-8 C88 48 48 94 0 118 C-48 94 -88 48 -88 -8 V-78 Z M-42 0 L-10 32 L48 -34"/></g>
+<circle cx="400" cy="300" r="205" fill="none" stroke="#A6D48A" stroke-opacity=".26" stroke-width="2"/>
+<circle cx="400" cy="300" r="245" fill="none" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="2" stroke-dasharray="8 18"/>
+<text x="80" y="110" fill="#A6D48A" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="700" letter-spacing="5">JARVIS COLLECTION</text>
+<text x="80" y="535" fill="#F4F0E7" font-family="Inter,Arial,sans-serif" font-size="62" font-weight="750">EstateGuard AI</text>
+<text x="80" y="610" fill="#C2CBD8" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="500"><tspan x="80" dy="0">INTELLIGENT BUSINESS AGENT</tspan></text>
+<rect x="80" y="700" width="90" height="5" rx="2.5" fill="#A6D48A"/>
+<text x="80" y="748" fill="#9AA4B2" font-family="Inter,Arial,sans-serif" font-size="20" letter-spacing="3">ZUBAIR DIGITAL KITS</text>
+<text x="720" y="748" fill="#9AA4B2" font-family="Inter,Arial,sans-serif" font-size="18" text-anchor="end">LOCAL-FIRST EDITION</text>
+</svg>

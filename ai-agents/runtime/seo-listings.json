@@ -1,0 +1,398 @@
+{
+  "schema_version": "1.0",
+  "locale": "en",
+  "listings": [
+    {
+      "slug": "rankmaster-ai",
+      "name": "RankMaster AI",
+      "seo_title": "RankMaster AI | SEO Content Brief Generator",
+      "meta_description": "Build focused SEO briefs, content outlines, title ideas and meta descriptions for your audience. A practical local-first SEO planning assistant.",
+      "primary_keyword": "SEO content brief generator",
+      "tags": [
+        "SEO",
+        "content strategy",
+        "keyword research",
+        "content optimization",
+        "AI writing"
+      ],
+      "hero": "Turn a topic into a focused content plan.",
+      "problem": "Writers often start drafting before they understand the reader's intent, page purpose, or evidence needed to make the content useful.",
+      "solution": "Organize a topic, audience, and primary phrase into a structured brief with an outline, metadata suggestions, and an editorial checklist.",
+      "included": [
+        "SEO brief workflow",
+        "Title and meta suggestions",
+        "Article outline",
+        "On-page checklist",
+        "Structured report output"
+      ],
+      "faq": [
+        [
+          "Does it provide live keyword volume?",
+          "No. The local edition does not query a live search provider or invent volume figures."
+        ],
+        [
+          "Does it guarantee rankings?",
+          "No. Rankings depend on competition, site quality, intent, links, and many external factors."
+        ],
+        [
+          "Can it support Arabic?",
+          "It accepts Unicode text; native-language review is needed for wording and intent."
+        ]
+      ],
+      "cta": "Build a clearer SEO brief before you write."
+    },
+    {
+      "slug": "leadscout-bot",
+      "name": "LeadScout Bot",
+      "seo_title": "LeadScout Bot | B2B Prospect Qualification",
+      "meta_description": "Organize company prospects, remove duplicates and score record completeness with source URLs. A transparent B2B lead research workflow.",
+      "primary_keyword": "B2B lead qualification tool",
+      "tags": [
+        "B2B leads",
+        "prospect research",
+        "sales operations",
+        "lead qualification",
+        "CSV workflow"
+      ],
+      "hero": "Make your prospect list more useful and auditable.",
+      "problem": "Raw prospect lists are often duplicated, incomplete, and disconnected from the source that supports each company record.",
+      "solution": "Normalize supplied company records, validate source URLs, remove duplicates, and score record completeness with an explicit explanation.",
+      "included": [
+        "Company record validation",
+        "Duplicate detection",
+        "Source URL provenance",
+        "Completeness scoring",
+        "Structured prospect report"
+      ],
+      "faq": [
+        [
+          "Does it scrape personal profiles?",
+          "No. The local workflow processes company-level records supplied by the user."
+        ],
+        [
+          "Does a high score mean the lead will buy?",
+          "No. The score measures record completeness, not buying intent or verified fit."
+        ],
+        [
+          "Does it verify emails?",
+          "No. Email discovery and verification are not included in this edition."
+        ]
+      ],
+      "cta": "Start with cleaner, source-backed company data."
+    },
+    {
+      "slug": "tradetrend-analyst",
+      "name": "TradeTrend Analyst",
+      "seo_title": "TradeTrend Analyst | Market Scenario Research",
+      "meta_description": "Analyze supplied price history with return, average and volatility statistics, then frame bull, base and bear scenarios without live trading.",
+      "primary_keyword": "financial market analysis tool",
+      "tags": [
+        "market analysis",
+        "price statistics",
+        "volatility",
+        "trading research",
+        "risk analysis"
+      ],
+      "hero": "Turn price history into a transparent research brief.",
+      "problem": "Market commentary can blur measured observations, assumptions, and predictions, making it difficult to see what data supports.",
+      "solution": "Calculate descriptive statistics from supplied closing prices and separate observed metrics from scenario hypotheses.",
+      "included": [
+        "Price-series validation",
+        "Period change and average",
+        "Return and volatility measures",
+        "Scenario framework",
+        "Risk disclosures"
+      ],
+      "faq": [
+        [
+          "Does it connect to an exchange?",
+          "No. This baseline analyzes price data that you provide."
+        ],
+        [
+          "Does it tell me what to buy?",
+          "No. It provides descriptive analysis, not investment advice or trade signals."
+        ],
+        [
+          "Can it place trades?",
+          "No. Live order execution is intentionally excluded."
+        ]
+      ],
+      "cta": "Separate measured market data from trading assumptions."
+    },
+    {
+      "slug": "docusense-support",
+      "name": "DocuSense Support",
+      "seo_title": "DocuSense Support | PDF Evidence Search",
+      "meta_description": "Search supplied document passages and retrieve relevant evidence with document and page references. Designed for transparent support workflows.",
+      "primary_keyword": "PDF document search assistant",
+      "tags": [
+        "PDF search",
+        "document knowledge",
+        "support operations",
+        "evidence retrieval",
+        "document Q&A"
+      ],
+      "hero": "Find the passage before you write the answer.",
+      "problem": "Support and operations teams waste time searching long documents and risk answering from memory instead of the source.",
+      "solution": "Rank supplied document passages by visible term overlap and return matching excerpts with document and page metadata.",
+      "included": [
+        "Multi-document text input",
+        "Evidence passage retrieval",
+        "Document and page references",
+        "Insufficient-evidence fallback",
+        "Structured answer report"
+      ],
+      "faq": [
+        [
+          "Is this semantic RAG?",
+          "Not in the local baseline. It uses transparent lexical retrieval."
+        ],
+        [
+          "Does it extract text from PDFs?",
+          "The current runtime accepts extracted text and page metadata; PDF parsing and OCR are not included."
+        ],
+        [
+          "Can it answer without evidence?",
+          "It reports insufficient evidence when no relevant passage is found."
+        ]
+      ],
+      "cta": "Keep document answers tied to visible evidence."
+    },
+    {
+      "slug": "socialsync-ai",
+      "name": "SocialSync AI",
+      "seo_title": "SocialSync AI | Social Content Draft Planner",
+      "meta_description": "Create channel-aware social post drafts with brand voice notes and an approval checklist. Keep publishing under human control.",
+      "primary_keyword": "social media content planner",
+      "tags": [
+        "social media",
+        "content planning",
+        "brand voice",
+        "post drafts",
+        "marketing workflow"
+      ],
+      "hero": "Plan the message. Review the draft. Keep control.",
+      "problem": "Teams rewrite the same idea for multiple channels and lose consistency when review and approval are informal.",
+      "solution": "Prepare channel-specific draft copy, record the requested brand voice, and supply a human review checklist.",
+      "included": [
+        "Channel-specific drafts",
+        "Brand voice input",
+        "Editorial review checklist",
+        "Approval-first status",
+        "Structured content pack"
+      ],
+      "faq": [
+        [
+          "Does it publish to accounts?",
+          "No. It creates drafts only; publishing and scheduling are not connected."
+        ],
+        [
+          "Does it guarantee engagement?",
+          "No. Reach and engagement depend on audience, creative quality, timing, and platform factors."
+        ],
+        [
+          "Can I add channels?",
+          "The workflow accepts channel names; each channel needs editorial and format review."
+        ]
+      ],
+      "cta": "Create a reviewable social content pack."
+    },
+    {
+      "slug": "mailforge-pro",
+      "name": "MailForge Pro",
+      "seo_title": "MailForge Pro | B2B Cold Email Sequence Writer",
+      "meta_description": "Draft a three-touch B2B outreach sequence using supplied company context and evidence. Review compliance before sending anything.",
+      "primary_keyword": "B2B cold email sequence writer",
+      "tags": [
+        "cold email",
+        "B2B outreach",
+        "sales copy",
+        "email sequence",
+        "personalization"
+      ],
+      "hero": "Make outreach relevant without inventing familiarity.",
+      "problem": "Generic outreach sounds interchangeable, while unsupported personalization can damage trust and create compliance risk.",
+      "solution": "Draft a three-touch sequence from the value proposition and evidence supplied, while flagging missing research and review steps.",
+      "included": [
+        "Three-step email sequence",
+        "Evidence-aware personalization",
+        "Subject line suggestions",
+        "Compliance checklist",
+        "Editable email copy"
+      ],
+      "faq": [
+        [
+          "Does it send emails?",
+          "No. It generates drafts only and never sends messages."
+        ],
+        [
+          "Does it guarantee deliverability?",
+          "No. Inbox placement depends on sender reputation, authentication, list quality, and recipient behavior."
+        ],
+        [
+          "Does it find personal contact details?",
+          "No. Supply lawful business context and verify outreach requirements."
+        ]
+      ],
+      "cta": "Write a more relevant first message, then review it."
+    },
+    {
+      "slug": "contentflip-ai",
+      "name": "ContentFlip AI",
+      "seo_title": "ContentFlip AI | Transcript to Article Converter",
+      "meta_description": "Turn an authorized transcript into an editable article outline with source traceability and editorial checks. No media scraping required.",
+      "primary_keyword": "transcript to article converter",
+      "tags": [
+        "content repurposing",
+        "transcript",
+        "article writing",
+        "video content",
+        "podcast workflow"
+      ],
+      "hero": "Turn spoken ideas into an editable written draft.",
+      "problem": "Useful insights in recordings are difficult to reuse when the transcript is unstructured and source context gets lost.",
+      "solution": "Organize supplied transcript text into an article structure and preserve basic source details for editorial review.",
+      "included": [
+        "Transcript segmentation",
+        "Article structure",
+        "Markdown-ready draft",
+        "Source traceability",
+        "Editorial and rights checklist"
+      ],
+      "faq": [
+        [
+          "Does it transcribe audio or video?",
+          "Not in the local baseline. It transforms a transcript that you provide."
+        ],
+        [
+          "Does it download videos?",
+          "No. Use only media you are authorized to access and process."
+        ],
+        [
+          "Can the article publish without review?",
+          "Review quotations, facts, names, and permissions before publishing."
+        ]
+      ],
+      "cta": "Repurpose a transcript into a first article draft."
+    },
+    {
+      "slug": "estateguard-ai",
+      "name": "EstateGuard AI",
+      "seo_title": "EstateGuard AI | Contract Clause Review Assistant",
+      "meta_description": "Flag common contract clause references and capture source excerpts for human review. A document triage aid, not legal advice.",
+      "primary_keyword": "contract clause review assistant",
+      "tags": [
+        "contract review",
+        "real estate",
+        "lease analysis",
+        "legal operations",
+        "document triage"
+      ],
+      "hero": "Spot clauses that deserve a closer human review.",
+      "problem": "Important contract terms can be buried in long documents, making first-pass review slow and inconsistent.",
+      "solution": "Identify common clause keywords, capture source line excerpts, and suggest focused questions for a qualified reviewer.",
+      "included": [
+        "Deposit and payment flags",
+        "Termination and renewal references",
+        "Liability and penalty checks",
+        "Source line excerpts",
+        "Human review prompts"
+      ],
+      "faq": [
+        [
+          "Is it a legal adviser?",
+          "No. It provides document triage only and does not give legal advice."
+        ],
+        [
+          "Does it determine enforceability?",
+          "No. Enforceability depends on the full contract and applicable jurisdiction."
+        ],
+        [
+          "Does it read scanned PDFs?",
+          "The current runtime accepts extracted contract text; OCR is not included."
+        ]
+      ],
+      "cta": "Prepare a more focused first-pass contract review."
+    },
+    {
+      "slug": "codesentinel",
+      "name": "CodeSentinel",
+      "seo_title": "CodeSentinel | Code Diff Security Review",
+      "meta_description": "Inspect added diff lines for common secret, eval, shell and SQL risks. Get review guidance without executing untrusted repository code.",
+      "primary_keyword": "code diff security review tool",
+      "tags": [
+        "code review",
+        "application security",
+        "static analysis",
+        "developer tools",
+        "secure coding"
+      ],
+      "hero": "Review risky changes before they reach the main branch.",
+      "problem": "Small code changes can introduce exposed credentials or unsafe execution paths that are easy to overlook in a large diff.",
+      "solution": "Scan added diff lines for a bounded set of risky patterns and return candidate findings with line references and remediation prompts.",
+      "included": [
+        "Diff-first input",
+        "Hard-coded secret checks",
+        "Dynamic execution and shell checks",
+        "SQL construction heuristics",
+        "Severity and review guidance"
+      ],
+      "faq": [
+        [
+          "Does it execute code?",
+          "Never. Untrusted source code is not executed."
+        ],
+        [
+          "Does it find every vulnerability?",
+          "No. Pattern checks are incomplete and require language-aware tools and human review."
+        ],
+        [
+          "Can it modify files?",
+          "No. It reports findings and suggestions only."
+        ]
+      ],
+      "cta": "Add a fast, explainable review pass to your code changes."
+    },
+    {
+      "slug": "marketmind-ai",
+      "name": "MarketMind AI",
+      "seo_title": "MarketMind AI | Market & Competitor Research",
+      "meta_description": "Structure competitor positioning, pricing inputs and evidence gaps into a market intelligence brief with SWOT research prompts.",
+      "primary_keyword": "market and competitor research assistant",
+      "tags": [
+        "market research",
+        "competitor analysis",
+        "market intelligence",
+        "SWOT",
+        "business strategy"
+      ],
+      "hero": "Turn scattered competitor notes into a decision brief.",
+      "problem": "Competitor research often mixes dated facts, unverified assumptions, and incomplete pricing into one unreliable summary.",
+      "solution": "Organize supplied competitor records into a comparison matrix, highlight missing source evidence, and structure next-step research.",
+      "included": [
+        "Competitor comparison matrix",
+        "Source URL and evidence status",
+        "Pricing and positioning fields",
+        "Research gap checklist",
+        "SWOT prompt framework"
+      ],
+      "faq": [
+        [
+          "Does it browse automatically?",
+          "Not in the local baseline. It structures information and source links you provide."
+        ],
+        [
+          "Are competitor prices verified?",
+          "No. Verify prices and plan details against dated primary sources."
+        ],
+        [
+          "Does it calculate TAM or market share?",
+          "No. Market sizing and share estimates require separate evidence-backed analysis."
+        ]
+      ],
+      "cta": "Build a competitor brief with visible evidence gaps."
+    }
+  ],
+  "listing_status": "internal_draft_not_published",
+  "publishing_authorized": false
+}
