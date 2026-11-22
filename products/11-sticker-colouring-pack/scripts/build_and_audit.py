@@ -138,7 +138,7 @@ def main() -> int:
         "- Git blob SHA-1 and byte-size checks: all passed.",
         "",
         "## Warnings",
-        *(f"- {warning}" for warning in warnings) if warnings else ["- None."],
+        *([f"- {warning}" for warning in warnings] if warnings else ["- None."]),
         "",
         "## Limitations",
         "- Visual/artistic review and legal ownership review are not automated.",
