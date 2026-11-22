@@ -46,3 +46,8 @@ A 3-user tier at USD $100 appears in the source listing draft but remains unappr
 - [Complete ZIP](11-sticker-colouring-pack/delivery/sticker-colouring-pack.zip)
 - [Colouring PDF](11-sticker-colouring-pack/delivery/colouring-pages.pdf)
 - [Source manifest](11-sticker-colouring-pack/manifest.json)
+- [Gumroad policy review](11-sticker-colouring-pack/POLICY_REVIEW.md)
+
+## Gumroad account reconciliation
+
+A connected account check on 2026-11-22 returned 24 product records, all marked unpublished. One related draft already exists: `Street Crew Color & Print Art Pack (DRAFT - not for publishing)`, priced at $19, with one existing 7.19 MB ZIP. It has no description or cover. It has not been changed. The new $39 target and new delivery files must be reconciled with that draft before adding or publishing anything in Gumroad.
