@@ -6,7 +6,7 @@
 - Colouring pages: 13
 - Original 400px renders: 31
 - Print PDF: 3,648,868 bytes; 13 square pages at approximately 5.33 in.
-- Delivery ZIP: 21,934,158 bytes.
+- Delivery ZIP: 21,934,160 bytes.
 - PNGs: readable, PNG format, transparency channel present.
 - Colouring pages: readable 1600 × 1600 JPEG.
 - Original renders: readable 400 × 400 JPEG.
