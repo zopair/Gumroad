@@ -1,6 +1,6 @@
 # Sticker & Colouring Pack — Original Characters Edition
 
-<badge>Internal review build — not published</badge>
+**Status:** Internal review build — not published.
 
 ## Product summary
 
