@@ -21,6 +21,14 @@ Gumroad currently allows ten published product slots for this store. All ten are
 | 9 | Proposal & Statement of Work (SOW) Template | $12 | Define deliverables and project scope |
 | 10 | Service Pricing Calculator for Freelancers | $9 | Estimate service pricing and project quotes |
 
+## Internal product under preparation — not live
+
+| # | Working title | Target price | Status |
+|---:|---|---:|---|
+| 11 | Sticker & Colouring Pack — Original Characters Edition | $39 single-user target | Source assets transferred; automated QA passed; listing and license remain under review |
+
+The product is intentionally excluded from the live-product count and must not be represented as published. Review assets: [preview center](products/11-sticker-colouring-pack/preview.html), [quality report](products/11-sticker-colouring-pack/quality-report.md), [delivery ZIP](products/11-sticker-colouring-pack/delivery/sticker-colouring-pack.zip), and [13-page colouring PDF](products/11-sticker-colouring-pack/delivery/colouring-pages.pdf).
+
 ## Source files and included downloads
 
 Each live Gumroad listing now includes three downloads: its Markdown guide, matching CSV worksheet and editable XLSX workbook.
