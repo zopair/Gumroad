@@ -9,7 +9,7 @@ from pathlib import Path
 
 from PIL import Image
 from reportlab.lib.units import inch
-from reportlab.platypus import Image as PDFImage, PageBreak, SimpleDocTemplate
+from reportlab.platypus import BaseDocTemplate, Frame, Image as PDFImage, PageBreak, PageTemplate
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT = ROOT / "products" / "11-sticker-colouring-pack"
@@ -81,6 +81,24 @@ def validate() -> tuple[list[str], list[str], dict]:
     for key, value in expected.items():
         if counts[key] != value:
             errors.append(f"Count mismatch {key}: expected {value}, got {counts[key]}")
+    for relative_path, expected_size, _kind in json.loads((SOURCE / "spec.json").read_text(encoding="utf-8")):
+        path = SOURCE / relative_path
+        if not path.is_file():
+            errors.append(f"Missing from spec: {relative_path}")
+            continue
+        try:
+            with Image.open(path) as image:
+                if list(image.size) != expected_size:
+                    errors.append(f"Spec dimension mismatch: {relative_path}; expected {expected_size}, got {list(image.size)}")
+        except Exception as exc:
+            errors.append(f"Cannot inspect spec image {relative_path}: {exc}")
+    cover = SOURCE / "cover.png"
+    try:
+        with Image.open(cover) as image:
+            if image.format != "PNG" or image.size != (1429, 804):
+                errors.append(f"Unexpected cover format/dimensions: {image.format} {image.size}")
+    except Exception as exc:
+        errors.append(f"Unreadable cover: {exc}")
     if len(manifest["files"]) != 67:
         errors.append(f"Manifest file count expected 67, got {len(manifest['files'])}")
     return errors, warnings, counts
@@ -91,10 +109,9 @@ def build_pdf() -> Path:
     DELIVERY.mkdir(parents=True, exist_ok=True)
     pages = sorted((SOURCE / "colouring-pages").glob("*.jpg"))
     page_size = 5.333333 * inch
-    document = SimpleDocTemplate(
-        str(output), pagesize=(page_size, page_size),
-        leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,
-    )
+    document = BaseDocTemplate(str(output), pagesize=(page_size, page_size))
+    frame = Frame(0, 0, page_size, page_size, leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
+    document.addPageTemplates([PageTemplate(id="colouring-pages", frames=[frame])])
     story = []
     for index, path in enumerate(pages):
         story.append(PDFImage(str(path), width=page_size, height=page_size))
