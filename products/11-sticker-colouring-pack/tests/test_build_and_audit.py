@@ -6,7 +6,12 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
-from build_and_audit import git_blob_sha1  # noqa: E402
+from build_and_audit import PRODUCT, ROOT, git_blob_sha1  # noqa: E402
+
+
+class RepositoryPathTests(unittest.TestCase):
+    def test_product_root_resolves_to_repository_product_directory(self):
+        self.assertEqual(PRODUCT, ROOT / "products" / "11-sticker-colouring-pack")
 
 
 class GitBlobSha1Tests(unittest.TestCase):
