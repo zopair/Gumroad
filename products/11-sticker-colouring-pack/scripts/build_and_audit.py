@@ -11,7 +11,7 @@ from PIL import Image
 from reportlab.lib.units import inch
 from reportlab.platypus import BaseDocTemplate, Frame, Image as PDFImage, PageBreak, PageTemplate
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 PRODUCT = ROOT / "products" / "11-sticker-colouring-pack"
 SOURCE = PRODUCT / "source"
 MANIFEST = PRODUCT / "manifest.json"
