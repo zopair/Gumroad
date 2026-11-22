@@ -11,7 +11,9 @@ from build_and_audit import PRODUCT, ROOT, git_blob_sha1  # noqa: E402
 
 class RepositoryPathTests(unittest.TestCase):
     def test_product_root_resolves_to_repository_product_directory(self):
-        self.assertEqual(PRODUCT, ROOT / "products" / "11-sticker-colouring-pack")
+        expected_product = Path(__file__).resolve().parents[1]
+        self.assertEqual(PRODUCT, expected_product)
+        self.assertEqual(ROOT, expected_product.parents[1])
 
 
 class GitBlobSha1Tests(unittest.TestCase):
