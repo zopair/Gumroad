@@ -1,0 +1,42 @@
+name: Sticker Pack QA and Delivery
+on:
+  push:
+    branches: [feat/sticker-colouring-pack]
+    paths:
+      - "products/11-sticker-colouring-pack/source/**"
+      - "products/11-sticker-colouring-pack/manifest.json"
+      - "products/11-sticker-colouring-pack/scripts/**"
+      - "products/11-sticker-colouring-pack/tests/**"
+      - ".github/workflows/sticker-pack-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out product branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install free open-source build dependencies
+        run: python -m pip install --disable-pip-version-check Pillow reportlab
+      - name: Run regression tests
+        run: python -m unittest discover -s products/11-sticker-colouring-pack/tests -v
+      - name: Validate assets and build delivery files
+        run: python products/11-sticker-colouring-pack/scripts/build_and_audit.py
+      - name: Commit verified report and customer downloads
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add products/11-sticker-colouring-pack/quality-report.md products/11-sticker-colouring-pack/delivery/
+          if ! git diff --cached --quiet; then
+            git commit -m "Build verified sticker pack delivery files"
+            git push
+          fi
