@@ -3,6 +3,7 @@ import json
 import sys
 import unittest
 from pathlib import Path
+from zipfile import ZipFile
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPT_DIR))
@@ -38,6 +39,23 @@ class ManifestTests(unittest.TestCase):
         self.assertEqual(manifest["counts"]["colouring_pages_jpg"], 13)
         self.assertEqual(manifest["counts"]["original_renders_jpg"], 31)
         self.assertNotIn("pack-full.zip", [item["path"] for item in manifest["files"]])
+
+
+class DeliveryArchiveTests(unittest.TestCase):
+    def test_delivery_zip_is_valid_and_contains_every_manifest_asset(self):
+        product = Path(__file__).resolve().parents[1]
+        manifest = json.loads((product / "manifest.json").read_text(encoding="utf-8"))
+        archive_path = product / "delivery" / "sticker-colouring-pack.zip"
+
+        self.assertTrue(archive_path.is_file(), "customer ZIP must exist")
+
+        with ZipFile(archive_path) as archive:
+            self.assertIsNone(archive.testzip(), "customer ZIP must pass CRC checks")
+            names = set(archive.namelist())
+            expected = {item["path"] for item in manifest["files"]}
+            self.assertTrue(expected.issubset(names))
+            self.assertIn("delivery/colouring-pages.pdf", names)
+            self.assertEqual(len(expected), 67)
 
 
 if __name__ == "__main__":
