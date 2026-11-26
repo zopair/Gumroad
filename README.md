@@ -93,3 +93,64 @@ The ten product slots are occupied. Additional catalog ideas are internal backlo
 - Do not claim sales, rankings, reviews or guaranteed outcomes without verified evidence.
 - Do not publish new products unless a published slot becomes available or the account limit changes.
 - Follow [Publishing & Asset Standards](docs/PUBLISHING_AND_ASSET_STANDARDS.md) for provider limits, file/image formats, deployment routes, and release checks.
+
+
+## Technical Setup & Verification
+
+The repository contains two distinct tracks: the Zubair Digital Kits product catalog/workbook generator and the optional RelayMind video studio. They have separate workflows and runtime requirements.
+
+### Product workbook and asset checks
+
+```bash
+python -m pip install -r requirements.txt openpyxl
+python -m unittest discover -s tests -v
+python scripts/build_product_workbooks.py . dist
+python scripts/validate_gumroad_assets.py
+```
+
+The workbook test suite verifies ten generated XLSX workbooks, selected formulas, data validation, and content counts. The asset validator checks PNG dimensions, DPI metadata, file size, and thumbnail geometry. The cover-render workflow also requires the system `librsvg2-bin` package.
+
+### RelayMind local dry run
+
+```bash
+python -m pip install -r requirements.txt
+python runner.py --dry-run --out /tmp/relaymind-dry-run
+```
+
+The default browser Studio and optional GitHub/Actions render mode are separate execution paths. Any external provider key, model download, or service quota must be evaluated independently; the repository does not guarantee unlimited free external inference.
+
+### Automation write boundary
+
+The workbook and product-cover workflows currently request `contents: write` and commit generated workbooks/assets directly to `main` after their checks. They do not open a review PR. The RelayMind owner self-test is manual and read-only. Review generated files and workflow permissions before enabling additional automation.
+
+## Proof of Concept & Enterprise Customization Readiness
+
+**Status: Product catalog with generated digital deliverables plus a separate browser-first video-studio PoC.** The repository includes ten editable XLSX workbooks with regression tests, product previews and marketing assets, and an optional video generation engine. It does not establish external marketplace sales, customer outcomes, or that every product brief is already published as a Gumroad listing.
+
+| Area | Current state / boundary |
+|---|---|
+| Digital product workbooks | Ten generated XLSX deliverables; selected content/formula regression tests |
+| Product visual assets | SVG source and rendered PNG/GIF previews; image-size/DPI validator |
+| Catalog and storefront | Static product catalog and profile page; Gumroad transaction state is external |
+| RelayMind browser Studio | Client-side generation flow; visitor supplies their own optional API key; fallback sources and local rendering have separate terms/limits |
+| RelayMind GitHub mode | Optional customer-owned workflow path; not the default owner-side hosting model |
+| Voice / media dependencies | Edge-TTS, gTTS, FFmpeg/Pillow and browser ONNX model; review each upstream license and network requirement |
+| Test coverage | Workbook and image asset tests; manual RelayMind self-test workflow |
+| Direct workflow writes | Workbook and cover workflows can push generated artifacts directly to main |
+| Software license | `LICENSE.md` defines customer usage terms for Zubair Digital Kits products; it is not a general open-source license for all repository source code |
+
+### Readiness gates
+
+1. Verify each Gumroad listing's actual published status, price, files, preview, and license terms in the Gumroad account; repository files alone do not prove publication.
+2. Keep the workbook source, generated workbook, CSV companion, preview images, and listing description synchronized.
+3. Add `openpyxl` explicitly to the documented development/test dependency set or a dedicated dev requirements file.
+4. Review direct-to-main workflow permissions and consider PR-based artifact updates if owner review is required.
+5. Maintain per-asset third-party license attribution for fonts, images, voices, models, and generated media.
+6. Do not claim unlimited free AI usage; external keys, quota limits, browser APIs, and model downloads remain subject to provider terms.
+7. Keep RelayMind's client-side licensing check described as a deterrent, not tamper-proof access control.
+
+## Intellectual Property & Authorship
+
+Project authorship and attribution: **Aly Hussein Zopair (علي حسين زبير ALY HUSSEIN ZOPAIR)**.
+
+The product-use terms in `LICENSE.md` apply to Zubair Digital Kits deliverables as written. They do not automatically grant an open-source license to all source code or third-party components in this repository. Review and clarify the intended code license before redistribution.
